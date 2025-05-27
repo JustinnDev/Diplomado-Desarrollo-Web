@@ -1,5 +1,7 @@
 {% load static %}
 
+
+
 <!DOCTYPE HTML>
 <html>
     
@@ -61,6 +63,8 @@
             
              <!-- Menu -->
             
+            {% block 'menu' %}
+
             <nav class="colorlib-nav" role="navigation">
                 <div class="top-menu">
                     <div class="container">
@@ -88,6 +92,8 @@
                 </div>
             </nav>
             
+            {% endblock %}
+
              <!-- Slide -->
              <aside id="colorlib-hero">
                 <div class="flexslider">
@@ -147,14 +153,7 @@
                     </ul>
                 </div>
             </aside>
-            
-            
-             
-           
-             <!-- Productos Servcios -->
-
-            
-
+        
                <!-- Nosotros-->
              
              <div id="colorlib-about">
