@@ -1,0 +1,70 @@
+djangoproject/
+│
+├── manage.py
+├── requirements.txt
+├── .env
+│
+├── config/                      # Configuración global del proyecto
+│   ├── __init__.py
+│   ├── settings.py              
+│   ├── urls.py                 
+│   ├── asgi.py
+│   └── wsgi.py
+│
+├── core/                        # Lógica común y utilidades compartidas
+│   ├── __init__.py
+│   ├── services/
+│   ├── utils/
+│   └── models/
+│
+├── templates/                   # Carpeta global de templates
+│   ├── landing/
+│   ├── materials/
+│   ├── erp_extension/
+│   └── users/
+│
+├── static/                      # Carpeta global de archivos estáticos
+│   ├── css/
+│   ├── js/
+│   ├── images/
+│   ├── landing/
+│   ├── materials/
+│   ├── erp_extension/
+│   └── users/
+│
+├── landing/
+│   ├── __init__.py
+│   ├── admin.py
+│   ├── apps.py
+│   ├── models.py
+│   ├── views.py
+│   └── urls.py
+│   
+│
+├── materials/
+│   ├── __init__.py
+│   ├── admin.py
+│   ├── apps.py
+│   ├── models.py
+│   ├── views.py
+│   ├── urls.py
+│   └── services/
+│  
+│
+├── erp_extension/
+│   ├── __init__.py
+│   ├── admin.py
+│   ├── apps.py
+│   ├── models.py
+│   ├── views.py
+│   └── urls.py
+│  
+│
+└── users/
+    ├── __init__.py
+    ├── admin.py
+    ├── apps.py
+    ├── models.py
+    ├── urls.py
+    └── forms.py
+
