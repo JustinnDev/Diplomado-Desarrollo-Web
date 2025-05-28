@@ -1,7 +1,5 @@
 {% load static %}
 
-
-
 <!DOCTYPE HTML>
 <html>
     
@@ -49,10 +47,7 @@
 
 <!-- Modernizr JS -->
 <script src="{% static 'js/modernizr-2.6.2.min.js' %}"></script>
-<!-- FOR IE9 below -->
-<!--[if lt IE 9]>
-<script src="{% static 'js/respond.min.js' %}"></script>
-<![endif]-->
+
      
     </head>
     <body>
@@ -65,34 +60,59 @@
             
             {% block 'menu' %}
 
-            <nav class="colorlib-nav" role="navigation">
-                <div class="top-menu">
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-xs-2">
-                                <div id="colorlib-logo"> <img src="{% static 'images/logo.png' %}"> <a href=""  ></a></div>
-                            </div>
-                            <div class="col-xs-10 text-right menu-1">
-                                <ul>
-                                    <li class="active"><a href="index.html">Home</a></li>
-                                    <li><a href="#proyectos">Productos</a></li>
-                                    <li class="has-dropdown">
-									<a><b>Llámanos!</b></a>
-									<ul class="dropdown">
-										<li> <i class="icon-whatsapp"></i> <i class="icon-phone2"></i> <a href="https://wa.me/584243749696" target="_blank"> +58 424-3749696</a></li>
-										<li> <i class="icon-phone2"></i> <a href="tel://584248305236">+58 424-8305236</a></li>
-										<li> <i class="icon-phone2"></i> <a href="tel://584243749696">+58 424-3749696</a> </li>
-									</ul>
-                                    <li > <a href="#about">Nosotros</a> </li>
-                                    <li><a href="#contact">Contacto</a></li>
-                                </ul>
-                            </div>
-                        </div>
+<nav class="colorlib-nav" role="navigation">
+    <div class="top-menu">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-2">
+                    <div id="colorlib-logo"> 
+                        <img src="{% static 'images/logo.png' %}"> 
+                        <a href="{% url 'landing:index' %}"></a>
                     </div>
                 </div>
-            </nav>
+                <div class="col-xs-10 text-right menu-1">
+                    <ul>
+                        <li class="{% if request.path == '/' %}active{% endif %}"><a href="{% url 'landing:index' %}">Home</a></li>
+                        <li><a href="#proyectos">Productos</a></li>
+                        <li class="has-dropdown">
+                            <a><b>Llámanos!</b></a>
+                            <ul class="dropdown">
+                                <li> <i class="icon-whatsapp"></i> <i class="icon-phone2"></i> <a href="https://wa.me/584243749696" target="_blank"> +58 424-3749696</a></li>
+                                <li> <i class="icon-phone2"></i> <a href="tel://584248305236">+58 424-8305236</a></li>
+                                <li> <i class="icon-phone2"></i> <a href="tel://584243749696">+58 424-3749696</a> </li>
+                            </ul>
+                        </li>
+                        <li><a href="#about">Nosotros</a></li>
+                        <li><a href="#contact">Contacto</a></li>
+                        
+<li class="has-dropdown">
+    {% if user.is_authenticated %}
+        <a href="#"><i class="icon-user"></i> {{ user.username }}</a>
+        <ul class="dropdown">
+            {% if user.role == 'admin' %}
+                <li><a href="{% url 'admin:index' %}"><i class="icon-settings"></i> Panel Admin</a></li>
+                <li><a href="{% url 'users:manage_staff' %}"><i class="icon-users"></i> Gestionar Staff</a></li>
+            {% elif user.role == 'staff' %}
+                <li><a href="{% url 'users:dashboard' %}"><i class="icon-dashboard"></i> Dashboard Staff</a></li>
+            {% endif %}
+            <li><a href="{% url 'users:profile' %}"><i class="icon-user"></i> Mi Perfil</a></li>
+            <li><a href="{% url 'users:logout' %}"><i class="icon-exit"></i> Cerrar Sesión</a></li>
+        </ul>
+    {% else %}
+        <!-- Opciones para no autenticados -->
+    {% endif %}
+</li>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
             
             {% endblock %}
+
+{% block content %}
 
              <!-- Slide -->
              <aside id="colorlib-hero">
@@ -368,11 +388,15 @@
 					
 				</div>
 			</div>
-		</div>
+	</div>
                <a target="blank">
                <div id="map" class="colorlib-map"> </div>
 
                 </a>
+
+{% endblock %}
+
+	
 
             <footer id="colorlib-footer">
                 <div class="contact-information">
@@ -428,9 +452,9 @@
                             <div class="col-md-12 text-center">
                                 <p>
                                   	<small class="block">
-<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+
 <script>document.write(new Date().getFullYear());</script> Desing<i class="icon-heart3" aria-hidden="true"></i> by <a href="#" target="_blank">Rofer</a>
-<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+
 								</small>
                                 </p>
                             </div>
@@ -476,6 +500,5 @@
         
     </body>
 
-<!-- Mirrored from www.acerosroca.com/ by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 02 Oct 2023 20:03:57 GMT -->
 </html>
 
