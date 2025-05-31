@@ -5,9 +5,9 @@ from .models import CustomUser
 
 @admin.register(CustomUser)
 class CustomUserAdmin(admin.ModelAdmin):
-    list_display = ('username', 'email', 'is_staff', 'is_active')
+    list_display = ('username', 'email', 'is_staff', 'is_active', 'role')
     search_fields = ('username', 'email')
-    list_filter = ('is_staff', 'is_active')
+    list_filter = ('is_staff', 'is_active', 'role')
     ordering = ('username',)
     
     fieldsets = (
@@ -15,13 +15,13 @@ class CustomUserAdmin(admin.ModelAdmin):
             'fields': ('username', 'email', 'password')
         }),
         ('Permissions', {
-            'fields': ('is_staff', 'is_active', 'is_superuser')
+            'fields': ('is_staff', 'is_active', 'is_superuser', 'role')
         }),
     )
     
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('username', 'email', 'password1', 'password2', 'is_staff', 'is_active')
+            'fields': ('username', 'email', 'password1', 'password2', 'is_staff', 'is_active', 'role')
         }),
     )

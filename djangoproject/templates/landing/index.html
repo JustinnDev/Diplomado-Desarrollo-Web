@@ -60,6 +60,7 @@
             
             {% block 'menu' %}
 
+{% if request.path == '/' %}
 <nav class="colorlib-nav" role="navigation">
     <div class="top-menu">
         <div class="container">
@@ -84,24 +85,26 @@
                         </li>
                         <li><a href="#about">Nosotros</a></li>
                         <li><a href="#contact">Contacto</a></li>
-                        
-<li class="has-dropdown">
-    {% if user.is_authenticated %}
-        <a href="#"><i class="icon-user"></i> {{ user.username }}</a>
-        <ul class="dropdown">
-            {% if user.role == 'admin' %}
-                <li><a href="{% url 'admin:index' %}"><i class="icon-settings"></i> Panel Admin</a></li>
-                <li><a href="{% url 'users:manage_staff' %}"><i class="icon-users"></i> Gestionar Staff</a></li>
-            {% elif user.role == 'staff' %}
-                <li><a href="{% url 'users:dashboard' %}"><i class="icon-dashboard"></i> Dashboard Staff</a></li>
-            {% endif %}
-            <li><a href="{% url 'users:profile' %}"><i class="icon-user"></i> Mi Perfil</a></li>
-            <li><a href="{% url 'users:logout' %}"><i class="icon-exit"></i> Cerrar Sesión</a></li>
-        </ul>
-    {% else %}
-        <!-- Opciones para no autenticados -->
-    {% endif %}
-</li>
+                        <li class="has-dropdown">
+                            {% if user.is_authenticated %}
+                                <a href="#"><i class="icon-user"></i> {{ user.username }}</a>
+                                <ul class="dropdown">
+                                    {% if user.role == 'admin' %}
+                                        <li><a href="{% url 'admin:index' %}"><i class="icon-settings"></i> Panel Admin</a></li>
+                                        <li><a href="{% url 'users:manage_staff' %}"><i class="icon-users"></i> Gestionar Staff</a></li>
+                               
+                               
+                                    {% endif %}
+                                    <li><a href="{% url 'users:dashboard' %}"><i class="icon-user"></i> Mi Perfil</a></li>
+                                    <li><a href="{% url 'users:logout' %}"><i class="icon-exit"></i> Cerrar Sesión</a></li>
+                                </ul>
+                            {% else %}
+                                <a href="#"><i class="icon-user"></i> Cuenta</a>
+                                <ul class="dropdown">
+                                    <li><a href="{% url 'users:login' %}"><i class="icon-login"></i> Iniciar Sesión</a></li>
+                                    <li><a href="{% url 'users:register' %}"><i class="icon-user-plus"></i> Crear Cuenta</a></li>
+                                </ul>
+                            {% endif %}
                         </li>
                     </ul>
                 </div>
@@ -109,7 +112,47 @@
         </div>
     </div>
 </nav>
-            
+{% else %}
+<nav class="colorlib-nav" role="navigation">
+    <div class="top-menu">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-2">
+                    <div id="colorlib-logo"> 
+                        <img src="{% static 'images/logo.png' %}"> 
+                        <a href="{% url 'landing:index' %}"></a>
+                    </div>
+                </div>
+                <div class="col-xs-10 text-right menu-1">
+                    <ul>
+                        <li class="{% if request.path == '/' %}active{% endif %}"><a href="{% url 'landing:index' %}">Home</a></li>
+                        <li class="has-dropdown">
+                            {% if user.is_authenticated %}
+                                <a href="#" style="color: black !important;"><i class="icon-user"></i> {{ user.username }}</a>
+                                <ul class="dropdown">
+                                    {% if user.role == 'admin' %}
+                                        <li><a href="{% url 'admin:index' %}"><i class="icon-settings"></i> Panel Admin</a></li>
+                                        <li><a href="{% url 'users:manage_staff' %}"><i class="icon-users"></i> Gestionar Staff</a></li>
+                                    {% else %}
+                                        <li><a href="{% url 'users:dashboard' %}"><i class="icon-dashboard"></i> Mi Perfil</a></li>
+                                    {% endif %}
+                                    <li><a href="{% url 'users:logout' %}"><i class="icon-exit"></i> Cerrar Sesión</a></li>
+                                </ul>
+                                {% else %}
+                                <a href="#" style="color: black !important;"><i class="icon-user"></i> Cuenta</a>
+                                <ul class="dropdown">
+                                    <li><a href="{% url 'users:login' %}"><i class="icon-login"></i> Iniciar Sesión</a></li>
+                                    <li><a href="{% url 'users:register' %}"><i class="icon-user-plus"></i> Crear Cuenta</a></li>
+                                </ul>
+                            {% endif %}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+{% endif %}
             {% endblock %}
 
 {% block content %}

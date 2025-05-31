@@ -9,4 +9,6 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     path('profile/', views.profile_view, name='profile'),
     path('dashboard/', views.dashboard_view, name='dashboard'),
+    path('manage_staff/', views.manage_staff, name='manage_staff'),
+    path('manage_staff/<int:user_id>/', views.manage_staff, name='manage_staff_detail'),
 ]

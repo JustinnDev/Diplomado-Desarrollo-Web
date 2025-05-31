@@ -1,0 +1,55 @@
+{% extends "landing/index.html" %}
+
+{% block content %}
+<div class="container" style="margin-top: 80px;">
+    <div class="card p-4 shadow">
+        {% if user.is_superuser %}
+            <h2 class="mb-4">Bienvenido administrador, {{ user.get_full_name|default:user.username }}</h2>
+        {% else %}
+            <h2 class="mb-4">Bienvenido, {{ user.get_full_name|default:user.username }}</h2>
+        {% endif %}
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item"><strong>Nombre de usuario:</strong> {{ user.username }}</li>
+            <li class="list-group-item"><strong>Email:</strong> {{ user.email }}</li>
+            {% if user.first_name %}
+            <li class="list-group-item"><strong>Nombre:</strong> {{ user.first_name }}</li>
+            {% endif %}
+            {% if user.last_name %}
+            <li class="list-group-item"><strong>Apellido:</strong> {{ user.last_name }}</li>
+            {% endif %}
+            {% if user.phone_number %}
+            <li class="list-group-item"><strong>Teléfono:</strong> {{ user.phone_number }}</li>
+            {% endif %}
+            {% if user.date_of_birth %}
+            <li class="list-group-item"><strong>Fecha de nacimiento:</strong> {{ user.date_of_birth }}</li>
+            {% endif %}
+        </ul>
+    </div>
+
+    {% if user.is_superuser and users %}
+    <div class="card p-4 shadow mt-5">
+        <h3 class="mb-4">Lista de Usuarios</h3>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Usuario</th>
+                    <th>Email</th>
+                    <th>Rol</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in users %}
+                <tr>
+                    <td>{{ u.username }}</td>
+                    <td>{{ u.email }}</td>
+                    <td>
+                        {{ u.get_role_display }}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

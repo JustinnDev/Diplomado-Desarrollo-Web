@@ -1,0 +1,52 @@
+{% extends "landing/index.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container" style="margin-top: 80px; margin-bottom: 80px;">
+    <h2 class="mb-4">Administrar permisos de Staff</h2>
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-success" role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Usuario</th>
+                <th>Email</th>
+                <th>Rol</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <form method="post" action="users:manage_staff_update">
+                    {% csrf_token %}
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>
+                        <select name="role" class="form-select" {% if user.id == request.user.id %}disabled{% endif %}>
+                            <option value="{{ user.role }}" selected>
+                                {{ user.get_role_display }}
+                            </option>
+                            {% for value, display in user.ROLE_CHOICES %}
+                                {% if value != user.role %}
+                                    <option value="{{ value }}">{{ display }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </td>
+                    <td>
+                        <input type="hidden" name="user_id" value="{{ user.id }}">
+                        <button type="submit" class="btn btn-primary btn-sm" {% if user.id == request.user.id %}disabled{% endif %}>Actualizar</button>
+                    </td>
+                </form>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

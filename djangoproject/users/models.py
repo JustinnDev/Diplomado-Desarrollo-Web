@@ -5,8 +5,11 @@ class CustomUser(AbstractUser):
     ROLE_CHOICES = (
         ('admin', 'Administrador'),
         ('staff', 'Personal'),
+        ('licenciado', 'Licenciado'),
+        ('obrero', 'Obrero'),
+        ('visitante', 'Visitante'),
     )
-    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='staff')
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='visitante')
 
     def is_admin(self):
         return self.role == 'admin'
