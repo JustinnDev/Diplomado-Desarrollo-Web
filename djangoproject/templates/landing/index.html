@@ -65,12 +65,6 @@
     <div class="top-menu">
         <div class="container">
             <div class="row">
-                <div class="col-xs-2">
-                    <div id="colorlib-logo"> 
-                        <img src="{% static 'images/logo.png' %}"> 
-                        <a href="{% url 'landing:index' %}"></a>
-                    </div>
-                </div>
                 <div class="col-xs-10 text-right menu-1">
                     <ul>
                         <li class="{% if request.path == '/' %}active{% endif %}"><a href="{% url 'landing:index' %}">Home</a></li>
