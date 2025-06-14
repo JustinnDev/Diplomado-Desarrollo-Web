@@ -16,6 +16,7 @@ db.sqlite3
 /static/
 .env
 .env.*
+venv_310/
 venv/
 env/
 ENV/
