@@ -129,3 +129,9 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'users.CustomUser'
+
+ALLOWED_HOSTS = [
+    'justinalmao.pythonanywhere.com', 
+    'localhost',
+    '127.0.0.1'
+]
