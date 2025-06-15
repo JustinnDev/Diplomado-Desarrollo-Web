@@ -4,26 +4,26 @@ djangoproject/
 ├── requirements.txt
 ├── .env
 │
-├── config/                      # Configuración global del proyecto
+├── config/                     
 │   ├── __init__.py
 │   ├── settings.py              
 │   ├── urls.py                 
 │   ├── asgi.py
 │   └── wsgi.py
 │
-├── core/                        # Lógica común y utilidades compartidas
+├── core/                     
 │   ├── __init__.py
 │   ├── services/
 │   ├── utils/
 │   └── models/
 │
-├── templates/                   # Carpeta global de templates
+├── templates/                 
 │   ├── landing/
 │   ├── materials/
 │   ├── erp_extension/
 │   └── users/
 │
-├── static/                      # Carpeta global de archivos estáticos
+├── static/                   
 │   ├── css/
 │   ├── js/
 │   ├── images/
