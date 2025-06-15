@@ -1,0 +1,110 @@
+{% extends 'landing/index.html' %}
+{% load static %}
+
+{% block content %}
+<div class="colorlib-contact">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2 text-center colorlib-heading animate-box">
+                <h2>Registro de Recepción</h2>
+                <p>Complete los datos de la recepción de materiales</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <div class="animate-box">
+                    <form method="post" class="contact-form">
+                        {% csrf_token %}
+                        
+                        <div class="form-group">
+                            <label for="{{ form.client.id_for_label }}">Chatarrero/Cliente</label>
+                            {{ form.client }}
+                            {{ form.client.errors }}
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="{{ form.material.id_for_label }}">Material</label>
+                                    {{ form.material }}
+                                    {{ form.material.errors }}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Precio Unitario</label>
+                                    <div id="price-display" class="form-control-static">
+                                        Seleccione un material
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="{{ form.gross_weight.id_for_label }}">Peso Bruto (kg)</label>
+                                    {{ form.gross_weight }}
+                                    {{ form.gross_weight.errors }}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="{{ form.rejection_weight.id_for_label }}">Peso Rechazo (kg)</label>
+                                    {{ form.rejection_weight }}
+                                    {{ form.rejection_weight.errors }}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Peso Neto (kg)</label>
+                                    <div id="net-weight-display" class="form-control-static">0.00</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="{{ form.notes.id_for_label }}">Observaciones</label>
+                            {{ form.notes }}
+                            {{ form.notes.errors }}
+                        </div>
+                        
+                        <div class="form-group text-center">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="icon-check"></i> Registrar Recepción
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('id_material').addEventListener('change', function() {
+    const materialId = this.value;
+    if (materialId) {
+        fetch(`/materials/api/materials/${materialId}/price/`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('price-display').textContent = `$${data.price}/kg`;
+            });
+    }
+});
+
+const grossWeightInput = document.getElementById('id_gross_weight');
+const rejectionWeightInput = document.getElementById('id_rejection_weight');
+const netWeightDisplay = document.getElementById('net-weight-display');
+
+function calculateNetWeight() {
+    const gross = parseFloat(grossWeightInput.value) || 0;
+    const rejection = parseFloat(rejectionWeightInput.value) || 0;
+    const net = gross - rejection;
+    netWeightDisplay.textContent = net.toFixed(2);
+}
+
+grossWeightInput.addEventListener('input', calculateNetWeight);
+rejectionWeightInput.addEventListener('input', calculateNetWeight);
+</script>
+{% endblock %}

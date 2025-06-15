@@ -1,0 +1,87 @@
+{% extends 'landing/index.html' %}
+{% load static %}
+
+{% block content %}
+<div class="colorlib-contact">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2 text-center colorlib-heading animate-box">
+                <h2>{% if form.instance.pk %}Editar{% else %}Agregar{% endif %} Material</h2>
+            </div>
+         
+        </div>
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <div class="animate-box">
+                    <form method="post" class="contact-form">
+                        {% csrf_token %}
+                           <div class="col-md-8 col-md-offset-2">
+                <div class="form-group">
+                    <label for="{{ form.name.id_for_label }}">Nombre del Material</label>
+                    {{ form.name }}
+                    {{ form.name.errors }}
+                </div>
+            </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="{{ form.category.id_for_label }}">Categoría</label>
+                                    {{ form.category }}
+                                    {{ form.category.errors }}
+                                </div>
+                            </div>
+                   
+                        </div>
+
+                        <div class="form-group">
+                            <label for="{{ form.base_price.id_for_label }}">Precio Base ($/kg)</label>
+                            {{ form.base_price }}
+                            {{ form.base_price.errors }}
+                        </div>
+                        
+                        <div class="form-group text-center">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="icon-check"></i> Guardar Material
+                            </button>
+                            <a href="{% url 'materials:list' %}" class="btn btn-default">
+                                <i class="icon-arrow-left"></i> Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('id_category').addEventListener('change', function() {
+    const categoryId = this.value;
+    fetch(`/materials/api/subtypes/?category=${categoryId}`)
+        .then(response => response.json())
+        .then(data => {
+            const subtypeSelect = document.getElementById('id_subtype');
+            subtypeSelect.innerHTML = '';
+            
+            const emptyOption = document.createElement('option');
+            emptyOption.value = '';
+            emptyOption.textContent = 'Seleccione un subtipo';
+            subtypeSelect.appendChild(emptyOption);
+            
+            data.forEach(subtype => {
+                const option = document.createElement('option');
+                option.value = subtype.id;
+                option.textContent = subtype.name;
+                subtypeSelect.appendChild(option);
+            });
+        });
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    const categorySelect = document.getElementById('id_category');
+    if (categorySelect.value) {
+        categorySelect.dispatchEvent(new Event('change'));
+    }
+});
+</script>
+{% endblock %}

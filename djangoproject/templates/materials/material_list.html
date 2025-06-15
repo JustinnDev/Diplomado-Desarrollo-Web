@@ -1,0 +1,60 @@
+{% extends 'landing/index.html' %}
+{% load static %}
+
+{% block content %}
+<div class="colorlib-services">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2 text-center colorlib-heading animate-box">
+                <h2>Catálogo de Materiales</h2>
+                <p>Listado completo de materiales y sus precios base</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="animate-box">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Categoría</th>
+                                    <th>Subtipo</th>
+                                    <th>Precio Base</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for material in materials %}
+                                <tr>
+                                    <td>{{ material.get_category_display }}</td>
+                                    <td>{{ material.get_subtype_display }}</td>
+                                    <td>${{ material.base_price|floatformat:2 }}</td>
+                                    <td>
+                                        <a href="{% url 'materials:edit' material.pk %}" class="btn btn-sm btn-primary">
+                                            <i class="icon-pencil"></i> Editar
+                                        </a>
+                                        <a href="{% url 'materials:delete' material.pk %}" class="btn btn-sm btn-danger">
+                                            <i class="icon-trash"></i> Eliminar
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center">No hay materiales registrados</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="text-center">
+                        <a href="{% url 'materials:add' %}" class="btn btn-success">
+                            <i class="icon-plus"></i> Nuevo Material
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
