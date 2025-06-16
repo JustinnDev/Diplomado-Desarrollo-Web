@@ -1,0 +1,45 @@
+{% extends 'landing/index.html' %}
+{% load static %}
+
+{% block content %}
+<div class="colorlib-about">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2 text-center colorlib-heading animate-box">
+                <h2>Sección en Desarrollo</h2>
+                <span class="dev-logo dev-logo-animated"></span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2 text-center animate-box">
+                <div class="about-desc">
+                    <h3>¡Estamos trabajando en esta sección!</h3>
+                    <p>Nuestro equipo está desarrollando esta funcionalidad para ofrecerte una mejor experiencia.</p>
+                    <p>Estará disponible en próximas actualizaciones.</p>
+                    
+                    <div class="row" style="margin-top: 40px;">
+                        <div class="col-md-4 col-sm-6 col-xs-12">
+                            <a href="{% url 'landing:index' %}" class="btn btn-primary btn-block under-dev-link">
+                                <span class="section-logo home"></span>
+                                Página Principal
+                            </a>
+                        </div>
+                        <div class="col-md-4 col-sm-6 col-xs-12">
+                            <a href="{% url 'landing:index' %}#proyectos" class="btn btn-primary btn-block under-dev-link">
+                                <span class="section-logo products"></span>
+                                Nuestros Productos
+                            </a>
+                        </div>
+                        <div class="col-md-4 col-sm-6 col-xs-12">
+                            <a href="{% url 'landing:index' %}#contact" class="btn btn-primary btn-block under-dev-link">
+                                <span class="section-logo contact"></span>
+                                Contacto
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

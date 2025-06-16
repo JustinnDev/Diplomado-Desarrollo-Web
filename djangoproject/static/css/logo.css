@@ -411,3 +411,71 @@
         font-size: 0.8rem;
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Logo de construcción/desarrollo */
+.dev-logo {
+    font-size: 5rem;
+    color: #f89d13;
+    margin: 20px 0;
+    display: block;
+    text-align: center;
+}
+
+.dev-logo::before {
+    content: "\e9ba"; /* Código del icono de herramientas en Icomoon */
+    font-family: 'icomoon'; /* Asegúrate que coincide con tu fuente de iconos */
+}
+
+/* Versión animada */
+.dev-logo-animated {
+    animation: hammer-pulse 2s infinite;
+    display: inline-block;
+}
+
+@keyframes hammer-pulse {
+    0% { transform: rotate(0deg); }
+    25% { transform: rotate(-15deg); }
+    50% { transform: rotate(0deg); }
+    75% { transform: rotate(15deg); }
+    100% { transform: rotate(0deg); }
+}
+
+/* Logos para secciones */
+.section-logo {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+    display: block;
+}
+
+.section-logo.home::before { content: "\e900"; color: #4e8cff; }
+.section-logo.products::before { content: "\e93a"; color: #6cbf6c; }
+.section-logo.contact::before { content: "\e972"; color: #ff6b6b; }
+.section-logo.about::before { content: "\e971"; color: #9b59b6; }

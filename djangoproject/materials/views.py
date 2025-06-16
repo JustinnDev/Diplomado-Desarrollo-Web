@@ -79,6 +79,9 @@ class ClientCreateView(CreateView):
 
 # Vistas para Recepción de Materiales
 def reception_create(request):
+
+    return render(request, 'comming_soon.html')
+
     if request.method == 'POST':
         form = MaterialReceptionForm(request.POST)
         if form.is_valid():
