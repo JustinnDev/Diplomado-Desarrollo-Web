@@ -30,7 +30,11 @@
                         <tbody>
                             {% for material in materials %}
                             <tr class="table-row">
-                                <td class="text-center" data-title="Categoría">{{ material.get_category_display }}</td>
+                                <td class="text-center" data-title="Categoría">
+                                    {{ material.get_category_display }}
+                                    <br>
+                                    <small class="material-name">{{ material.name }}</small>
+                                </td>
                                 <td class="text-center" data-title="Subtipo">{{ material.get_subtype_display }}</td>
                                 <td class="text-center price" data-title="Precio">${{ material.base_price|floatformat:2 }}</td>
                                 <td class="text-center actions">
