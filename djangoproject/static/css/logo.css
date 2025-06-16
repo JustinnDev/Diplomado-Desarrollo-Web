@@ -1,0 +1,413 @@
+/* logos.css - Con logos CSS personalizados */
+
+/* Contenedor principal */
+#material-dashboard {
+    padding: 7em 0;
+    background: #f8f9fa;
+}
+
+/* Logo ERP */
+.logo-erp {
+    position: relative;
+}
+.logo-erp::before {
+    content: '';
+    position: absolute;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: #3b5d50;
+    top: 8px;
+    left: 8px;
+    box-shadow: 0 0 0 6px #fff;
+    z-index: 1;
+}
+.logo-erp::after {
+    content: '';
+    position: absolute;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #fff;
+    top: 28px;
+    left: 28px;
+    z-index: 2;
+    box-shadow: 0 0 0 3px #3b5d50;
+}
+/* Dientes de engranaje */
+.logo-erp .erp-gear {
+    position: absolute;
+    width: 10px;
+    height: 22px;
+    background: #3b5d50;
+    border-radius: 2px;
+    top: 0;
+    left: 42px;
+    transform: rotate(15deg);
+    z-index: 3;
+    box-shadow:
+        -24px 24px 0 0 #3b5d50,
+        -34px 0 0 0 #3b5d50,
+        0 34px 0 0 #3b5d50,
+        24px 24px 0 0 #3b5d50,
+        34px 0 0 0 #3b5d50,
+        0 -34px 0 0 #3b5d50;
+}
+/* Barras de gráfico */
+.logo-erp .erp-bar1,
+.logo-erp .erp-bar2,
+.logo-erp .erp-bar3 {
+    position: absolute;
+    bottom: 18px;
+    background: #3b5d50;
+    border-radius: 2px;
+    z-index: 4;
+}
+.logo-erp .erp-bar1 {
+    left: 32px;
+    width: 8px;
+    height: 18px;
+}
+.logo-erp .erp-bar2 {
+    left: 44px;
+    width: 8px;
+    height: 26px;
+}
+.logo-erp .erp-bar3 {
+    left: 56px;
+    width: 8px;
+    height: 12px;
+}
+
+/* Tarjetas */
+.dashboard-card {
+    display: block;
+    background: #fff;
+    padding: 30px 20px;
+    margin-bottom: 30px;
+    border-radius: 8px;
+    box-shadow: 0 5px 25px -5px rgba(59, 93, 80, 0.1);
+    transition: all 0.4s ease;
+    text-decoration: none !important;
+    color: #333;
+    height: 100%;
+    border-top: 4px solid #3b5d50;
+    text-align: center;
+    overflow: hidden;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 35px -5px rgba(59, 93, 80, 0.15);
+}
+
+/* Logos CSS */
+.css-logo {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 25px;
+    position: relative;
+    border-radius: 50%;
+    background: #f0f7f4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 5px 15px rgba(59, 93, 80, 0.1);
+}
+
+/* Logo Añadir Material */
+.logo-add::before, .logo-add::after {
+    content: '';
+    position: absolute;
+    background: #3b5d50;
+    border-radius: 3px;
+}
+.logo-add::before {
+    width: 30px;
+    height: 6px;
+}
+.logo-add::after {
+    width: 6px;
+    height: 30px;
+}
+
+/* Logo Lista Materiales */
+.logo-list::before {
+    content: '';
+    position: absolute;
+    width: 40px;
+    height: 50px;
+    background: #fff;
+    border: 3px solid #3b5d50;
+    border-radius: 5px;
+    top: 15px;
+}
+.logo-list::after {
+    content: '';
+    position: absolute;
+    width: 30px;
+    height: 4px;
+    background: #3b5d50;
+    top: 25px;
+    left: 25px;
+    box-shadow: 0 8px 0 #3b5d50,
+                0 16px 0 #3b5d50;
+}
+
+/* Logo Recepción */
+.logo-reception::before {
+    content: '';
+    position: absolute;
+    width: 50px;
+    height: 30px;
+    background: #3b5d50;
+    border-radius: 15px 15px 5px 5px;
+    bottom: 15px;
+}
+.logo-reception::after {
+    content: '⇥';
+    position: absolute;
+    font-size: 30px;
+    color: #3b5d50;
+    top: 10px;
+    transform: rotate(90deg);
+}
+
+/* Texto */
+.dashboard-card h3 {
+    font-size: 1.25rem;
+    margin-bottom: 15px;
+    color: #3b5d50;
+    font-weight: 600;
+}
+
+.dashboard-card p {
+    margin-bottom: 20px;
+    color: #666;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    min-height: 50px;
+}
+
+/* Botones */
+.colorlib-btn-view {
+    margin-top: 15px;
+}
+
+.btn-material {
+    background: #3b5d50;
+    color: white !important;
+    padding: 8px 25px;
+    border-radius: 30px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: inline-block;
+    border: 2px solid #3b5d50;
+}
+
+.btn-material:hover {
+    background: transparent;
+    color: #3b5d50 !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    #material-dashboard {
+        padding: 4em 0;
+    }
+    
+    .css-logo {
+        width: 70px;
+        height: 70px;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Estilos para el catálogo de materiales */
+.colorlib-catalog {
+    padding: 7em 0;
+    background: #f8f9fa;
+}
+
+.catalog-title {
+    font-size: 2.2rem;
+    color: #3b5d50;
+    margin-bottom: 15px;
+    font-weight: 700;
+}
+
+.catalog-subtitle {
+    font-size: 1.1rem;
+    color: #666;
+    margin-bottom: 40px;
+}
+
+/* Estilos para la tabla */
+.catalog-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-bottom: 40px;
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 5px 25px rgba(59, 93, 80, 0.1);
+}
+
+.table-header {
+    background: #3b5d50;
+    color: white;
+}
+
+.table-header th {
+    padding: 18px 15px;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
+}
+
+.table-row {
+    transition: all 0.3s ease;
+}
+
+.table-row:hover {
+    background-color: #f0f7f4;
+}
+
+.table-row td {
+    padding: 15px;
+    border-bottom: 1px solid #e9ecef;
+    vertical-align: middle;
+}
+
+.price {
+    font-weight: 600;
+    color: #3b5d50;
+}
+
+/* Estilos para los botones de acción */
+.btn-action-group {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.btn {
+    padding: 8px 20px;
+    border-radius: 30px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid transparent;
+}
+
+.btn-edit {
+    background-color: #3b5d50;
+    color: white;
+}
+
+.btn-edit:hover {
+    background-color: transparent;
+    color: #3b5d50;
+    border-color: #3b5d50;
+}
+
+.btn-delete {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.btn-delete:hover {
+    background-color: transparent;
+    color: #e74c3c;
+    border-color: #e74c3c;
+}
+
+.btn-text {
+    margin-left: 6px;
+}
+
+/* Botón de añadir material */
+.btn-add-material {
+    background-color: #4caf50;
+    color: white;
+    padding: 12px 30px;
+    font-size: 1rem;
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+}
+
+.btn-add-material:hover {
+    background-color: transparent;
+    color: #4caf50;
+    border-color: #4caf50;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
+}
+
+/* Estado vacío */
+.no-results {
+    padding: 40px 0;
+}
+
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #666;
+}
+
+.empty-state i {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+    color: #3b5d50;
+}
+
+.empty-state p {
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .btn-text {
+        display: none;
+    }
+    
+    .btn {
+        padding: 8px 12px;
+    }
+    
+    .table-header th {
+        padding: 12px 8px;
+        font-size: 0.8rem;
+    }
+}

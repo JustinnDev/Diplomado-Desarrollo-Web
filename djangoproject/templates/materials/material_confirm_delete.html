@@ -1,0 +1,36 @@
+{% extends 'landing/index.html' %}
+{% load static %}
+
+{% block content %}
+<div class="colorlib-contact">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2 text-center colorlib-heading animate-box">
+                <h2>Confirmar Eliminación</h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <div class="animate-box">
+                    <div class="alert alert-danger text-center">
+                        <i class="icon-warning" style="font-size: 24px;"></i>
+                        <h3>¿Estás seguro de que deseas eliminar este material?</h3>
+                        <p><strong>{{ object.name }}</strong> - {{ object.category }}</p>
+                        <p>Esta acción no se puede deshacer.</p>
+                    </div>
+
+                    <form method="post" class="text-center">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-lg">
+                            <i class="icon-trash"></i> Sí, Eliminar
+                        </button>
+                        <a href="{% url 'materials:list' %}" class="btn btn-default btn-lg">
+                            <i class="icon-arrow-left"></i> Cancelar
+                        </a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -8,16 +8,13 @@ class Material(models.Model):
         ('ALUMINIO', 'Aluminio'),
         ('BRONCE', 'Bronce'),
         ('COBRE', 'Cobre'),
-
     ]
-    
     
     SUBTYPE_CHOICES = [
         ('CONTAMINADO', 'Contaminado'),
         ('LIMPIO', 'Limpio'),
         ('CON_PRODUCCION', 'Con producción'),
         ('SIN_PRODUCCION', 'Sin producción'),
-       
     ]
     
     name = models.CharField(max_length=100)

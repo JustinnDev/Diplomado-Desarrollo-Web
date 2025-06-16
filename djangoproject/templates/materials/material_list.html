@@ -1,60 +1,70 @@
 {% extends 'landing/index.html' %}
 {% load static %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/logos.css' %}">
+{% endblock %}
+
 {% block content %}
-<div class="colorlib-services">
+<section class="colorlib-section colorlib-catalog">
     <div class="container">
         <div class="row">
             <div class="col-md-8 col-md-offset-2 text-center colorlib-heading animate-box">
-                <h2>Catálogo de Materiales</h2>
-                <p>Listado completo de materiales y sus precios base</p>
+                <h2 class="catalog-title">Catálogo de Materiales</h2>
+                <p class="catalog-subtitle">Listado completo de materiales y sus precios base</p>
             </div>
         </div>
+        
         <div class="row">
-            <div class="col-md-12">
-                <div class="animate-box">
-                    <div class="table-responsive">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Categoría</th>
-                                    <th>Subtipo</th>
-                                    <th>Precio Base</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for material in materials %}
-                                <tr>
-                                    <td>{{ material.get_category_display }}</td>
-                                    <td>{{ material.get_subtype_display }}</td>
-                                    <td>${{ material.base_price|floatformat:2 }}</td>
-                                    <td>
-                                        <a href="{% url 'materials:edit' material.pk %}" class="btn btn-sm btn-primary">
-                                            <i class="icon-pencil"></i> Editar
+            <div class="col-md-12 animate-box" data-animate-effect="fadeInUp">
+                <div class="table-responsive">
+                    <table class="table catalog-table">
+                        <thead>
+                            <tr class="table-header">
+                                <th class="text-center">Categoría</th>
+                                <th class="text-center">Subtipo</th>
+                                <th class="text-center">Precio Base</th>
+                                <th class="text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for material in materials %}
+                            <tr class="table-row">
+                                <td class="text-center" data-title="Categoría">{{ material.get_category_display }}</td>
+                                <td class="text-center" data-title="Subtipo">{{ material.get_subtype_display }}</td>
+                                <td class="text-center price" data-title="Precio">${{ material.base_price|floatformat:2 }}</td>
+                                <td class="text-center actions">
+                                    <div class="btn-action-group">
+                                        <a href="{% url 'materials:edit' material.pk %}" class="btn btn-edit">
+                                            <i class="icon-pencil"></i> <span class="btn-text">Editar</span>
                                         </a>
-                                        <a href="{% url 'materials:delete' material.pk %}" class="btn btn-sm btn-danger">
-                                            <i class="icon-trash"></i> Eliminar
+                                        <a href="{% url 'materials:delete' material.pk %}" class="btn btn-delete">
+                                            <i class="icon-trash"></i> <span class="btn-text">Eliminar</span>
                                         </a>
-                                    </td>
-                                </tr>
-                                {% empty %}
-                                <tr>
-                                    <td colspan="4" class="text-center">No hay materiales registrados</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    <div class="text-center">
-                        <a href="{% url 'materials:add' %}" class="btn btn-success">
-                            <i class="icon-plus"></i> Nuevo Material
-                        </a>
-                    </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center no-results">
+                                    <div class="empty-state">
+                                        <i class="icon-info-circle"></i>
+                                        <p>No hay materiales registrados</p>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="text-center add-material-section">
+                    <a href="{% url 'materials:add' %}" class="btn btn-add-material">
+                        <i class="icon-plus"></i> Nuevo Material
+                    </a>
                 </div>
             </div>
         </div>
     </div>
-</div>
+</section>
 {% endblock %}

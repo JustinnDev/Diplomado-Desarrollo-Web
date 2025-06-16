@@ -1,0 +1,85 @@
+{% extends "landing/index.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/logos.css' %}">
+{% endblock %}
+
+{% block content %}
+<section id="material-dashboard" class="colorlib-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2 text-center colorlib-heading animate-box">
+                <h2>Panel Módulo Materiales</h2>
+                <p class="subtitle">Gestión completa de inventario y recepciones</p>
+            </div>
+        </div>
+        
+        <div class="row">
+            <!-- Tarjeta 1 -->
+            <div class="col-md-4 animate-box" data-animate-effect="fadeIn">
+                <div class="services">
+                    <a href="{% url 'materials:add' %}" class="dashboard-card">
+                        <div class="css-logo logo-add"></div>
+                        <div class="desc">
+                            <h3>Añadir Material</h3>
+                            <p>Registro de nuevos materiales en el sistema con todos sus detalles técnicos</p>
+                            <div class="colorlib-btn-view">
+                                <span class="btn btn-material">Acceder <i class="icon-arrow-right3"></i></span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Tarjeta 2 -->
+            <div class="col-md-4 animate-box" data-animate-effect="fadeIn">
+                <div class="services">
+                    <a href="{% url 'materials:list' %}" class="dashboard-card">
+                        <div class="css-logo logo-list"></div>
+                        <div class="desc">
+                            <h3>Inventario</h3>
+                            <p>Consulta y administra el stock completo de materiales disponibles</p>
+                            <div class="colorlib-btn-view">
+                                <span class="btn btn-material">Acceder <i class="icon-arrow-right3"></i></span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Tarjeta 3 -->
+            <div class="col-md-4 animate-box" data-animate-effect="fadeIn">
+                <div class="services">
+                    <a href="{% url 'materials:reception_add' %}" class="dashboard-card">
+                        <div class="css-logo logo-reception"></div>
+                        <div class="desc">
+                            <h3>Recepciones</h3>
+                            <p>Gestión completa de notas de recepción y entradas de material</p>
+                            <div class="colorlib-btn-view">
+                                <span class="btn btn-material">Acceder <i class="icon-arrow-right3"></i></span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Tarjeta 4: Extensión ERP -->
+            <div class="col-md-4 animate-box" data-animate-effect="fadeIn">
+                <div class="services">
+                    <a href="{% url 'materials:add' %}" class="dashboard-card">
+                        <div class="css-logo logo-erp"></div>
+                        <div class="desc">
+                            <h3>Extensión ERP</h3>
+                            <p>Accede a funcionalidades avanzadas de integración con el sistema ERP</p>
+                            <div class="colorlib-btn-view">
+                                <span class="btn btn-material">Acceder <i class="icon-arrow-right3"></i></span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
