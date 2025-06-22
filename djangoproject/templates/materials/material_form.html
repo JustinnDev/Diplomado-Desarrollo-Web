@@ -15,7 +15,7 @@
                 <div class="animate-box">
                     {% if not form.instance.pk %}
                         {# Formulario para agregar material #}
-                        <form method="post" action="{% url 'materials:add_db' %}" class="contact-form">
+                        <form method="post" action="{% url 'materials:add' %}" class="contact-form">
                             {% csrf_token %}
                             <div class="form-group">
                                 <label for="{{ form.name.id_for_label }}">Nombre</label>
@@ -56,7 +56,7 @@
                         </form>
                     {% else %}
                         {# Formulario para editar material #}
-                        <form method="post" action="{% url 'materials:edit_db' form.instance.pk %}" class="contact-form">
+                        <form method="post" action="{% url 'materials:edit' form.instance.pk %}" class="contact-form">
                             {% csrf_token %}
                             <div class="form-group">
                                 <label for="{{ form.name.id_for_label }}">Nombre</label>

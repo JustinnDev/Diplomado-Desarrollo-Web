@@ -11,11 +11,24 @@ class MaterialListView(ListView):
     template_name = 'materials/material_list.html'
     context_object_name = 'materials'
 
+    def form_invalid(self, form):
+        messages.error(self.request, 'No hay materiales disponibles.')
+        return super().form_invalid(form)
+   
+
 class MaterialCreateView(CreateView):
     model = Material
     form_class = MaterialForm
     template_name = 'materials/material_form.html'
-    success_url = reverse_lazy('materials:material_list')
+    success_url = reverse_lazy('materials:list')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Material creado correctamente.')
+        return super().form_valid(form)
+    
+    def form_invalid(self, form):
+        messages.error(self.request, 'Error al crear el material. Por favor, corrige los errores.')
+        return super().form_invalid(form)
 
 class MaterialUpdateView(UpdateView):
     model = Material
@@ -23,45 +36,24 @@ class MaterialUpdateView(UpdateView):
     template_name = 'materials/material_form.html'
     success_url = reverse_lazy('materials:list')
 
+    def form_valid(self, form):
+        messages.success(self.request, 'Material actualizado correctamente.')
+        return super().form_valid(form)
+    
+    def form_invalid(self, form):
+        messages.error(self.request, 'Error al actualizar el material. Por favor, corrige los errores.')
+        return super().form_invalid(form)
+
+
 class MaterialDeleteView(DeleteView):
     model = Material
     template_name = 'materials/material_confirm_delete.html'
     success_url = reverse_lazy('materials:list')
 
-def add_material(request):
-    if request.method == 'POST':
-        form = MaterialForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('materials:list')
-        else:
-            messages.error(request, 'Error al guardar el material. Por favor, corrige los errores.')
-    else:
-        form = MaterialForm()
-    
-    return render(request, 'materials/material_form.html', {'form': form})
-
-def edit_material(request, pk):
-    material = get_object_or_404(Material, pk=pk)
-    if request.method == 'POST':
-        form = MaterialForm(request.POST, instance=material)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Material actualizado correctamente.')
-            return redirect('materials:list')
-        else:
-            messages.error(request, 'Error al actualizar el material. Por favor, corrige los errores.')
-    else:
-        form = MaterialForm(instance=material)
-    return render(request, 'materials/material_form.html', {'form': form})
-
-def delete_material(request, pk):
-    material = get_object_or_404(Material, pk=pk)
-    if request.method == 'POST':
-        material.delete()
-        messages.success(request, 'Material eliminado correctamente.')
-        return redirect('materials:list')
-    return render(request, 'materials/material_confirm_delete.html', {'material': material})
+    def dispatch(self, request, *args, **kwargs):
+        if request.method == 'POST':
+            messages.success(request, 'Material eliminado correctamente.')
+        return super().dispatch(request, *args, **kwargs)
 
 # Vistas para Clientes
 class ClientListView(ListView):
