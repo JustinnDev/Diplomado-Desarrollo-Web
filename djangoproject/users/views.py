@@ -4,6 +4,8 @@ from .forms import CustomUserCreationForm
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import user_passes_test
+from .forms import CustomUserEditForm, CustomPasswordChangeForm
+from django.contrib.auth import update_session_auth_hash
 
 def register_view(request):
     if request.method == 'POST':
@@ -86,3 +88,40 @@ def manage_staff_detail(request, user_id):
         return redirect('users:manage_staff_detail', user_id=user.id)
 
     return render(request, 'users/manage_staff_detail.html', {'user_obj': user})
+
+def edit_profile_view(request):
+    if not request.user.is_authenticated:
+        messages.error(request, 'Debes iniciar sesión para editar tu perfil.')
+        return redirect('users:login')
+
+    if request.method == 'POST':
+        form = CustomUserEditForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Perfil actualizado exitosamente.')
+            return redirect('users:dashboard')
+        else:
+            messages.error(request, 'Por favor corrige los errores en el formulario.')
+    else:
+            form = CustomUserEditForm(instance=request.user)
+
+    return render(request, 'users/edit_profile.html', {'form': form})
+
+def change_password_view(request):
+    if not request.user.is_authenticated:
+        messages.error(request, 'Debes iniciar sesión para cambiar tu contraseña.')
+        return redirect('users:login')
+
+    if request.method == 'POST':
+        form = CustomPasswordChangeForm(user=request.user, data=request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)
+            messages.success(request, 'Contraseña cambiada exitosamente.')
+            return redirect('users:dashboard')
+        else:
+            messages.error(request, 'Por favor corrige los errores en el formulario.')
+    else:
+        form = CustomPasswordChangeForm(user=request.user)
+
+    return render(request, 'users/change_password.html', {'form': form})

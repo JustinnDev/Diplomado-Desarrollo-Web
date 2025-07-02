@@ -9,5 +9,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     container.remove();
                 }
             }, 500);
+        }, 3000); // Add a timeout value for the first setTimeout
     });
 });

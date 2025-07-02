@@ -1,110 +1,244 @@
-{% extends 'landing/index.html' %}
-{% load static %}
-
-{% block content %}
-<div class="colorlib-contact">
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Recepción de Materiales</title>
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <script src="https://unpkg.com/hyperscript.org@0.9.12"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+        }
+        .cliente-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .material-section {
+            margin-bottom: 30px;
+        }
+        .material-card {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: #f9f9f9;
+        }
+        .material-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .material-name {
+            font-weight: bold;
+            width: 150px;
+        }
+        .peso-input {
+            width: 80px;
+            padding: 5px;
+            margin: 0 10px;
+        }
+        .operacion {
+            margin: 0 10px;
+            font-weight: bold;
+        }
+        .resultado {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .devolucion {
+            color: #e74c3c;
+        }
+        .total-section {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 2px dashed #333;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .add-material-btn {
+            background-color: #27ae60;
+        }
+        .calc-btn {
+            background-color: #f39c12;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+        }
+    </style>
+</head>
+<body>
     <div class="container">
-        <div class="row">
-            <div class="col-md-8 col-md-offset-2 text-center colorlib-heading animate-box">
-                <h2>Registro de Recepción</h2>
-                <p>Complete los datos de la recepción de materiales</p>
+        <div class="cliente-header">
+            <h1>Nota de Recepción</h1>
+            <div>
+                <input type="text" id="cliente-nombre" placeholder="Nombre del cliente" value="JARLIS" style="padding: 8px; width: 200px;">
             </div>
         </div>
-        <div class="row">
-            <div class="col-md-8 col-md-offset-2">
-                <div class="animate-box">
-                    <form method="post" class="contact-form">
-                        {% csrf_token %}
-                        
-                        <div class="form-group">
-                            <label for="{{ form.client.id_for_label }}">Chatarrero/Cliente</label>
-                            {{ form.client }}
-                            {{ form.client.errors }}
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="{{ form.material.id_for_label }}">Material</label>
-                                    {{ form.material }}
-                                    {{ form.material.errors }}
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>Precio Unitario</label>
-                                    <div id="price-display" class="form-control-static">
-                                        Seleccione un material
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="{{ form.gross_weight.id_for_label }}">Peso Bruto (kg)</label>
-                                    {{ form.gross_weight }}
-                                    {{ form.gross_weight.errors }}
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="{{ form.rejection_weight.id_for_label }}">Peso Rechazo (kg)</label>
-                                    {{ form.rejection_weight }}
-                                    {{ form.rejection_weight.errors }}
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label>Peso Neto (kg)</label>
-                                    <div id="net-weight-display" class="form-control-static">0.00</div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="{{ form.notes.id_for_label }}">Observaciones</label>
-                            {{ form.notes }}
-                            {{ form.notes.errors }}
-                        </div>
-                        
-                        <div class="form-group text-center">
-                            <button type="submit" class="btn btn-primary btn-lg">
-                                <i class="icon-check"></i> Registrar Recepción
-                            </button>
-                        </div>
-                    </form>
+
+        <!-- Sección de Materiales -->
+        <div class="material-section">
+            <h2>Materiales</h2>
+            
+            <!-- Cobre -->
+            <div class="material-card">
+                <div class="material-row">
+                    <div class="material-name">Cobre</div>
+                    <input type="number" class="peso-input" value="128" id="cobre-peso">
+                    <span>kg</span>
+                    <span class="operacion">---></span>
+                    <input type="number" class="peso-input" value="110" id="cobre-comprado">
+                    <span>kg</span>
+                    <span class="devolucion">(Devolución: <input type="number" class="peso-input" value="18" id="cobre-devolucion"> kg)</span>
                 </div>
+            </div>
+            
+            <!-- Bronce -->
+            <div class="material-card">
+                <div class="material-row">
+                    <div class="material-name">Bronce</div>
+                    <input type="number" class="peso-input" value="84" id="bronce-peso">
+                    <span>kg</span>
+                    <span class="operacion">---></span>
+                    <input type="number" class="peso-input" value="70" id="bronce-comprado">
+                    <span>kg</span>
+                    <span class="devolucion">(Devolución: <input type="number" class="peso-input" value="14" id="bronce-devolucion"> kg)</span>
+                </div>
+            </div>
+            
+            <!-- Hierro Corto Pesado -->
+            <div class="material-card">
+                <div class="material-row">
+                    <div class="material-name">Hierro Corto Pesado</div>
+                </div>
+                <div class="material-row">
+                    <input type="number" class="peso-input" value="1309" id="hierro1-peso">
+                    <span class="operacion">-</span>
+                    <input type="number" class="peso-input" value="330" id="hierro1-resta">
+                    <span class="operacion">=</span>
+                    <span class="resultado" id="hierro1-resultado">979 kg</span>
+                </div>
+                <div class="material-row">
+                    <input type="number" class="peso-input" value="900" id="hierro2-peso">
+                    <span class="operacion">-</span>
+                    <input type="number" class="peso-input" value="300" id="hierro2-resta">
+                    <span class="operacion">=</span>
+                    <span class="resultado" id="hierro2-resultado">600 kg</span>
+                </div>
+            </div>
+            
+            <button class="add-material-btn" _="on click toggle .hidden on #nuevo-material-modal">
+                + Añadir Otro Material
+            </button>
+        </div>
+
+        <!-- Totales -->
+        <div class="total-section">
+            <div class="material-row">
+                <span>Total Neto:</span>
+                <span class="resultado" id="total-neto">1579 kg</span>
+            </div>
+            <button class="calc-btn" _="on click calcularTotal()">Calcular Total</button>
+            <button style="background-color: #27ae60;">Guardar Nota</button>
+        </div>
+    </div>
+
+    <!-- Modal para nuevo material -->
+    <div class="modal hidden" id="nuevo-material-modal" _="on click toggle .hidden on me">
+        <div class="modal-content" _="on click halt">
+            <h3>Añadir Nuevo Material</h3>
+            <div style="margin-bottom: 15px;">
+                <label>Nombre del Material:</label>
+                <input type="text" style="padding: 8px; width: 100%;">
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label>Peso Bruto (kg):</label>
+                <input type="number" style="padding: 8px; width: 100%;">
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label>Peso a descontar (kg):</label>
+                <input type="number" style="padding: 8px; width: 100%;">
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+                <button _="on click toggle .hidden on #nuevo-material-modal">Cancelar</button>
+                <button style="background-color: #27ae60;">Añadir Material</button>
             </div>
         </div>
     </div>
-</div>
 
-<script>
-document.getElementById('id_material').addEventListener('change', function() {
-    const materialId = this.value;
-    if (materialId) {
-        fetch(`/materials/api/materials/${materialId}/price/`)
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('price-display').textContent = `$${data.price}/kg`;
-            });
-    }
-});
-
-const grossWeightInput = document.getElementById('id_gross_weight');
-const rejectionWeightInput = document.getElementById('id_rejection_weight');
-const netWeightDisplay = document.getElementById('net-weight-display');
-
-function calculateNetWeight() {
-    const gross = parseFloat(grossWeightInput.value) || 0;
-    const rejection = parseFloat(rejectionWeightInput.value) || 0;
-    const net = gross - rejection;
-    netWeightDisplay.textContent = net.toFixed(2);
-}
-
-grossWeightInput.addEventListener('input', calculateNetWeight);
-rejectionWeightInput.addEventListener('input', calculateNetWeight);
-</script>
-{% endblock %}
+    <script>
+        // Función para calcular totales automáticamente
+        function calcularTotal() {
+            // Calcular hierro corto pesado
+            const hierro1 = parseFloat(document.getElementById('hierro1-peso').value) || 0;
+            const hierro1Resta = parseFloat(document.getElementById('hierro1-resta').value) || 0;
+            const hierro1Result = hierro1 - hierro1Resta;
+            document.getElementById('hierro1-resultado').textContent = hierro1Result + ' kg';
+            
+            const hierro2 = parseFloat(document.getElementById('hierro2-peso').value) || 0;
+            const hierro2Resta = parseFloat(document.getElementById('hierro2-resta').value) || 0;
+            const hierro2Result = hierro2 - hierro2Resta;
+            document.getElementById('hierro2-resultado').textContent = hierro2Result + ' kg';
+            
+            // Calcular total neto
+            const cobreComprado = parseFloat(document.getElementById('cobre-comprado').value) || 0;
+            const bronceComprado = parseFloat(document.getElementById('bronce-comprado').value) || 0;
+            const totalNeto = cobreComprado + bronceComprado + hierro1Result + hierro2Result;
+            
+            document.getElementById('total-neto').textContent = totalNeto + ' kg';
+            
+            alert('Total calculado: ' + totalNeto + ' kg');
+        }
+        
+        // Calcular automáticamente cuando cambian los valores
+        document.querySelectorAll('.peso-input').forEach(input => {
+            input.addEventListener('change', calcularTotal);
+        });
+    </script>
+</body>
+</html>

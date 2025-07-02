@@ -19,8 +19,24 @@
         <meta property="og:site_name" content=""/>
         <meta property="og:description" content=""/>
         
+            <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    
+    <!-- Hyperscript (opcional) -->
+    <script src="https://unpkg.com/hyperscript.org@0.9.12"></script>
+    
+    <!-- Para el CSRF Token (importante en Django) -->
+    <script>
+        document.body.addEventListener('htmx:configRequest', (event) => {
+            event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
+        });
+    </script>
 
         <link href="https://fonts.googleapis.com/css?family=Poppins:200,300,400,500,700" rel="stylesheet">
+
+
+    <script src="{% static 'js/reception_create.js' %}"></script>
+
 
 <!-- logo.css -->
 <link rel="stylesheet" href="{% static 'css/logo.css' %}">
@@ -60,55 +76,59 @@
             
              <!-- Menu -->
             
-            {% block 'menu' %}
-            
-{% if request.path == '/' %}
+   {% block 'menu' %}
 <nav class="colorlib-nav" role="navigation">
     <!-- Mensajes para el usuario -->
-{% if messages %}
-<div class="message-container">
-    {% for message in messages %}
-        <div class="alert 
-            {% if message.tags == 'error' %}
-                alert-danger
-            {% elif message.tags == 'warning' %}
-                alert-warning
-            {% elif message.tags == 'success' %}
-                alert-success
-            {% else %}
-                alert-info
-            {% endif %}
-            animate-box message-alert" role="alert" style="font-size: 16px;">
-            <i class="icon-info"></i> {{ message }}
-        </div>
-    {% endfor %}
-</div>
-{% endif %}
+    {% if messages %}
+    <div class="message-container">
+        {% for message in messages %}
+            <div class="alert 
+                {% if message.tags == 'error' %}
+                    alert-danger
+                {% elif message.tags == 'warning' %}
+                    alert-warning
+                {% elif message.tags == 'success' %}
+                    alert-success
+                {% else %}
+                    alert-info
+                {% endif %}
+                animate-box message-alert" role="alert" style="font-size: 16px;">
+                <i class="icon-info"></i> {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
     <div class="top-menu">
         <div class="container">
             <div class="row">
                 <div class="col-xs-10 text-right menu-1">
                     <ul>
-                        <li class="{% if request.path == '/' %}active{% endif %}"><a href="{% url 'landing:index' %}">Home</a></li>
-                        <li><a href="#proyectos">Productos</a></li>
-                        <li class="has-dropdown">
-                            <a><b>Llámanos!</b></a>
-                            <ul class="dropdown">
-                                <li> <i class="icon-whatsapp"></i> <i class="icon-phone2"></i> <a href="https://wa.me/584243749696" target="_blank"> +58 424-3749696</a></li>
-                                <li> <i class="icon-phone2"></i> <a href="tel://584248305236">+58 424-8305236</a></li>
-                                <li> <i class="icon-phone2"></i> <a href="tel://584243749696">+58 424-3749696</a> </li>
-                            </ul>
-                        </li>
-                        <li><a href="#about">Nosotros</a></li>
-                        <li><a href="#contact">Contacto</a></li>
+                        {% if request.path == '/' %}
+                            <li class="active"><a href="{% url 'landing:index' %}">Home</a></li>
+                            <li><a href="#proyectos">Productos</a></li>
+                            <li class="has-dropdown">
+                                <a><b>Llámanos!</b></a>
+                                <ul class="dropdown">
+                                    <li> <i class="icon-whatsapp"></i> <i class="icon-phone2"></i> <a href="https://wa.me/584243749696" target="_blank"> +58 424-3749696</a></li>
+                                    <li> <i class="icon-phone2"></i> <a href="tel://584248305236">+58 424-8305236</a></li>
+                                    <li> <i class="icon-phone2"></i> <a href="tel://584243749696">+58 424-3749696</a> </li>
+                                </ul>
+                            </li>
+                            <li><a href="#about">Nosotros</a></li>
+                            <li><a href="#contact">Contacto</a></li>
+                        {% else %}
+                            <li class="{% if request.path == '/' %}active{% endif %}"><a href="{% url 'landing:index' %}">Home</a></li>
+                        {% endif %}
+                        
                         <li class="has-dropdown">
                             {% if user.is_authenticated %}
-                                <a href="#"><i class="icon-user"></i> {{ user.username }}</a>
+                                <a href="#" {% if request.path != '/' %}style="color: black !important;"{% endif %}><i class="icon-user"></i> {{ user.username }}</a>
                                 <ul class="dropdown">
                                     {% if user.role == 'admin' %}
                                         <li><a href="{% url 'admin:index' %}"><i class="icon-settings"></i> Panel Admin</a></li>
                                         <li><a href="{% url 'users:manage_staff' %}"><i class="icon-users"></i> Gestionar Staff</a></li>
-                                           <li><a href="{% url 'materials:dashboard' %}"><i class="icon-plus"></i>Materiales</a></li>
+                                        <li><a href="{% url 'materials:dashboard' %}"><i class="icon-plus"></i>Materiales</a></li>
                                     {% elif user.is_staff %}
                                         <li><a href="{% url 'materials:dashboard' %}"><i class="icon-plus"></i>Materiales</a></li>
                                     {% endif %}
@@ -116,7 +136,7 @@
                                     <li><a href="{% url 'users:logout' %}"><i class="icon-exit"></i> Cerrar Sesión</a></li>
                                 </ul>
                             {% else %}
-                                <a href="#"><i class="icon-user"></i> Cuenta</a>
+                                <a href="#" {% if request.path != '/' %}style="color: black !important;"{% endif %}><i class="icon-user"></i> Cuenta</a>
                                 <ul class="dropdown">
                                     <li><a href="{% url 'users:login' %}"><i class="icon-login"></i> Iniciar Sesión</a></li>
                                     <li><a href="{% url 'users:register' %}"><i class="icon-user-plus"></i> Crear Cuenta</a></li>
@@ -129,71 +149,7 @@
         </div>
     </div>
 </nav>
-{% else %}
-<nav class="colorlib-nav" role="navigation">
-    <!-- Mensajes para el usuario -->
-{% if messages %}
-<div class="message-container">
-    {% for message in messages %}
-        <div class="alert 
-            {% if message.tags == 'error' %}
-                alert-danger
-            {% elif message.tags == 'warning' %}
-                alert-warning
-            {% elif message.tags == 'success' %}
-                alert-success
-            {% else %}
-                alert-info
-            {% endif %}
-            animate-box message-alert" role="alert" style="font-size: 16px;">
-            <i class="icon-info"></i> {{ message }}
-        </div>
-    {% endfor %}
-</div>
-{% endif %}
-    <div class="top-menu">
-        <div class="container">
-            <div class="row">
-                <div class="col-xs-2">
-                    <div id="colorlib-logo"> 
-                        <img src="{% static 'images/logo.png' %}"> 
-                        <a href="{% url 'landing:index' %}"></a>
-                    </div>
-                </div>
-                <div class="col-xs-10 text-right menu-1">
-                    <ul>
-                        <li class="{% if request.path == '/' %}active{% endif %}"><a href="{% url 'landing:index' %}">Home</a></li>
-                        <li class="has-dropdown">
-                            {% if user.is_authenticated %}
-                                <a href="#" style="color: black !important;"><i class="icon-user"></i> {{ user.username }}</a>
-                                <ul class="dropdown">
-                                    {% if user.role == 'admin' %}
-                                        <li><a href="{% url 'admin:index' %}"><i class="icon-settings"></i> Panel Admin</a></li>
-                                        <li><a href="{% url 'users:manage_staff' %}"><i class="icon-users"></i> Gestionar Staff</a></li>
-                                        <li><a href="{% url 'materials:dashboard' %}"><i class="icon-plus"></i>Materiales</a></li>
-                                    {% elif user.is_staff %}
-                                        <li><a href="{% url 'materials:dashboard' %}"><i class="icon-plus"></i>Materiales</a></li>
-                                    {% else %}
-                                        <li><a href="{% url 'users:dashboard' %}"><i class="icon-dashboard"></i> Mi Perfil</a></li>
-                                    {% endif %}
-                                    <li><a href="{% url 'users:logout' %}"><i class="icon-exit"></i> Cerrar Sesión</a></li>
-                                </ul>
-                                {% else %}
-                                <a href="#" style="color: black !important;"><i class="icon-user"></i> Cuenta</a>
-                                <ul class="dropdown">
-                                    <li><a href="{% url 'users:login' %}"><i class="icon-login"></i> Iniciar Sesión</a></li>
-                                    <li><a href="{% url 'users:register' %}"><i class="icon-user-plus"></i> Crear Cuenta</a></li>
-                                </ul>
-                            {% endif %}
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-</nav>
-{% endif %}
-            {% endblock %}
+{% endblock %}
 
 {% block content %}
 

@@ -1,5 +1,5 @@
 from django import forms
-from .models import Material, Client, MaterialReception
+from .models import MaterialType, Client, MaterialReception, ReceptionMaterial, MaterialOperation
 
 class ClientForm(forms.ModelForm):
     class Meta:
@@ -9,22 +9,19 @@ class ClientForm(forms.ModelForm):
             'phone': forms.TextInput(attrs={'type': 'tel'}),
         }
 
-class MaterialForm(forms.ModelForm):
+class MaterialTypeForm(forms.ModelForm):
     class Meta:
-        model = Material
-        fields = ['name', 'category', 'subtype', 'base_price']
-
-class MaterialReceptionForm(forms.ModelForm):
-    class Meta:
-        model = MaterialReception
-        fields = ['client', 'material', 'gross_weight', 'rejection_weight', 'notes']
+        model = MaterialType
+        fields = ['name', 'category', 'base_price']
         widgets = {
-            'client': forms.Select(attrs={'class': 'select2'}),
-            'material': forms.Select(attrs={'class': 'select2'}),
-            'gross_weight': forms.NumberInput(attrs={'step': '0.01'}),
-            'rejection_weight': forms.NumberInput(attrs={'step': '0.01'}),
+            'base_price': forms.NumberInput(attrs={'step': '0.01'}),
         }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['material'].widget.attrs['onchange'] = 'updatePrice(this)'
+class MaterialOperationForm(forms.ModelForm):
+    class Meta:
+        model = MaterialOperation
+        fields = ['gross_weight', 'tare_weight']
+        widgets = {
+            'gross_weight': forms.NumberInput(attrs={'step': '0.01'}),
+            'tare_weight': forms.NumberInput(attrs={'step': '0.01'}),
+        }

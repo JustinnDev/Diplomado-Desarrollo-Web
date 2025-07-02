@@ -1,0 +1,146 @@
+{% extends 'landing/index.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Recepción de Materiales</h2>
+    
+    <form id="reception-form" method="post">
+        {% csrf_token %}
+        
+        <!-- Sección Cliente -->
+        <div class="form-group">
+            <label for="client-select">Cliente:</label>
+            <select id="client-select" name="client" class="form-control" required>
+                <option value="">Seleccione un cliente</option>
+                {% for client in clients %}
+                <option value="{{ client.id }}">{{ client.name }} - {{ client.identification }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <!-- Contenedor de Materiales -->
+        <div id="materials-container" class="mt-4">
+            <!-- Los materiales se añadirán aquí -->
+        </div>
+        
+        <!-- Botón para añadir material -->
+        <button type="button" id="add-material-btn" class="btn btn-primary mt-3">
+            <i class="fas fa-plus"></i> Añadir Material
+        </button>
+        
+        <!-- Notas -->
+        <div class="form-group mt-4">
+            <label for="reception-notes">Notas/Observaciones:</label>
+            <textarea id="reception-notes" name="notes" class="form-control" rows="3"></textarea>
+        </div>
+        
+        <!-- Botón de enviar -->
+        <button type="submit" class="btn btn-success mt-4">
+            <i class="fas fa-save"></i> Guardar Recepción
+        </button>
+    </form>
+</div>
+
+<!-- Template para Material (oculto) -->
+<template id="material-template">
+    <div class="material-item card mt-3" data-material-index="{index}">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Material #{index}</h5>
+            <button type="button" class="btn btn-sm btn-danger remove-material">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Tipo de Material:</label>
+                        <select name="materials[{index}][type]" class="form-control material-type" required>
+                            <option value="">Seleccione un material</option>
+                            {% for material in material_types %}
+                            <option value="{{ material.id }}" data-price="{{ material.base_price }}">
+                                {{ material.name }} ({{ material.get_category_display }})
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Subtipo:</label>
+                        <select name="materials[{index}][subtype]" class="form-control">
+                            <option value="LIMPIO">Limpio</option>
+                            <option value="CONTAMINADO">Contaminado</option>
+                            <option value="CON_PRODUCCION">Con producción</option>
+                            <option value="SIN_PRODUCCION">Sin producción</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mt-2">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Descuento:</label>
+                        <input type="number" name="materials[{index}][discount_value]" 
+                               class="form-control discount-value" value="0" min="0" step="0.01">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Tipo de Descuento:</label>
+                        <select name="materials[{index}][discount_type]" class="form-control discount-type">
+                            <option value="NONE">Ninguno</option>
+                            <option value="ABSOLUTE">Kg</option>
+                            <option value="PERCENTAGE">%</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <h6 class="mt-3">Operaciones de Pesaje:</h6>
+            <div class="operations-container">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Bruto (kg)</th>
+                            <th>Tara (kg)</th>
+                            <th>Neto (kg)</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody class="operations-body">
+                        <!-- Operaciones se añadirán aquí -->
+                    </tbody>
+                </table>
+                <button type="button" class="btn btn-sm btn-primary add-operation">
+                    <i class="fas fa-plus"></i> Añadir Operación
+                </button>
+            </div>
+        </div>
+    </div>
+</template>
+
+<!-- Template para Operación (oculto) -->
+<template id="operation-template">
+    <tr class="operation-row" data-op-index="{opIndex}">
+        <td class="op-number">{opNumber}</td>
+        <td>
+            <input type="number" name="materials[{materialIndex}][operations][{opIndex}][gross]" 
+                   class="form-control gross" step="0.01" min="0" required>
+        </td>
+        <td>
+            <input type="number" name="materials[{materialIndex}][operations][{opIndex}][tare]" 
+                   class="form-control tare" step="0.01" min="0" required>
+        </td>
+        <td class="net-weight">0.00</td>
+        <td>
+            <button type="button" class="btn btn-sm btn-danger remove-operation">
+                <i class="fas fa-trash"></i>
+            </button>
+        </td>
+    </tr>
+</template>
+{% endblock %}
