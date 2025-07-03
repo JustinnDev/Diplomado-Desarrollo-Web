@@ -62,4 +62,5 @@ ehthumbs.db
 desktop.ini
 .idea/
 *.iml
-djangoproject/staticfiles/
+/djangoproject/staticfiles/
+/staticfiles/
