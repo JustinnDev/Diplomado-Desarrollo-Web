@@ -1,0 +1,120 @@
+{% extends 'landing/index.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/logos.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="colorlib-section colorlib-catalog">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2 text-center colorlib-heading animate-box">
+                <h2 class="catalog-title">Historial de Recepciones</h2>
+                <p class="catalog-subtitle">Listado completo de recepciones de materiales</p>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-12 animate-box" data-animate-effect="fadeInUp">
+                <div class="table-responsive">
+                    <table class="table catalog-table">
+                        <thead>
+                            <tr class="table-header">
+                                <th class="text-center">ID</th>
+                                <th class="text-center">Cliente</th>
+                                <th class="text-center">Fecha</th>
+                                <th class="text-center">Materiales</th>
+                                <th class="text-center">Peso Total</th>
+                                <th class="text-center">Valor Total</th>
+                                <th class="text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for reception in receptions %}
+                            <tr class="table-row">
+                                <td class="text-center" data-title="ID">
+                                    #{{ reception.id }}
+                                </td>
+                                <td class="text-center" data-title="Cliente">
+                                    {{ reception.client.name }}
+                                    <br>
+                                    <small class="client-id">{{ reception.client.identification }}</small>
+                                </td>
+                                <td class="text-center" data-title="Fecha">
+                                    {{ reception.reception_date|date:"d/m/Y H:i" }}
+                                </td>
+                                <td class="text-center" data-title="Materiales">
+                                    {{ reception.materials.count }}
+                                </td>
+                                <td class="text-center weight" data-title="Peso Total">
+                                    {{ reception.total_net_weight|floatformat:2 }} kg
+                                </td>
+                                <td class="text-center price" data-title="Valor Total">
+                                    ${{ reception.total_reception|floatformat:2 }}
+                                </td>
+                                <td class="text-center actions">
+                                    <div class="btn-action-group">
+                                        <a href="{% url 'materials:reception_detail' reception.pk %}" class="btn btn-view">
+                                            <i class="icon-eye"></i> <span class="btn-text">Ver</span>
+                                        </a>
+                                        <a href="{% url 'materials:reception_update' reception.pk %}" class="btn btn-edit">
+                                            <i class="icon-pencil"></i> <span class="btn-text">Editar</span>
+                                        </a>
+                                        <a href="{% url 'materials:reception_delete' reception.pk %}" class="btn btn-delete">
+                                            <i class="icon-trash"></i> <span class="btn-text">Eliminar</span>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center no-results">
+                                    <div class="empty-state">
+                                        <i class="icon-info-circle"></i>
+                                        <p>No hay recepciones registradas</p>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="text-center add-material-section">
+                    <a href="{% url 'materials:reception_create' %}" class="btn btn-add-material">
+                        <i class="icon-plus"></i> Nueva Recepción
+                    </a>
+                </div>
+
+                <!-- Paginación -->
+                {% if is_paginated %}
+                <div class="text-center pagination-section">
+                    <ul class="pagination">
+                        {% if page_obj.has_previous %}
+                        <li><a href="?page={{ page_obj.previous_page_number }}">&laquo;</a></li>
+                        {% else %}
+                        <li class="disabled"><span>&laquo;</span></li>
+                        {% endif %}
+                        
+                        {% for i in paginator.page_range %}
+                        {% if page_obj.number == i %}
+                        <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+                        {% else %}
+                        <li><a href="?page={{ i }}">{{ i }}</a></li>
+                        {% endif %}
+                        {% endfor %}
+                        
+                        {% if page_obj.has_next %}
+                        <li><a href="?page={{ page_obj.next_page_number }}">&raquo;</a></li>
+                        {% else %}
+                        <li class="disabled"><span>&raquo;</span></li>
+                        {% endif %}
+                    </ul>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

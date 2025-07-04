@@ -2,44 +2,56 @@
 {% load static %}
 
 {% block content %}
+
+{% if editing %}
+<script id="reception-data" type="application/json">
+    {{ materials_json|safe }}
+</script>
+{% endif %}
+
 <div class="container mt-4" style="margin-top: 80px;">
     <h2 class="mb-4">Recepción de Materiales</h2>
+
+   <form id="reception-form" method="post">
+    {% csrf_token %}
+    {% if editing %}
+        <input type="hidden" name="editing" value="true">
+    {% endif %}
     
-    <form id="reception-form" method="post">
-        {% csrf_token %}
-        
-        <!-- Sección Cliente -->
-        <div class="form-group">
-            <label for="client-select">Cliente:</label>
-            <select id="client-select" name="client" class="form-control" required>
-                <option value="">Seleccione un cliente</option>
-                {% for client in clients %}
-                <option value="{{ client.id }}">{{ client.name }} - {{ client.identification }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        
-        <!-- Contenedor de Materiales -->
-        <div id="materials-container" class="mt-4">
-            <!-- Los materiales se añadirán aquí -->
-        </div>
-        
-        <!-- Botón para añadir material -->
-        <button type="button" id="add-material-btn" class="btn btn-primary mt-3">
-            <i class="fas fa-plus"></i> Añadir Material
-        </button>
-        
-        <!-- Notas -->
-        <div class="form-group mt-4">
-            <label for="reception-notes">Notas/Observaciones:</label>
-            <textarea id="reception-notes" name="notes" class="form-control" rows="3"></textarea>
-        </div>
-        
-        <!-- Botón de enviar -->
-        <button type="submit" class="btn btn-success mt-4">
-            <i class="fas fa-save"></i> Guardar Recepción
-        </button>
-    </form>
+    <!-- Sección Cliente -->
+    <div class="form-group">
+        <label for="client-select">Cliente:</label>
+        <select id="client-select" name="client" class="form-control" required>
+            <option value="">Seleccione un cliente</option>
+            {% for client in clients %}
+            <option value="{{ client.id }}" {% if editing and reception.client.id == client.id %}selected{% endif %}>
+                {{ client.name }} - {{ client.identification }}
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+    
+    <!-- Contenedor de Materiales -->
+    <div id="materials-container" class="mt-4">
+        <!-- Los materiales se añadirán aquí -->
+    </div>
+    
+    <!-- Botón para añadir material -->
+    <button type="button" id="add-material-btn" class="btn btn-primary mt-3">
+        <i class="fas fa-plus"></i> Añadir Material
+    </button>
+    
+    <!-- Notas -->
+    <div class="form-group mt-4">
+        <label for="reception-notes">Notas/Observaciones:</label>
+        <textarea id="reception-notes" name="notes" class="form-control" rows="3">{% if editing %}{{ reception.notes }}{% endif %}</textarea>
+    </div>
+    
+    <!-- Botón de enviar -->
+    <button type="submit" class="btn btn-success mt-4">
+        <i class="fas fa-save"></i> {% if editing %}Actualizar{% else %}Guardar{% endif %} Recepción
+    </button>
+</form>
 </div>
 
 <!-- Template para Material (oculto) -->

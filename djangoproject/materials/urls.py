@@ -13,8 +13,9 @@ urlpatterns = [
     path('clients/add/', views.ClientCreateView.as_view(), name='client_add'),
     path('receptions/', views.ReceptionListView.as_view(), name='reception_list'),
     path('receptions/add/', views.reception_create, name='reception_add'),
-    #path('receptions/<int:pk>/', views.reception_detail, name='reception_detail'),
     path('reception/new/', views.ReceptionCreateView.as_view(), name='reception_create'),
+    path('reception/<int:pk>/edit/', views.ReceptionUpdateView.as_view(), name='reception_update'),
+    path('reception/<int:pk>/delete/', views.ReceptionDeleteView.as_view(), name='reception_delete'),
     path('reception/<int:pk>/detail/', views.ReceptionDetailView.as_view(), name='reception_detail'),
     path('reception/complete/', views.ReceptionCompleteView.as_view(), name='reception_complete'),
 ]
