@@ -4,7 +4,7 @@ from django.urls import reverse_lazy
 from .models import MaterialType, Client, MaterialReception, ReceptionMaterial, MaterialOperation
 from .forms import MaterialTypeForm, ClientForm
 from django.contrib import messages
-from django.db import transaction
+from django.db import transaction, connections
 from django.core.serializers.json import DjangoJSONEncoder
 import json
 
@@ -275,7 +275,6 @@ class ReceptionUpdateView(View):
             print("Error en la actualización de la recepción:", str(e))
             messages.error(request, f'Error: {str(e)}')
             return redirect('materials:reception_update', pk=pk)
-
 
 class ReceptionDeleteView(DeleteView):
     model = MaterialReception
