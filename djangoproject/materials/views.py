@@ -4,12 +4,35 @@ from django.urls import reverse_lazy
 from .models import MaterialType, Client, MaterialReception, ReceptionMaterial, MaterialOperation
 from .forms import MaterialTypeForm, ClientForm
 from django.contrib import messages
+from django.contrib.auth.mixins import AccessMixin
 from django.db import transaction, connections
 from django.core.serializers.json import DjangoJSONEncoder
 import json
 
+
+def admin_or_lin_required(view_func):
+    def wrapper(request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect('landing:index')
+        
+        if request.user.role in ['admin', 'licenciado']:
+            return view_func(request, *args, **kwargs)
+        return redirect('landing:index')
+    return wrapper
+
+class AdminMixin(AccessMixin):
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect('landing:index')
+        
+        if request.user.role not in ['admin', 'licenciado']:
+            return redirect('landing:index')
+            
+        return super().dispatch(request, *args, **kwargs)
+
+
 # Vistas para Materiales
-class MaterialListView(ListView):
+class MaterialListView(AdminMixin,ListView):
     model = MaterialType
     template_name = 'materials/material_list.html'
     context_object_name = 'materials'
@@ -18,7 +41,7 @@ class MaterialListView(ListView):
         messages.error(self.request, 'No hay materiales disponibles.')
         return super().form_invalid(form)
    
-class MaterialCreateView(CreateView):
+class MaterialCreateView(AdminMixin,CreateView):
     model = MaterialType
     form_class = MaterialTypeForm
     template_name = 'materials/material_form.html'
@@ -32,7 +55,7 @@ class MaterialCreateView(CreateView):
         messages.error(self.request, 'Error al crear el material. Por favor, corrige los errores.')
         return super().form_invalid(form)
 
-class MaterialUpdateView(UpdateView):
+class MaterialUpdateView(AdminMixin,UpdateView):
     model = MaterialType
     form_class = MaterialTypeForm
     template_name = 'materials/material_form.html'
@@ -46,7 +69,7 @@ class MaterialUpdateView(UpdateView):
         messages.error(self.request, 'Error al actualizar el material. Por favor, corrige los errores.')
         return super().form_invalid(form)
 
-class MaterialDeleteView(DeleteView):
+class MaterialDeleteView(AdminMixin,DeleteView):
     model = MaterialType
     template_name = 'materials/material_confirm_delete.html'
     success_url = reverse_lazy('materials:list')
@@ -59,12 +82,12 @@ class MaterialDeleteView(DeleteView):
 
 
 # Vistas para Clientes
-class ClientListView(ListView):
+class ClientListView(AdminMixin,ListView):
     model = Client
     template_name = 'materials/client_list.html'
     context_object_name = 'clients'
 
-class ClientCreateView(CreateView):
+class ClientCreateView(AdminMixin,CreateView):
     model = Client
     form_class = ClientForm
     template_name = 'materials/client_form.html'
@@ -90,21 +113,23 @@ def reception_create(request):
     
     return render(request, 'materials/reception_form.html', {'form': form})
 
-class ReceptionListView(ListView):
+class ReceptionListView(AdminMixin,ListView):
     model = MaterialReception
     template_name = 'materials/reception_list.html'
     context_object_name = 'receptions'
     ordering = ['-reception_date']
     paginate_by = 20
 
+@admin_or_lin_required
 def reception_detail(request, pk):
     reception = get_object_or_404(MaterialReception, pk=pk)
     return render(request, 'materials/reception_detail.html', {'reception': reception})
 
+@admin_or_lin_required
 def dashboard(request):
     return render(request, 'materials/material_dashboard.html')
 
-class ReceptionCreateView(View):
+class ReceptionCreateView(AdminMixin,View):
     def get(self, request, *args, **kwargs):
         return render(request, 'materials/reception_create.html', {
             'clients': Client.objects.all(),
@@ -172,7 +197,7 @@ class ReceptionCreateView(View):
             messages.error(request, f'Error: {str(e)}')
             return redirect('materials:reception_create')
 
-class ReceptionUpdateView(View):
+class ReceptionUpdateView(AdminMixin,View):
     def get(self, request, pk, *args, **kwargs):
         reception = get_object_or_404(MaterialReception, pk=pk)
         
@@ -276,7 +301,7 @@ class ReceptionUpdateView(View):
             messages.error(request, f'Error: {str(e)}')
             return redirect('materials:reception_update', pk=pk)
 
-class ReceptionDeleteView(DeleteView):
+class ReceptionDeleteView(AdminMixin,DeleteView):
     model = MaterialReception
     template_name = 'materials/reception_confirm_delete.html'
     success_url = reverse_lazy('materials:reception_list')
@@ -286,7 +311,7 @@ class ReceptionDeleteView(DeleteView):
             messages.success(request, 'Recepción eliminada correctamente.')
         return super().dispatch(request, *args, **kwargs)
 
-class ReceptionDetailView(DetailView):
+class ReceptionDetailView(AdminMixin,DetailView):
     model = MaterialReception
     template_name = 'materials/reception_detail.html'
     context_object_name = 'reception'
@@ -307,7 +332,7 @@ class ReceptionDetailView(DetailView):
         })
         return context
 
-class ReceptionCompleteView(TemplateView):
+class ReceptionCompleteView(AdminMixin,TemplateView):
     def get(self, request, *args, **kwargs):
         if 'current_reception' in request.session:
             reception_id = request.session['current_reception']
