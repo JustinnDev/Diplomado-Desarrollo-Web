@@ -81,6 +81,19 @@ class CustomUserAdmin(admin.ModelAdmin):
     
     def toggle_user_active(self, request, user_id):
         user = CustomUser.objects.get(pk=user_id)
+
+        # Verificar si es superuser
+        if user.is_superuser:
+            self.message_user(
+                request, 
+                'No se puede bloquear/desbloquear a un Superusuario', 
+                level='WARNING'  # Cambiado de ERROR a WARNING
+            )
+            # Redirige a la página anterior (HTTP_REFERER) o a la lista por defecto
+            return HttpResponseRedirect(
+                request.META.get('HTTP_REFERER')
+            )
+        
         user.is_active = not user.is_active
         user.save()
         self.message_user(request, f'Usuario {user.username} ha sido {"desbloqueado" if user.is_active else "bloqueado"}')
