@@ -1,104 +1,92 @@
-{% extends 'landing/index.html' %}
+{% extends 'materials/material_dashboard.html' %}
 {% load static %}
 
-{% block content %}
-<div class="colorlib-contact" style="margin-top: 80px;">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-8 col-md-offset-2 text-center colorlib-heading animate-box">
-                <h2>{% if form.instance.pk %}Editar{% else %}Agregar{% endif %} Material</h2>
+{% block module_content %}
+<div class="module-header">
+    <h1>{% if form.instance.pk %}Editar{% else %}Agregar{% endif %} Material</h1>
+    <p class="subtitle">Complete los datos del material</p>
+</div>
+
+<div class="module-form-container">
+    <div class="module-form-card">
+        {% if not form.instance.pk %}
+        {# Formulario para agregar material #}
+        <form method="post" action="{% url 'materials:add' %}" class="material-form">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="{{ form.name.id_for_label }}">Nombre</label>
+                {{ form.name }}
+                {{ form.name.errors }}
             </div>
-         
-        </div>
-        <div class="row">
-            <div class="col-md-8 col-md-offset-2">
-                <div class="animate-box">
-                    {% if not form.instance.pk %}
-                        {# Formulario para agregar material #}
-                        <form method="post" action="{% url 'materials:add' %}" class="contact-form">
-                            {% csrf_token %}
-                            <div class="form-group">
-                                <label for="{{ form.name.id_for_label }}">Nombre</label>
-                                {{ form.name }}
-                                {{ form.name.errors }}
-                            </div>
 
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="{{ form.category.id_for_label }}">Categoría</label>
-                                        {{ form.category }}
-                                        {{ form.category.errors }}
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="{{ form.subtype.id_for_label }}">Subtipo</label>
-                                        {{ form.subtype }}
-                                        {{ form.subtype.errors }}
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="{{ form.base_price.id_for_label }}">Precio Base ($/kg)</label>
-                                {{ form.base_price }}
-                                {{ form.base_price.errors }}
-                            </div>
-                            <div class="form-group text-center">
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="icon-check"></i> Guardar Material
-                                </button>
-                                <a href="{% url 'materials:list' %}" class="btn btn-default">
-                                    <i class="icon-arrow-left"></i> Cancelar
-                                </a>
-                            </div>
-                        </form>
-                    {% else %}
-                        {# Formulario para editar material #}
-                        <form method="post" action="{% url 'materials:edit' form.instance.pk %}" class="contact-form">
-                            {% csrf_token %}
-                            <div class="form-group">
-                                <label for="{{ form.name.id_for_label }}">Nombre</label>
-                                {{ form.name }}
-                                {{ form.name.errors }}
-                            </div>
-
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="{{ form.category.id_for_label }}">Categoría</label>
-                                        {{ form.category }}
-                                        {{ form.category.errors }}
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="{{ form.subtype.id_for_label }}">Subtipo</label>
-                                        {{ form.subtype }}
-                                        {{ form.subtype.errors }}
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="{{ form.base_price.id_for_label }}">Precio Base ($/kg)</label>
-                                {{ form.base_price }}
-                                {{ form.base_price.errors }}
-                            </div>
-                            <div class="form-group text-center">
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="icon-check"></i> Guardar Cambios
-                                </button>
-                                <a href="{% url 'materials:list' %}" class="btn btn-default">
-                                    <i class="icon-arrow-left"></i> Cancelar
-                                </a>
-                            </div>
-                        </form>
-                    {% endif %}
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="{{ form.category.id_for_label }}">Categoría</label>
+                    {{ form.category }}
+                    {{ form.category.errors }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.subtype.id_for_label }}">Subtipo</label>
+                    {{ form.subtype }}
+                    {{ form.subtype.errors }}
                 </div>
             </div>
-        </div>
+
+            <div class="form-group">
+                <label for="{{ form.base_price.id_for_label }}">Precio Base ($/kg)</label>
+                {{ form.base_price }}
+                {{ form.base_price.errors }}
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="btn-primary">
+                    <i class="icon-check"></i> Guardar Material
+                </button>
+                <a href="{% url 'materials:list' %}" class="btn-secondary">
+                    <i class="icon-arrow-left"></i> Cancelar
+                </a>
+            </div>
+        </form>
+        {% else %}
+        {# Formulario para editar material #}
+        <form method="post" action="{% url 'materials:edit' form.instance.pk %}" class="material-form">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="{{ form.name.id_for_label }}">Nombre</label>
+                {{ form.name }}
+                {{ form.name.errors }}
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="{{ form.category.id_for_label }}">Categoría</label>
+                    {{ form.category }}
+                    {{ form.category.errors }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.subtype.id_for_label }}">Subtipo</label>
+                    {{ form.subtype }}
+                    {{ form.subtype.errors }}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.base_price.id_for_label }}">Precio Base ($/kg)</label>
+                {{ form.base_price }}
+                {{ form.base_price.errors }}
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="btn-primary">
+                    <i class="icon-check"></i> Guardar Cambios
+                </button>
+                <a href="{% url 'materials:list' %}" class="btn-secondary">
+                    <i class="icon-arrow-left"></i> Cancelar
+                </a>
+            </div>
+        </form>
+        {% endif %}
     </div>
 </div>
+
 {% endblock %}

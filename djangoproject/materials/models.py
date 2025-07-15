@@ -15,7 +15,7 @@ class MaterialType(models.Model):
     base_price = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)])
     
     def __str__(self):
-        return f"{self.name} ({self.get_category_display()})"
+        return f"{self.name}"
 
 class Client(models.Model):
     name = models.CharField(max_length=100)

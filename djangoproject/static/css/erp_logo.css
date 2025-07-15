@@ -1,0 +1,285 @@
+/* logos.css */
+/* Estilos para los logos de los módulos */
+
+/* Logo genérico para "Añadir" */
+.logo-add {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #4CAF50;
+    position: relative;
+    margin: 0 auto 15px;
+}
+
+.logo-add::before,
+.logo-add::after {
+    content: '';
+    position: absolute;
+    background-color: white;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.logo-add::before {
+    width: 25px;
+    height: 4px;
+}
+
+.logo-add::after {
+    width: 4px;
+    height: 25px;
+}
+
+/* Logo para "Lista" */
+.logo-list {
+    width: 60px;
+    height: 60px;
+    background-color: #2196F3;
+    border-radius: 8px;
+    position: relative;
+    margin: 0 auto 15px;
+}
+
+.logo-list::before,
+.logo-list::after {
+    content: '';
+    position: absolute;
+    left: 10px;
+    right: 10px;
+    height: 4px;
+    background-color: white;
+    border-radius: 2px;
+}
+
+.logo-list::before {
+    top: 18px;
+    box-shadow: 0 12px 0 white;
+}
+
+.logo-list::after {
+    bottom: 18px;
+}
+
+/* Logo para "Recepción" */
+.logo-reception {
+    width: 60px;
+    height: 60px;
+    background-color: #FF9800;
+    border-radius: 8px;
+    position: relative;
+    margin: 0 auto 15px;
+}
+
+.logo-reception::before {
+    content: '';
+    position: absolute;
+    width: 40px;
+    height: 25px;
+    background-color: white;
+    border-radius: 4px 4px 0 0;
+    bottom: 10px;
+    left: 10px;
+}
+
+.logo-reception::after {
+    content: '';
+    position: absolute;
+    width: 30px;
+    height: 15px;
+    background-color: #FF9800;
+    border: 2px solid white;
+    border-radius: 3px;
+    top: 12px;
+    left: 15px;
+}
+
+/* Logo para "Lista de Recepciones" */
+.logo-reception_list {
+    width: 60px;
+    height: 60px;
+    background-color: #9C27B0;
+    border-radius: 8px;
+    position: relative;
+    margin: 0 auto 15px;
+}
+
+.logo-reception_list::before {
+    content: '✓';
+    position: absolute;
+    color: white;
+    font-size: 30px;
+    font-weight: bold;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.logo-reception_list::after {
+    content: '';
+    position: absolute;
+    width: 40px;
+    height: 25px;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    bottom: 10px;
+    left: 10px;
+}
+
+/* Logo para "Extensión ERP" */
+.logo-erp {
+    width: 60px;
+    height: 60px;
+    background-color: #607D8B;
+    border-radius: 50%;
+    position: relative;
+    margin: 0 auto 15px;
+}
+
+.logo-erp::before {
+    content: 'ERP';
+    position: absolute;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* Logo para "Home/Dashboard" */
+.logo-home {
+    width: 60px;
+    height: 60px;
+    background-color: #3F51B5;
+    border-radius: 50%;
+    position: relative;
+    margin: 0 auto 15px;
+}
+
+.logo-home::before {
+    content: '⌂';
+    position: absolute;
+    color: white;
+    font-size: 30px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* Logo para "Inventario" */
+.logo-inventory {
+    width: 60px;
+    height: 60px;
+    background-color: #009688;
+    border-radius: 8px;
+    position: relative;
+    margin: 0 auto 15px;
+}
+
+.logo-inventory::before {
+    content: '';
+    position: absolute;
+    width: 30px;
+    height: 20px;
+    background-color: white;
+    border-radius: 3px;
+    top: 15px;
+    left: 15px;
+    box-shadow: 0 15px 0 white;
+}
+
+/* Logo para "Ventas" */
+.logo-sales {
+    width: 60px;
+    height: 60px;
+    background-color: #E91E63;
+    border-radius: 50%;
+    position: relative;
+    margin: 0 auto 15px;
+}
+
+.logo-sales::before {
+    content: '$';
+    position: absolute;
+    color: white;
+    font-size: 30px;
+    font-weight: bold;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* Logo para "CRM" */
+.logo-crm {
+    width: 60px;
+    height: 60px;
+    background-color: #FF5722;
+    border-radius: 8px;
+    position: relative;
+    margin: 0 auto 15px;
+}
+
+.logo-crm::before {
+    content: 'CRM';
+    position: absolute;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* Logo para "Configuración" */
+.logo-settings {
+    width: 60px;
+    height: 60px;
+    background-color: #795548;
+    border-radius: 50%;
+    position: relative;
+    margin: 0 auto 15px;
+}
+
+.logo-settings::before {
+    content: '⚙';
+    position: absolute;
+    font-size: 30px;
+    color: white;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* Logo para "Integraciones" */
+.logo-integrations {
+    width: 60px;
+    height: 60px;
+    background-color: #00BCD4;
+    border-radius: 8px;
+    position: relative;
+    margin: 0 auto 15px;
+}
+
+.logo-integrations::before {
+    content: '⇄';
+    position: absolute;
+    font-size: 30px;
+    color: white;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* Efecto hover para todos los logos */
+.css-logo:hover {
+    transform: scale(1.1);
+    transition: transform 0.3s ease;
+}
+
+/* Clase base para todos los logos */
+.css-logo {
+    display: block;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}

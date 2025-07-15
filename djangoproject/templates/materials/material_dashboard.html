@@ -1,100 +1,387 @@
-{% extends "landing/index.html" %}
 {% load static %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/logos.css' %}">
+<link rel="stylesheet" href="{% static 'css/logo.css' %}">
+<link rel="stylesheet" href="{% static 'css/erp_logo.css' %}">
+<link rel="stylesheet" href="{% static 'css/erp_extension.css' %}">
+<link rel="stylesheet" href="{% static 'css/erp_extension_forms.css' %}">
+<link rel="stylesheet" href="{% static 'css/erp_extension_list.css' %}">
+<link rel="stylesheet" href="{% static 'css/erp_extension_confirm_delete.css' %}">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<style>
+    /* Loader styles */
+    .page-loader {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        transition: opacity 0.3s ease;
+    }
+    
+    .loader-content {
+        text-align: center;
+    }
+    
+    .loader-content img {
+        width: 80px;
+        height: 80px;
+    }
+    
+    /* Content reveal animation */
+    .content-loaded .erp-sidebar {
+        animation: slideInLeft 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.1) both;
+    }
+    
+    .content-loaded .content-header {
+        animation: fadeInDown 0.5s ease both 0.2s;
+    }
+    
+    .content-loaded .module-header {
+        animation: fadeIn 0.6s ease both 0.3s;
+    }
+    
+    .content-loaded .module-card {
+        animation: fadeInUp 0.6s ease both;
+    }
+    
+    .content-loaded .module-card:nth-child(1) {
+        animation-delay: 0.4s;
+    }
+    
+    .content-loaded .module-card:nth-child(2) {
+        animation-delay: 0.5s;
+    }
+    
+    .content-loaded .module-card:nth-child(3) {
+        animation-delay: 0.6s;
+    }
+    
+    @keyframes slideInLeft {
+        from {
+            transform: translateX(-20px);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    
+    @keyframes fadeInDown {
+        from {
+            transform: translateY(-20px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            transform: translateY(20px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+</style>
 {% endblock %}
 
 {% block content %}
-<section id="material-dashboard" class="colorlib-section">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-8 col-md-offset-2 text-center colorlib-heading animate-box">
-                <h2>Panel Módulo Materiales</h2>
-                <p class="subtitle">Gestión completa de inventario y recepciones</p>
-            </div>
+<!-- Page Loader -->
+<div class="page-loader" id="pageLoader">
+    <div class="loader-content">
+        <img src="{% static 'images/loader.gif' %}" alt="Loading...">
+        <p>Cargando sistema...</p>
+    </div>
+</div>
+
+<div class="erp-container">
+    <!-- Barra lateral moderna -->
+    <aside class="erp-sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3>ERP Empresarial</h3>
         </div>
         
-        <div class="row">
-            <!-- Tarjeta 1 -->
-            <div class="col-md-4 animate-box" data-animate-effect="fadeIn">
-                <div class="services">
-                    <a href="{% url 'materials:add' %}" class="dashboard-card">
-                        <div class="css-logo logo-add"></div>
-                        <div class="desc">
-                            <h3>Añadir Material</h3>
-                            <p>Registro de nuevos materiales en el sistema con todos sus detalles técnicos</p>
-                            <div class="colorlib-btn-view">
-                                <span class="btn btn-material">Acceder <i class="icon-arrow-right3"></i></span>
-                            </div>
-                        </div>
-                    </a>
-                </div>
+        <div class="sidebar-menu">
+            <div class="menu-category">Principal</div>
+            <div class="menu-item">
+                <a href="{% url 'landing:index' %}">
+                    <span class="menu-icon"><i class="icon-home"></i></span>
+                    <span class="menu-text">Dashboard</span>
+                </a>
             </div>
             
-            <!-- Tarjeta 2 -->
-            <div class="col-md-4 animate-box" data-animate-effect="fadeIn">
-                <div class="services">
-                    <a href="{% url 'materials:list' %}" class="dashboard-card">
-                        <div class="css-logo logo-list"></div>
-                        <div class="desc">
-                            <h3>Lista</h3>
-                            <p>Consulta y administra el stock de tipos de materiales</p>
-                            <div class="colorlib-btn-view">
-                                <span class="btn btn-material">Acceder <i class="icon-arrow-right3"></i></span>
-                            </div>
-                        </div>
-                    </a>
-                </div>
+            <div class="menu-category">Operaciones</div>
+            <div class="menu-item active">
+                <a href="{% url 'materials:dashboard' %}">
+                    <span class="menu-icon"><i class="icon-cube"></i></span>
+                    <span class="menu-text">Materiales</span>
+                </a>
+            </div>
+            <div class="menu-item">
+                <a href="">
+                    <span class="menu-icon"><i class="icon-warehouse"></i></span>
+                    <span class="menu-text">Inventario</span>
+                </a>
+            </div>
+            <div class="menu-item">
+                <a href="">
+                    <span class="menu-icon"><i class="icon-shopping-cart"></i></span>
+                    <span class="menu-text">Compras</span>
+                </a>
             </div>
             
-            <!-- Tarjeta 3 -->
-            <div class="col-md-4 animate-box" data-animate-effect="fadeIn">
-                <div class="services">
-                    <a href="{% url 'materials:reception_create' %}" class="dashboard-card">
-                        <div class="css-logo logo-reception"></div>
-                        <div class="desc">
-                            <h3>Recepciones</h3>
-                            <p>Gestión completa de notas de recepción y entradas de material</p>
-                            <div class="colorlib-btn-view">
-                                <span class="btn btn-material">Acceder <i class="icon-arrow-right3"></i></span>
-                            </div>
-                        </div>
-                    </a>
-                </div>
+            <div class="menu-category">Ventas</div>
+            <div class="menu-item">
+                <a href="">
+                    <span class="menu-icon"><i class="icon-tags"></i></span>
+                    <span class="menu-text">Ventas</span>
+                </a>
             </div>
-
-                        <div class="col-md-4 animate-box" data-animate-effect="fadeIn">
-                <div class="services">
-                    <a href="{% url 'materials:reception_list' %}" class="dashboard-card">
-                        <div class="css-logo logo-reception_list"></div>
-                        <div class="desc">
-                            <h3>Lista Recepciones</h3>
-                            <p>Gestión completa de notas de recepción y entradas de material</p>
-                            <div class="colorlib-btn-view">
-                                <span class="btn btn-material">Acceder <i class="icon-arrow-right3"></i></span>
-                            </div>
-                        </div>
-                    </a>
-                </div>
+            <div class="menu-item">
+                <a href="">
+                    <span class="menu-icon"><i class="icon-users"></i></span>
+                    <span class="menu-text">CRM</span>
+                </a>
             </div>
-
-            <!-- Tarjeta 4: Extensión ERP -->
-            <div class="col-md-4 animate-box" data-animate-effect="fadeIn">
-                <div class="services">
-                    <a href="{% url 'materials:reception_add' %}" class="dashboard-card">
-                        <div class="css-logo logo-erp"></div>
-                        <div class="desc">
-                            <h3>Extensión ERP</h3>
-                            <p>Accede a funcionalidades avanzadas de integración con el sistema ERP</p>
-                            <div class="colorlib-btn-view">
-                                <span class="btn btn-material">Acceder <i class="icon-arrow-right3"></i></span>
-                            </div>
-                        </div>
-                    </a>
-                </div>
+            
+            <div class="menu-category">Finanzas</div>
+            <div class="menu-item">
+                <a href="">
+                    <span class="menu-icon"><i class="icon-calculator"></i></span>
+                    <span class="menu-text">Contabilidad</span>
+                </a>
+            </div>
+            <div class="menu-item">
+                <a href="">
+                    <span class="menu-icon"><i class="icon-file-invoice-dollar"></i></span>
+                    <span class="menu-text">Facturación</span>
+                </a>
+            </div>
+            
+            <div class="menu-category">Administración</div>
+            <div class="menu-item">
+                <a href="">
+                    <span class="menu-icon"><i class="icon-cog"></i></span>
+                    <span class="menu-text">Configuración</span>
+                </a>
+            </div>
+            <div class="menu-item">
+                <a href="">
+                    <span class="menu-icon"><i class="icon-plug"></i></span>
+                    <span class="menu-text">Integraciones</span>
+                </a>
             </div>
         </div>
+    </aside>
+    
+    <!-- Contenido principal -->
+    <div class="erp-content">
+        <header class="content-header">
+            <button class="toggle-sidebar" id="toggleSidebar">
+                <i class="Logo"></i>
+            </button>
+            
+            <div class="user-profile">
+                <!-- Aquí iría el menú de usuario -->
+            </div>
+        </header>
+        
+        <main class="main-content">
+            {% block module_content %}
+            <!-- Contenido específico del módulo -->
+            <div class="module-header">
+                <h1>Panel Principal</h1>
+                <p class="subtitle">Bienvenido al sistema ERP empresarial</p>
+            </div>
+            
+            <div class="module-grid">
+                <!-- Tarjeta de Materiales -->
+                <div class="module-card">
+                    <div class="module-card-header">
+                        <h3><i class="icon icon-cube"></i> Materiales</h3>
+                    </div>
+                    <div class="module-card-body">
+                        <div class="module-feature">
+                            <a href="{% url 'materials:add' %}">
+                                <span class="feature-icon"><i class="icon-plus"></i></span>
+                                Añadir Material
+                            </a>
+                        </div>
+                        <div class="module-feature">
+                            <a href="{% url 'materials:list' %}">
+                                <span class="feature-icon"><i class="icon-list"></i></span>
+                                Lista de Materiales
+                            </a>
+                        </div>
+                        <div class="module-feature">
+                            <a href="{% url 'materials:reception_create' %}">
+                                <span class="feature-icon"><i class="icon-truck"></i></span>
+                                Recepciones
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tarjeta de Inventario -->
+                <div class="module-card">
+                    <div class="module-card-header">
+                        <h3><i class="icon icon-warehouse"></i> Inventario</h3>
+                    </div>
+                    <div class="module-card-body">
+                        <div class="module-feature">
+                            <a href="#">
+                                <span class="feature-icon"><i class="icon-boxes"></i></span>
+                                Gestión de Stock
+                            </a>
+                        </div>
+                        <div class="module-feature">
+                            <a href="#">
+                                <span class="feature-icon"><i class="icon-exchange-alt"></i></span>
+                                Movimientos
+                            </a>
+                        </div>
+                        <div class="module-feature">
+                            <a href="#">
+                                <span class="feature-icon"><i class="icon-chart-bar"></i></span>
+                                Reportes
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tarjeta de Actividad -->
+                <div class="module-card">
+                    <div class="module-card-header">
+                        <h3><i class="icon icon-clock"></i> Actividad Reciente</h3>
+                    </div>
+                    <div class="module-card-body">
+                        <div class="recent-activity">
+                            <!-- Aquí iría la actividad reciente -->
+                            <p>No hay actividad reciente</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endblock %}
+        </main>
     </div>
-</section>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Ocultar todo el contenido inicialmente
+    document.querySelector('.erp-container').style.opacity = '0';
+    document.querySelector('.erp-container').style.visibility = 'hidden';
+    
+    // Mostrar loader por 200ms
+    setTimeout(function() {
+        document.getElementById('pageLoader').style.opacity = '0';
+        
+        setTimeout(function() {
+            document.getElementById('pageLoader').style.display = 'none';
+            
+            // Mostrar contenido con animaciones
+            document.body.classList.add('content-loaded');
+            
+            // Asegurarse de que el contenedor principal sea visible
+            document.querySelector('.erp-container').style.opacity = '1';
+            document.querySelector('.erp-container').style.visibility = 'visible';
+            
+            // Forzar repintado para activar las animaciones
+            void document.querySelector('.erp-sidebar').offsetWidth;
+            
+        }, 300); // Tiempo de la transición de fade out
+    }, 200); // Tiempo que se muestra el loader
+
+    const sidebar = document.getElementById('sidebar');
+    const toggleSidebar = document.getElementById('toggleSidebar');
+    const sidebarOverlay = document.createElement('div');
+    sidebarOverlay.className = 'sidebar-overlay';
+    document.body.appendChild(sidebarOverlay);
+
+    // Función para alternar la barra lateral
+    function toggleSidebarFn() {
+        sidebar.classList.toggle('sidebar-visible');
+        sidebarOverlay.classList.toggle('overlay-visible');
+        
+        // Bloquear scroll del body cuando el sidebar está abierto
+        if (sidebar.classList.contains('sidebar-visible')) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+    }
+
+    // Event listeners
+    toggleSidebar.addEventListener('click', toggleSidebarFn);
+    sidebarOverlay.addEventListener('click', toggleSidebarFn);
+
+    // Cerrar sidebar al hacer clic en un enlace (en móviles)
+    const menuLinks = document.querySelectorAll('.menu-item a');
+    menuLinks.forEach(link => {
+        link.addEventListener('click', function() {
+            if (window.innerWidth <= 768) {
+                toggleSidebarFn();
+            }
+        });
+    });
+
+    // Persistencia del estado del sidebar
+    const savedState = localStorage.getItem('sidebarCollapsed');
+    if (savedState === 'true' && window.innerWidth > 768) {
+        sidebar.classList.add('sidebar-collapsed');
+    }
+
+    toggleSidebar.addEventListener('click', function() {
+        if (window.innerWidth > 768) {
+            sidebar.classList.toggle('sidebar-collapsed');
+            localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('sidebar-collapsed'));
+        }
+    });
+
+    // Marcar elemento activo basado en la URL
+    const currentPath = window.location.pathname;
+    const menuItems = document.querySelectorAll('.menu-item a');
+    
+    menuItems.forEach(item => {
+        if (item.getAttribute('href') === currentPath) {
+            item.parentElement.classList.add('active');
+        }
+    });
+
+    // Ajustar dinámicamente el margen superior del contenido
+    function adjustContentMargin() {
+        const headerHeight = document.querySelector('.content-header').offsetHeight;
+        document.querySelector('.main-content').style.marginTop = `${headerHeight}px`;
+    }
+
+    window.addEventListener('resize', adjustContentMargin);
+    adjustContentMargin();
+});
+</script>
 {% endblock %}

@@ -1,0 +1,120 @@
+    /* Estilos específicos para la lista de materiales */
+    .colorlib-catalog {
+        padding: 20px 0;
+    }
+    
+    .catalog-title {
+        margin-bottom: 10px;
+        color: #333;
+    }
+    
+    .catalog-subtitle {
+        color: #666;
+        margin-bottom: 30px;
+    }
+    
+    .catalog-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 30px;
+    }
+    
+    .table-header {
+        background-color: #f8f9fa;
+    }
+    
+    .table-header th {
+        padding: 15px;
+        font-weight: 600;
+        color: #495057;
+        border-bottom: 2px solid #dee2e6;
+    }
+    
+    .table-row {
+        border-bottom: 1px solid #e9ecef;
+    }
+    
+    .table-row:hover {
+        background-color: #f8f9fa;
+    }
+    
+    .table-row td {
+        padding: 15px;
+        vertical-align: middle;
+    }
+    
+    .material-name {
+        font-weight: 500;
+        color: #333;
+    }
+    
+    .price {
+        font-weight: 600;
+        color: #28a745;
+    }
+    
+    .btn-action-group {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+    }
+    
+    .btn-edit, .btn-delete {
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-size: 14px;
+        transition: all 0.3s;
+    }
+    
+    .btn-edit {
+        background-color: #17a2b8;
+        color: white;
+    }
+    
+    .btn-edit:hover {
+        background-color: #138496;
+    }
+    
+    .btn-delete {
+        background-color: #dc3545;
+        color: white;
+    }
+    
+    .btn-delete:hover {
+        background-color: #c82333;
+    }
+    
+    .no-results {
+        padding: 30px;
+        color: #6c757d;
+    }
+    
+    .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .empty-state i {
+        font-size: 24px;
+        color: #adb5bd;
+    }
+    
+    .add-material-section {
+        margin-top: 20px;
+    }
+    
+    .btn-add-material {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 4px;
+        font-weight: 500;
+        transition: all 0.3s;
+    }
+    
+    .btn-add-material:hover {
+        background-color: #0069d9;
+        color: white;
+    }

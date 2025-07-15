@@ -1,11 +1,7 @@
-{% extends 'landing/index.html' %}
+{% extends 'materials/material_dashboard.html' %}
 {% load static %}
 
-{% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/logos.css' %}">
-{% endblock %}
-
-{% block content %}
+{% block module_content %}
 <section class="colorlib-section colorlib-catalog">
     <div class="container">
         <div class="row">
@@ -31,11 +27,9 @@
                             {% for material in materials %}
                             <tr class="table-row">
                                 <td class="text-center" data-title="Categoría">
-                                    {{ material.get_category_display }}
-                                    <br>
-                                    <small class="material-name">{{ material.name }}</small>
+                                    <small class="material-name">{{ material.get_category_display }}</small>
                                 </td>
-                                <td class="text-center" data-title="Subtipo">{{ material.get_subtype_display }}</td>
+                                <td class="text-center" data-title="Subtipo">{{ material.name }}</td>
                                 <td class="text-center price" data-title="Precio">${{ material.base_price|floatformat:2 }}</td>
                                 <td class="text-center actions">
                                     <div class="btn-action-group">
