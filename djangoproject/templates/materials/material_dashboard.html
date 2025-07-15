@@ -1,5 +1,8 @@
 {% load static %}
 
+
+<script src="{% static 'js/reception_create.js' %}"></script>
+
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/logo.css' %}">
 <link rel="stylesheet" href="{% static 'css/erp_logo.css' %}">
@@ -7,105 +10,10 @@
 <link rel="stylesheet" href="{% static 'css/erp_extension_forms.css' %}">
 <link rel="stylesheet" href="{% static 'css/erp_extension_list.css' %}">
 <link rel="stylesheet" href="{% static 'css/erp_extension_confirm_delete.css' %}">
+<link rel="stylesheet" href="{% static 'css/erp_extension_messages.css' %}">
+<link rel="stylesheet" href="{% static 'css/erp_extension_animate.css' %}">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
-<style>
-    /* Loader styles */
-    .page-loader {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: white;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 9999;
-        transition: opacity 0.3s ease;
-    }
-    
-    .loader-content {
-        text-align: center;
-    }
-    
-    .loader-content img {
-        width: 80px;
-        height: 80px;
-    }
-    
-    /* Content reveal animation */
-    .content-loaded .erp-sidebar {
-        animation: slideInLeft 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.1) both;
-    }
-    
-    .content-loaded .content-header {
-        animation: fadeInDown 0.5s ease both 0.2s;
-    }
-    
-    .content-loaded .module-header {
-        animation: fadeIn 0.6s ease both 0.3s;
-    }
-    
-    .content-loaded .module-card {
-        animation: fadeInUp 0.6s ease both;
-    }
-    
-    .content-loaded .module-card:nth-child(1) {
-        animation-delay: 0.4s;
-    }
-    
-    .content-loaded .module-card:nth-child(2) {
-        animation-delay: 0.5s;
-    }
-    
-    .content-loaded .module-card:nth-child(3) {
-        animation-delay: 0.6s;
-    }
-    
-    @keyframes slideInLeft {
-        from {
-            transform: translateX(-20px);
-            opacity: 0;
-        }
-        to {
-            transform: translateX(0);
-            opacity: 1;
-        }
-    }
-    
-    @keyframes fadeInDown {
-        from {
-            transform: translateY(-20px);
-            opacity: 0;
-        }
-        to {
-            transform: translateY(0);
-            opacity: 1;
-        }
-    }
-    
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-        }
-        to {
-            opacity: 1;
-        }
-    }
-    
-    @keyframes fadeInUp {
-        from {
-            transform: translateY(20px);
-            opacity: 0;
-        }
-        to {
-            transform: translateY(0);
-            opacity: 1;
-        }
-    }
-</style>
 {% endblock %}
 
 {% block content %}
@@ -116,6 +24,8 @@
         <p>Cargando sistema...</p>
     </div>
 </div>
+
+
 
 <div class="erp-container">
     <!-- Barra lateral moderna -->
@@ -204,9 +114,29 @@
                 <i class="Logo"></i>
             </button>
             
+            {% if messages %}
+                <div class="erp-messages" style="margin: 0 auto; max-width: 600px; display: flex; justify-content: center;">
+                    {% for message in messages %}
+                        <div class="erp-alert 
+                            {% if message.tags == 'error' %}erp-alert-danger
+                            {% elif message.tags == 'warning' %}erp-alert-warning
+                            {% elif message.tags == 'success' %}erp-alert-success
+                            {% else %}erp-alert-info
+                            {% endif %} animate-box"
+                            role="alert"
+                            style="display: flex; align-items: center; gap: 12px; padding: 12px 20px; border-radius: 8px; font-size: 15px; margin-bottom: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+                            <i class="icon-info" style="font-size: 20px;"></i>
+                            <span>{{ message }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
             <div class="user-profile">
                 <!-- Aquí iría el menú de usuario -->
             </div>
+
+
         </header>
         
         <main class="main-content">

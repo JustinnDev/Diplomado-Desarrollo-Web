@@ -1,122 +1,298 @@
-{% extends 'landing/index.html' %}
+{% extends 'materials/material_dashboard.html' %}
 {% load static %}
 
-{% block content %}
+{% block extra_css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/erp_extension_forms.css' %}">
+<style>
+/* Estilos específicos para el formulario de recepción */
+.reception-form-container {
+    padding: 1rem;
+    max-width: 100%;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
 
-{% if editing %}
-<script id="reception-data" type="application/json">
-    {{ materials_json|safe }}
-</script>
-{% endif %}
+.reception-form-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    padding: 1rem;
+    border: 1px solid #e5e7eb;
+    width: 100%;
+    box-sizing: border-box;
+}
 
-<div class="container mt-4" style="margin-top: 80px;">
-    <h2 class="mb-4">Recepción de Materiales</h2>
+.material-item {
+    margin-bottom: 1rem;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+}
 
-   <form id="reception-form" method="post">
-    {% csrf_token %}
-    {% if editing %}
-        <input type="hidden" name="editing" value="true">
-    {% endif %}
+.material-item .card-header {
+    background-color: #f8fafc;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+}
+
+.material-item .card-body {
+    padding: 1rem;
+}
+
+.operations-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.operations-container table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 600px; /* Permite el scroll horizontal en tablas muy grandes */
+}
+
+.operations-container th {
+    background-color: #f8fafc;
+    padding: 0.5rem;
+    text-align: left;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #64748b;
+}
+
+.operations-container td {
+    padding: 0.5rem;
+    border-bottom: 1px solid #e5e7eb;
+    vertical-align: middle;
+    font-size: 0.85rem;
+}
+
+.operations-container .form-control {
+    width: 100%;
+    font-size: 0.85rem;
+    padding: 0.375rem 0.5rem;
+}
+
+.net-weight {
+    font-weight: 600;
+    color: #334155;
+    font-size: 0.9rem;
+}
+
+.add-operation {
+    margin-top: 0.75rem;
+}
+
+.form-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding-top: 1rem;
+    margin-top: 1rem;
+    border-top: 1px solid #e5e7eb;
+}
+
+.form-actions .btn {
+    width: 100%;
+    padding: 0.5rem;
+    font-size: 0.9rem;
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.material-item {
+    animation: fadeIn 0.3s ease-out forwards;
+}
+
+/* Media Queries para diferentes tamaños */
+@media (min-width: 400px) {
+    .reception-form-container {
+        padding: 1.25rem;
+    }
     
-    <!-- Sección Cliente -->
-    <div class="form-group">
-        <label for="client-select">Cliente:</label>
-        <select id="client-select" name="client" class="form-control" required>
-            <option value="">Seleccione un cliente</option>
-            {% for client in clients %}
-            <option value="{{ client.id }}" {% if editing and reception.client.id == client.id %}selected{% endif %}>
-                {{ client.name }} - {{ client.identification }}
-            </option>
-            {% endfor %}
-        </select>
+    .reception-form-card {
+        padding: 1.5rem;
+    }
+}
+
+@media (min-width: 576px) {
+    .form-actions {
+        flex-direction: row;
+        justify-content: flex-end;
+    }
+    
+    .form-actions .btn {
+        width: auto;
+    }
+}
+
+@media (min-width: 768px) {
+    .reception-form-container {
+        padding: 2rem;
+        max-width: 1200px;
+    }
+
+    .reception-form-card {
+        padding: 2rem;
+        border-radius: 12px;
+    }
+
+    .material-item {
+        margin-bottom: 1.5rem;
+        border-radius: 8px;
+    }
+
+    .material-item .card-header {
+        padding: 0.75rem 1.25rem;
+        font-size: 1rem;
+    }
+
+    .material-item .card-body {
+        padding: 1.25rem;
+    }
+
+    .operations-container th {
+        padding: 0.75rem;
+        font-size: 0.75rem;
+    }
+
+    .operations-container td {
+        padding: 0.75rem;
+        font-size: 1rem;
+    }
+
+    .operations-container .form-control {
+        font-size: 1rem;
+        padding: 0.5rem 0.75rem;
+    }
+
+    .net-weight {
+        font-size: 1rem;
+    }
+
+    .add-operation {
+        margin-top: 1rem;
+    }
+
+    .form-actions {
+        padding-top: 1.5rem;
+        margin-top: 1.5rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block module_content %}
+<div class="reception-form-container">
+    <div class="reception-form-card">
+        <h2 class="mb-4">{% if editing %}Editar{% else %}Nueva{% endif %} Recepción de Materiales</h2>
+
+        <form id="reception-form" method="post" class="material-form">
+            {% csrf_token %}
+            {% if editing %}
+                <input type="hidden" name="editing" value="true">
+            {% endif %}
+            
+            <!-- Sección Cliente -->
+            <div class="form-group">
+                <label for="client-select">Cliente</label>
+                <select id="client-select" name="client" class="form-control" required>
+                    <option value="">Seleccione un cliente</option>
+                    {% for client in clients %}
+                    <option value="{{ client.id }}" {% if editing and reception.client.id == client.id %}selected{% endif %}>
+                        {{ client.name }} - {{ client.identification }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <!-- Contenedor de Materiales -->
+            <div id="materials-container" class="mt-4">
+                <!-- Los materiales se añadirán aquí -->
+            </div>
+            
+            <!-- Botón para añadir material -->
+            <button type="button" id="add-material-btn" class="btn btn-primary">
+                <i class="icon-plus"></i> Añadir Material
+            </button>
+            
+            <!-- Notas -->
+            <div class="form-group mt-4">
+                <label for="reception-notes">Notas/Observaciones</label>
+                <textarea id="reception-notes" name="notes" class="form-control" rows="3">{% if editing %}{{ reception.notes }}{% endif %}</textarea>
+            </div>
+            
+            <!-- Botones de acción -->
+            <div class="form-actions">
+                <button type="submit" class="btn btn-success">
+                    <i class="icon-save"></i> {% if editing %}Actualizar{% else %}Guardar{% endif %} Recepción
+                </button>
+                <a href="{% url 'materials:reception_list' %}" class="btn btn-secondary">
+                    <i class="icon-times"></i> Cancelar
+                </a>
+            </div>
+        </form>
     </div>
-    
-    <!-- Contenedor de Materiales -->
-    <div id="materials-container" class="mt-4">
-        <!-- Los materiales se añadirán aquí -->
-    </div>
-    
-    <!-- Botón para añadir material -->
-    <button type="button" id="add-material-btn" class="btn btn-primary mt-3">
-        <i class="fas fa-plus"></i> Añadir Material
-    </button>
-    
-    <!-- Notas -->
-    <div class="form-group mt-4">
-        <label for="reception-notes">Notas/Observaciones:</label>
-        <textarea id="reception-notes" name="notes" class="form-control" rows="3">{% if editing %}{{ reception.notes }}{% endif %}</textarea>
-    </div>
-    
-    <!-- Botón de enviar -->
-    <button type="submit" class="btn btn-success mt-4">
-        <i class="fas fa-save"></i> {% if editing %}Actualizar{% else %}Guardar{% endif %} Recepción
-    </button>   
-</form>
-<a href="{% url 'materials:reception_list' %}" class="btn btn-secondary mt-2 ml-2">
-    <i class="fas fa-times"></i> Cancelar
-</a>
 </div>
 
 <!-- Template para Material (oculto) -->
 <template id="material-template">
-    <div class="material-item card mt-3" data-material-index="{index}">
+    <div class="material-item card" data-material-index="{index}">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="mb-0">Material #{index}</h5>
             <button type="button" class="btn btn-sm btn-danger remove-material">
-                <i class="icon-trash"></i>
+                <i class="icon-trash"></i> Eliminar
             </button>
         </div>
         <div class="card-body">
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label>Tipo de Material:</label>
-                        <select name="materials[{index}][type]" class="form-control material-type" required>
-                            <option value="">Seleccione un material</option>
-                            {% for material in material_types %}
-                            <option value="{{ material.id }}" data-price="{{ material.base_price }}">
-                                {{ material.name }} ({{ material.get_category_display }})
-                            </option>
-                            {% endfor %}
-                        </select>
-                    </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Tipo de Material</label>
+                    <select name="materials[{index}][type]" class="form-control material-type" required>
+                        <option value="">Seleccione un material</option>
+                        {% for material in material_types %}
+                        <option value="{{ material.id }}" data-price="{{ material.base_price }}">
+                            {{ material.name }} ({{ material.get_category_display }})
+                        </option>
+                        {% endfor %}
+                    </select>
                 </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label>Subtipo:</label>
-                        <select name="materials[{index}][subtype]" class="form-control">
-                            <option value="LIMPIO">Limpio</option>
-                            <option value="CONTAMINADO">Contaminado</option>
-                            <option value="CON_PRODUCCION">Con producción</option>
-                            <option value="SIN_PRODUCCION">Sin producción</option>
-                        </select>
-                    </div>
+                <div class="form-group">
+                    <label>Subtipo</label>
+                    <select name="materials[{index}][subtype]" class="form-control">
+                        <option value="LIMPIO">Limpio</option>
+                        <option value="CONTAMINADO">Contaminado</option>
+                        <option value="CON_PRODUCCION">Con producción</option>
+                        <option value="SIN_PRODUCCION">Sin producción</option>
+                    </select>
                 </div>
             </div>
             
-            <div class="row mt-2">
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label>Descuento:</label>
-                        <input type="number" name="materials[{index}][discount_value]" 
-                               class="form-control discount-value" value="0" min="0" step="0.01">
-                    </div>
+            <div class="form-row mt-2">
+                <div class="form-group">
+                    <label>Descuento</label>
+                    <input type="number" name="materials[{index}][discount_value]" 
+                           class="form-control discount-value" value="0" min="0" step="0.01">
                 </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label>Tipo de Descuento:</label>
-                        <select name="materials[{index}][discount_type]" class="form-control discount-type">
-                            <option value="NONE">Ninguno</option>
-                            <option value="ABSOLUTE">Kg</option>
-                            <option value="PERCENTAGE">%</option>
-                        </select>
-                    </div>
+                <div class="form-group">
+                    <label>Tipo de Descuento</label>
+                    <select name="materials[{index}][discount_type]" class="form-control discount-type">
+                        <option value="NONE">Ninguno</option>
+                        <option value="ABSOLUTE">Kg</option>
+                        <option value="PERCENTAGE">%</option>
+                    </select>
                 </div>
             </div>
             
-            <h6 class="mt-3">Operaciones de Pesaje:</h6>
+            <h6 class="mt-4 mb-3">Operaciones de Pesaje</h6>
             <div class="operations-container">
-                <table class="table table-bordered">
+                <table class="table">
                     <thead>
                         <tr>
                             <th>#</th>
@@ -131,7 +307,7 @@
                     </tbody>
                 </table>
                 <button type="button" class="btn btn-sm btn-primary add-operation">
-                    <i class="fas fa-plus"></i> Añadir Operación
+                    <i class="icon-plus"></i> Añadir Operación
                 </button>
             </div>
         </div>
