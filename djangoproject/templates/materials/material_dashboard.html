@@ -1,9 +1,15 @@
 {% load static %}
 
-
 <script src="{% static 'js/reception_create.js' %}"></script>
 
 {% block extra_css %}
+<!-- Dependencias Externas -->
+<script src="{% static 'js/jquery.min.js' %}"></script>
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
+<link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<!-- Dependencias Internas -->
 <link rel="stylesheet" href="{% static 'css/logo.css' %}">
 <link rel="stylesheet" href="{% static 'css/erp_logo.css' %}">
 <link rel="stylesheet" href="{% static 'css/erp_extension.css' %}">
@@ -25,8 +31,6 @@
     </div>
 </div>
 
-
-
 <div class="erp-container">
     <!-- Barra lateral moderna -->
     <aside class="erp-sidebar" id="sidebar">
@@ -44,66 +48,66 @@
             </div>
             
             <div class="menu-category">Operaciones</div>
-            <div class="menu-item active">
-                <a href="{% url 'materials:dashboard' %}">
-                    <span class="menu-icon"><i class="icon-cube"></i></span>
-                    <span class="menu-text">Materiales</span>
-                </a>
-            </div>
-            <div class="menu-item">
-                <a href="">
-                    <span class="menu-icon"><i class="icon-warehouse"></i></span>
-                    <span class="menu-text">Inventario</span>
-                </a>
-            </div>
-            <div class="menu-item">
-                <a href="">
-                    <span class="menu-icon"><i class="icon-shopping-cart"></i></span>
-                    <span class="menu-text">Compras</span>
-                </a>
-            </div>
+                <div class="menu-item active">
+                    <a href="{% url 'materials:dashboard' %}">
+                        <span class="menu-icon"><i class="icon-cube"></i></span>
+                        <span class="menu-text">Materiales</span>
+                    </a>
+                </div>
+                <div class="menu-item">
+                    <a href="{% url 'materials:comming_soon' %}">
+                        <span class="menu-icon"><i class="icon-warehouse"></i></span>
+                        <span class="menu-text">Inventario</span>
+                    </a>
+                </div>
+                <div class="menu-item">
+                    <a href="{% url 'erp_extension:view_clients' %}">
+                        <span class="menu-icon"><i class="icon-shopping-cart"></i></span>
+                        <span class="menu-text">Compras</span>
+                    </a>
+                </div>
             
             <div class="menu-category">Ventas</div>
-            <div class="menu-item">
-                <a href="">
-                    <span class="menu-icon"><i class="icon-tags"></i></span>
-                    <span class="menu-text">Ventas</span>
-                </a>
-            </div>
-            <div class="menu-item">
-                <a href="">
-                    <span class="menu-icon"><i class="icon-users"></i></span>
-                    <span class="menu-text">CRM</span>
-                </a>
-            </div>
+                <div class="menu-item">
+                    <a href="">
+                        <span class="menu-icon"><i class="icon-tags"></i></span>
+                        <span class="menu-text">Ventas</span>
+                    </a>
+                </div>
+                <div class="menu-item">
+                    <a href="">
+                        <span class="menu-icon"><i class="icon-users"></i></span>
+                        <span class="menu-text">CRM</span>
+                    </a>
+                </div>
             
             <div class="menu-category">Finanzas</div>
-            <div class="menu-item">
-                <a href="">
-                    <span class="menu-icon"><i class="icon-calculator"></i></span>
-                    <span class="menu-text">Contabilidad</span>
-                </a>
-            </div>
-            <div class="menu-item">
-                <a href="">
-                    <span class="menu-icon"><i class="icon-file-invoice-dollar"></i></span>
-                    <span class="menu-text">Facturación</span>
-                </a>
-            </div>
+                <div class="menu-item">
+                    <a href="">
+                        <span class="menu-icon"><i class="icon-calculator"></i></span>
+                        <span class="menu-text">Contabilidad</span>
+                    </a>
+                </div>
+                <div class="menu-item">
+                    <a href="">
+                        <span class="menu-icon"><i class="icon-file-invoice-dollar"></i></span>
+                        <span class="menu-text">Facturación</span>
+                    </a>
+                </div>
             
             <div class="menu-category">Administración</div>
-            <div class="menu-item">
-                <a href="">
-                    <span class="menu-icon"><i class="icon-cog"></i></span>
-                    <span class="menu-text">Configuración</span>
-                </a>
-            </div>
-            <div class="menu-item">
-                <a href="">
-                    <span class="menu-icon"><i class="icon-plug"></i></span>
-                    <span class="menu-text">Integraciones</span>
-                </a>
-            </div>
+                <div class="menu-item">
+                    <a href="">
+                        <span class="menu-icon"><i class="icon-cog"></i></span>
+                        <span class="menu-text">Configuración</span>
+                    </a>
+                </div>
+                <div class="menu-item">
+                    <a href="">
+                        <span class="menu-icon"><i class="icon-plug"></i></span>
+                        <span class="menu-text">Integraciones</span>
+                    </a>
+                </div>
         </div>
     </aside>
     
@@ -132,9 +136,21 @@
                 </div>
             {% endif %}
 
-            <div class="user-profile">
-                <!-- Aquí iría el menú de usuario -->
-            </div>
+<div class="user-profile">
+    <button class="user-trigger">
+        <img src="ruta/a/tu/avatar.jpg" alt="Perfil de usuario" class="user-avatar">
+    </button>
+    <ul class="dropdown">
+        {% if user.role == 'admin' %}
+            <li><a href="{% url 'admin:index' %}"><i class="icon-settings"></i> Panel Admin</a></li>
+            <li><a href="{% url 'materials:dashboard' %}"><i class="icon-plus"></i> Sistema</a></li>
+        {% elif user.role != 'visitante' %}
+            <li><a href="{% url 'materials:dashboard' %}"><i class="icon-plus"></i> Sistema</a></li>
+        {% endif %}
+            <li><a href="{% url 'users:dashboard' %}"><i class="icon-user"></i> Mi Perfil</a></li>
+            <li><a href="{% url 'users:logout' %}"><i class="icon-exit"></i> Cerrar Sesión</a></li>
+    </ul>
+</div>
 
 
         </header>

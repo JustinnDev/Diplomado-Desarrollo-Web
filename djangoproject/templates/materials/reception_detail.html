@@ -1,6 +1,6 @@
-{% extends "landing/index.html" %} 
+{% extends "materials/material_dashboard.html" %} 
 
-{% block content %}
+{% block module_content %}
 
 <div class="container-fluid" style="margin-top: 80px;">
     <div class="row mb-4">
@@ -190,8 +190,6 @@
 
 {% endblock %}
 
-
-{% block extra_css %}
 <style>
     .detail-section {
         margin-bottom: 1.5rem;
@@ -233,9 +231,7 @@
         font-weight: 500;
     }
 </style>
-{% endblock %}
 
-{% block extra_js %}
 <script>
 $(document).ready(function() {
     // Expandir operaciones al hacer clic en la fila
@@ -247,4 +243,3 @@ $(document).ready(function() {
     $('[data-toggle="tooltip"]').tooltip();
 });
 </script>
-{% endblock %}

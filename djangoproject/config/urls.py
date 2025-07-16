@@ -26,6 +26,7 @@ urlpatterns = [
     path('' , include('landing.urls')),
     path('users/', include('users.urls')),
     path('materials/', include('materials.urls')),
+    path('erp_extension/', include('erp_extension.urls')),
 ]
 
 if settings.DEBUG:

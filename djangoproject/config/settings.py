@@ -90,11 +90,13 @@ DATABASES = {
         'HOST': '26.110.109.182',
         'PORT': '3306',
         'OPTIONS': {
-            'charset': 'latin1', 
-            'init_command': 'SET sql_mode="traditional"',  # ¡Clave para MySQL antiguo!
-            'connect_timeout': 10,  # Opcional para conexiones lentas
-        }
-    }    
+            'charset': 'latin1',
+            'connect_timeout': 10,
+            # ¡Configuración clave para MySQL antiguo!
+            'init_command': None,  # Desactiva completamente los comandos iniciales
+            'use_unicode': False,
+        },
+    }
 }
 
 

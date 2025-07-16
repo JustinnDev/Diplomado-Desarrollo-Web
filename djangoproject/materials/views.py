@@ -96,22 +96,8 @@ class ClientCreateView(AdminMixin,CreateView):
 
 
 # Vistas para Recepción de Materiales
-def reception_create(request):
-
+def comming_soon(request):
     return render(request, 'comming_soon.html')
-
-    if request.method == 'POST':
-        form = MaterialReceptionForm(request.POST)
-        if form.is_valid():
-            reception = form.save(commit=False)
-            material = form.cleaned_data['material']
-            reception.unit_price = material.base_price
-            reception.save()
-            return redirect('materials:reception_list')
-    else:
-        form = MaterialReceptionForm()
-    
-    return render(request, 'materials/reception_form.html', {'form': form})
 
 class ReceptionListView(AdminMixin,ListView):
     model = MaterialReception

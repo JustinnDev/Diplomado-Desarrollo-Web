@@ -189,6 +189,13 @@
 {% endblock %}
 
 {% block module_content %}
+
+{% if editing %}
+<script id="reception-data" type="application/json">
+    {{ materials_json|safe }}
+</script>
+{% endif %}
+
 <div class="reception-form-container">
     <div class="reception-form-card">
         <h2 class="mb-4">{% if editing %}Editar{% else %}Nueva{% endif %} Recepción de Materiales</h2>

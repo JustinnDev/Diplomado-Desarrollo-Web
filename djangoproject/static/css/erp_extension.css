@@ -397,7 +397,248 @@ body {
     }
 }
 
+/* User Profile Dropdown Styles */
+.user-profile {
+    position: relative;
+    margin-left: auto;
+    padding-right: 1rem;
+}
+
+.user-profile .dropdown {
+    position: absolute;
+    right: 0;
+    top: calc(var(--header-height) - 10px);
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    min-width: 200px;
+    padding: 0.5rem 0;
+    border: 1px solid #e5e7eb;
+    z-index: 100;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all 0.2s ease;
+}
+
+.user-profile:hover .dropdown,
+.user-profile:focus-within .dropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.user-profile .dropdown li {
+    list-style: none;
+}
+
+.user-profile .dropdown li a {
+    display: flex;
+    align-items: center;
+    padding: 0.625rem 1rem;
+    color: var(--sidebar-text);
+    text-decoration: none;
+    font-size: 0.875rem;
+    transition: all 0.2s;
+}
+
+.user-profile .dropdown li a:hover {
+    background-color: var(--sidebar-hover);
+    color: #111827;
+}
+
+.user-profile .dropdown li a i {
+    margin-right: 0.75rem;
+    color: var(--primary-color);
+    width: 20px;
+    text-align: center;
+}
+
+.user-trigger {
+    display: flex;
+    align-items: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: all 0.2s;
+}
+
+.user-trigger:hover {
+    background-color: var(--sidebar-hover);
+}
+
+.user-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--primary-light);
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: light) {
+    .user-profile .dropdown {
+        background-color: #1f2937;
+        border-color: #374151;
+    }
+    
+    .user-profile .dropdown li a {
+        color: #d1d5db;
+    }
+    
+    .user-profile .dropdown li a:hover {
+        background-color: #374151;
+        color: #f9fafb;
+    }
+    
+    .user-trigger:hover {
+        background-color: #374151;
+    }
+}
+
+@media (max-width: 768px) {
+    .user-profile {
+        padding-right: 0.5rem;
+    }
+    
+    .user-profile .dropdown {
+        min-width: 180px;
+    }
+}
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* User Info Styles */
+.user-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.user-info-item {
+    padding: 0.75rem;
+    background: #f8f9fa;
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+}
+
+.info-label {
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+.info-value {
+    font-size: 0.95rem;
+    color: #343a40;
+    margin-top: 0.25rem;
+}
+
+.profile-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e9ecef;
+}
+
+@media (max-width: 768px) {
+    .profile-actions {
+        flex-direction: column;
+    }
+    
+    .user-info-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Password Form Specific Styles */
+.password-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.password-input-wrapper {
+    position: relative;
+}
+
+.password-input-wrapper input {
+    padding-right: 2.5rem;
+    width: 100%;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 0.875rem;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #6b7280;
+    font-size: 1.1rem;
+    transition: color 0.2s;
+}
+
+.password-toggle:hover {
+    color: var(--primary-color);
+}
+
+.form-help-text {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 0.75rem;
+    color: #6b7280;
+    line-height: 1.4;
+}
+
+.form-error {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 0.75rem;
+    color: #dc3545;
+}
+
+/* Password requirements list */
+.password-requirements {
+    margin-top: 0.5rem;
+    padding-left: 1.25rem;
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+
+.password-requirements li {
+    margin-bottom: 0.25rem;
+    list-style-type: disc;
+}
+
+.password-requirements .valid {
+    color: #28a745;
+}
+
+.password-requirements .invalid {
+    color: #6b7280;
+}
 
