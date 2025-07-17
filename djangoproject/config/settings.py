@@ -82,6 +82,20 @@ DATABASES = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     },
+    'erp_db': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'dpadmwin',
+        'USER': 'root',
+        'PASSWORD': '',
+        'HOST': '26.110.109.182',
+        'PORT': '3306',
+        'OPTIONS': {
+            'charset': 'latin1',
+            'init_command': None,  # Desactiva completamente los comandos iniciales
+            'connect_timeout': 10,
+            'use_unicode': False,
+        },
+    }
 }
 
 
