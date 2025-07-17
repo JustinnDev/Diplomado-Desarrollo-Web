@@ -1,30 +1,25 @@
 from django.shortcuts import render
 from django.contrib import messages
-import MySQLdb
 import sys
-
+import pymysql
+        
 def view_clients(request):
-
-    return render(request, 'comming_soon.html')
-
     print("\n=== INICIANDO CONEXIÓN A MYSQL 2005 ===")
     messages.info(request, "Iniciando conexión con la base de datos ERP")
 
     try:
-        print("Paso 1: Estableciendo conexión directa...")
-        messages.info(request, "Conectando al servidor...")
-        
-        conn = MySQLdb.connect(
-            host='26.110.109.182',
+        pymysql.install_as_MySQLdb() 
+        conn = pymysql.connect(
+            host='26.110.109.182', #IP radmin VPN
             user='root',
-            passwd='',
-            db='dpadmwin',
+            password='',
+            database='dpadmwin',
             charset='latin1',
             connect_timeout=10
         )
-        print("✓ Conexión MySQL directa establecida")
-        messages.success(request, "Conexión exitosa al servidor MySQL")
+        print("✓ Conexión via pymysql exitosa")
 
+        messages.info(request, "Conectando al servidor...")
         cursor = conn.cursor()
         print("Paso 2: Cursor creado correctamente")
 
@@ -56,14 +51,15 @@ def view_clients(request):
             'datos': datos
         })
         
-    except MySQLdb.Error as e:
-        error_msg = f"Error MySQL ({e.args[0]}): {e.args[1]}"
-        print(f"✗ ERROR: {error_msg}")
-        print(f"Tipo de error: {sys.exc_info()[0]}")
+    except Exception as e:
+        error_type = type(e).__name__
+        error_msg = str(e)
+        print(f"✗ ERROR ({error_type}): {error_msg}")
+        print(f"Traceback: {sys.exc_info()[2]}")
         
         messages.error(request, "Error crítico al acceder a la base de datos")
-        messages.warning(request, f"Detalle técnico: {e.args[1]} (Código: {e.args[0]})")
-
+        messages.warning(request, f"Detalle técnico: {error_msg.split('(')[0]}")
+        
         return render(request, 'erp_extension/ver_dpclientes.html', {
             'columnas': [],
             'datos': []
