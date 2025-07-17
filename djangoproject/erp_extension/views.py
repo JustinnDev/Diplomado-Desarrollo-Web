@@ -4,6 +4,9 @@ import MySQLdb
 import sys
 
 def view_clients(request):
+
+    return render(request, 'comming_soon.html')
+
     print("\n=== INICIANDO CONEXIÓN A MYSQL 2005 ===")
     messages.info(request, "Iniciando conexión con la base de datos ERP")
 
