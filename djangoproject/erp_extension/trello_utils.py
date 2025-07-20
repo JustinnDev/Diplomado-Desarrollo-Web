@@ -2,6 +2,7 @@
 from trello import TrelloClient
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
+from datetime import datetime
 
 def verify_trello_connection():
     """
@@ -70,12 +71,12 @@ def get_board_details(board_id):
     client = get_trello_client()
     board = client.get_board(board_id)
     
-    # Obtener listas y tarjetas
-    lists = board.all_lists()
+    # Obtener solo listas no archivadas
+    lists = [lst for lst in board.all_lists() if not lst.closed]
     cards = []
-    
+        
     for list_obj in lists:
-        list_cards = list_obj.list_cards()
+        list_cards = [card for card in list_obj.list_cards() if not card.closed]
         for card in list_cards:
             cards.append({
                 'id': card.id,
@@ -83,7 +84,8 @@ def get_board_details(board_id):
                 'desc': card.description,
                 'url': card.url,
                 'list_name': list_obj.name,
-                'due_date': card.due_date
+                'due_date': card.due_date,
+                'due_date_passed': card.due_date and card.due_date < datetime.now()
             })
     
     return {
@@ -108,3 +110,27 @@ def create_card(list_id, card_name, card_desc="", due_date=None):
     client = get_trello_client()
     trello_list = client.get_list(list_id)
     return trello_list.add_card(card_name, desc=card_desc, due=due_date)
+
+
+
+
+def delete_card(card_id):
+    """Elimina una tarjeta específica"""
+    client = get_trello_client()
+    card = client.get_card(card_id)
+    card.delete()
+    return True
+
+def archive_list(list_id):
+    """Archiva una lista específica"""
+    client = get_trello_client()
+    trello_list = client.get_list(list_id)
+    trello_list.close()
+    return True
+
+def archive_board(board_id):
+    """Archiva un tablero específico"""
+    client = get_trello_client()
+    board = client.get_board(board_id)
+    board.close()
+    return True

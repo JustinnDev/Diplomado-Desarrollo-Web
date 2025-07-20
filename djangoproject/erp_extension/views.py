@@ -3,11 +3,7 @@ from django.contrib import messages
 import pymysql 
 from django.http import JsonResponse
 from django.views import View
-from .trello_utils import verify_trello_connection, get_all_workspaces, get_boards_by_workspace, get_board_details, create_list, create_card
-from django.views.generic import ListView, CreateView
-from django.urls import reverse_lazy
-from trello import TrelloClient
-from django.conf import settings
+from .trello_utils import verify_trello_connection, get_all_workspaces, get_boards_by_workspace, get_board_details, create_list, create_card, delete_card, archive_list, archive_board
 from django.views.generic import TemplateView
 
 class TrelloConnectionTestView(View):
@@ -24,6 +20,8 @@ class TrelloConnectionTestView(View):
         
         return render(request, 'erp_extension/crm.html', context)
 
+# views.py (modificar la clase TrelloExplorerView)
+
 class TrelloExplorerView(TemplateView):
     template_name = 'erp_extension/crm.html'
     
@@ -34,16 +32,13 @@ class TrelloExplorerView(TemplateView):
         
         try:
             if board_id:
-                # Vista de detalle de tablero
                 context['board'] = get_board_details(board_id)
                 context['view_type'] = 'board_detail'
             elif workspace_id:
-                # Vista de tableros del workspace
                 context['boards'] = get_boards_by_workspace(workspace_id)
                 context['current_workspace_id'] = workspace_id
                 context['view_type'] = 'workspace_boards'
             else:
-                # Vista principal de workspaces
                 context['workspaces'] = get_all_workspaces()
                 context['view_type'] = 'workspaces'
                 
@@ -91,11 +86,27 @@ class TrelloExplorerView(TemplateView):
                     }
                 })
                 
+            elif action == 'delete_card':
+                card_id = request.POST.get('card_id')
+                delete_card(card_id)
+                return JsonResponse({'success': True})
+                
+            elif action == 'archive_list':
+                list_id = request.POST.get('list_id')
+                archive_list(list_id)
+                return JsonResponse({'success': True})
+                
+            elif action == 'archive_board':
+                archive_board(board_id)
+                return JsonResponse({'success': True})
+                
         except Exception as e:
             return JsonResponse({
                 'success': False,
                 'error': str(e)
             }, status=400)
+            
+
 
 def view_clients(request):
     print("\n=== CONEXIÓN MYSQL 2005 ===")
