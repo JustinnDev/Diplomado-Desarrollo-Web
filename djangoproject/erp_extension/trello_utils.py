@@ -3,6 +3,7 @@ from trello import TrelloClient
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from datetime import datetime
+from datetime import datetime, timezone
 
 def verify_trello_connection():
     """
@@ -78,14 +79,29 @@ def get_board_details(board_id):
     for list_obj in lists:
         list_cards = [card for card in list_obj.list_cards() if not card.closed]
         for card in list_cards:
+            # Manejar fechas con zona horaria consistentemente
+            due_date = None
+            due_date_passed = False
+            
+            if card.due_date:
+                # Asegurar que la fecha tenga zona horaria (UTC)
+                if card.due_date.tzinfo is None:
+                    due_date = card.due_date.replace(tzinfo=timezone.utc)
+                else:
+                    due_date = card.due_date
+                
+                # Comparar con la hora actual (también en UTC)
+                current_time = datetime.now(timezone.utc)
+                due_date_passed = due_date < current_time
+            
             cards.append({
                 'id': card.id,
                 'name': card.name,
                 'desc': card.description,
                 'url': card.url,
                 'list_name': list_obj.name,
-                'due_date': card.due_date,
-                'due_date_passed': card.due_date and card.due_date < datetime.now()
+                'due_date': due_date,
+                'due_date_passed': due_date_passed
             })
     
     return {
@@ -98,6 +114,8 @@ def get_board_details(board_id):
         'lists': [{'id': l.id, 'name': l.name} for l in lists],
         'cards': cards
     }
+
+
 
 def create_list(board_id, list_name):
     """Crea una nueva lista en un tablero específico"""
@@ -129,18 +147,30 @@ def update_card(card_id, new_name=None, new_desc=None, new_due_date=None):
     if new_name is not None:
         card.set_name(new_name)
     if new_desc is not None:
-        card.set_description(new_desc)  # Usar set_description en lugar de desc
+        card.set_description(new_desc)
+    
+    # Manejo especial para la fecha de vencimiento
     if new_due_date is not None:
+        if isinstance(new_due_date, str):
+            try:
+                # Parsear la fecha y añadir zona horaria UTC
+                new_due_date = datetime.strptime(new_due_date, '%Y-%m-%dT%H:%M')
+                new_due_date = new_due_date.replace(tzinfo=timezone.utc)
+            except ValueError:
+                try:
+                    new_due_date = datetime.strptime(new_due_date, '%Y-%m-%d')
+                    new_due_date = new_due_date.replace(tzinfo=timezone.utc)
+                except ValueError as e:
+                    raise ValueError(f"Formato de fecha no válido: {new_due_date}") from e
+        
         card.set_due(new_due_date)
     
-    # No necesitamos save() porque los métodos set_* ya guardan los cambios
     return {
         'id': card.id,
         'name': card.name,
-        'desc': card.description,  # Usar description para obtener la descripción
-        'due_date': card.due_date
+        'desc': card.description,
+        'due_date': card.due_date.replace(tzinfo=timezone.utc) if card.due_date else None
     }
-
 
 def delete_card(card_id):
     """Elimina una tarjeta específica"""

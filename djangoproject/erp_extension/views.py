@@ -98,26 +98,41 @@ class TrelloExplorerView(TemplateView):
                 new_desc = request.POST.get('new_desc', None)
                 new_due_date = request.POST.get('new_due_date', None)
                 
-                # Convertir new_desc a None si está vacío
+                # Convertir descripción vacía a None
                 if new_desc == '':
                     new_desc = None
                     
-                updated_card = update_card(
-                    card_id,
-                    new_name,
-                    new_desc,
-                    new_due_date if new_due_date else None
-                )
-                
-                return JsonResponse({
-                    'success': True,
-                    'card': {
-                        'id': updated_card['id'],
-                        'name': updated_card['name'],
-                        'desc': updated_card['desc'],
-                        'due_date': updated_card['due_date'].isoformat() if updated_card['due_date'] else None
-                    }
-                })
+                try:
+                    updated_card = update_card(
+                        card_id,
+                        new_name,
+                        new_desc,
+                        new_due_date if new_due_date else None
+                    )
+                    
+                    # Manejar correctamente la fecha en la respuesta
+                    due_date_response = None
+                    if updated_card['due_date']:
+                        if hasattr(updated_card['due_date'], 'isoformat'):
+                            due_date_response = updated_card['due_date'].isoformat()
+                        else:
+                            due_date_response = str(updated_card['due_date'])
+                    
+                    return JsonResponse({
+                        'success': True,
+                        'card': {
+                            'id': updated_card['id'],
+                            'name': updated_card['name'],
+                            'desc': updated_card['desc'],
+                            'due_date': due_date_response
+                        }
+                    })
+            
+                except Exception as e:
+                    return JsonResponse({
+                        'success': False,
+                        'error': str(e)
+                    }, status=400)
                 
             elif action == 'delete_card':
                 card_id = request.POST.get('card_id')
