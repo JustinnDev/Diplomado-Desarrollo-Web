@@ -10,5 +10,6 @@ urlpatterns = [
     path('trello/workspaces/', views.TrelloExplorerView.as_view(), name='trello_workspaces'),
     path('trello/workspaces/<str:workspace_id>/', views.TrelloExplorerView.as_view(), name='workspace_boards'),
     path('trello/boards/<str:board_id>/', views.TrelloExplorerView.as_view(), name='board_detail'),
+    
     ]
 

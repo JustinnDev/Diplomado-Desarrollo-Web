@@ -3,7 +3,7 @@ from django.contrib import messages
 import pymysql 
 from django.http import JsonResponse
 from django.views import View
-from .trello_utils import verify_trello_connection, get_all_workspaces, get_boards_by_workspace, get_board_details
+from .trello_utils import verify_trello_connection, get_all_workspaces, get_boards_by_workspace, get_board_details, create_list, create_card
 from django.views.generic import ListView, CreateView
 from django.urls import reverse_lazy
 from trello import TrelloClient
@@ -51,7 +51,51 @@ class TrelloExplorerView(TemplateView):
             context['error'] = str(e)
             
         return context
-
+    
+    def post(self, request, *args, **kwargs):
+        action = request.POST.get('action')
+        board_id = kwargs.get('board_id')
+        
+        try:
+            if action == 'create_list':
+                list_name = request.POST.get('list_name')
+                new_list = create_list(board_id, list_name)
+                return JsonResponse({
+                    'success': True,
+                    'list': {
+                        'id': new_list.id,
+                        'name': new_list.name
+                    }
+                })
+                
+            elif action == 'create_card':
+                list_id = request.POST.get('list_id')
+                card_name = request.POST.get('card_name')
+                card_desc = request.POST.get('card_desc', '')
+                due_date = request.POST.get('due_date')
+                
+                new_card = create_card(
+                    list_id, 
+                    card_name, 
+                    card_desc, 
+                    due_date if due_date else None
+                )
+                
+                return JsonResponse({
+                    'success': True,
+                    'card': {
+                        'id': new_card.id,
+                        'name': new_card.name,
+                        'desc': new_card.description,
+                        'due_date': new_card.due_date.isoformat() if new_card.due_date else None
+                    }
+                })
+                
+        except Exception as e:
+            return JsonResponse({
+                'success': False,
+                'error': str(e)
+            }, status=400)
 
 def view_clients(request):
     print("\n=== CONEXIÓN MYSQL 2005 ===")

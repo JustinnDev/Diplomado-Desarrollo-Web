@@ -1,6 +1,5 @@
 {% extends 'materials/material_dashboard.html' %}
 
-
 {% block module_content %}
 <div class="container mt-4">
     {% if error %}
@@ -107,6 +106,23 @@
                 </div>
             </div>
 
+            <!-- Formulario para añadir nueva lista -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5>Añadir nueva lista</h5>
+                </div>
+                <div class="card-body">
+                    <form id="newListForm">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="create_list">
+                        <div class="input-group">
+                            <input type="text" name="list_name" class="form-control" placeholder="Nombre de la lista" required>
+                            <button type="submit" class="btn btn-primary">Crear</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
             <h4>Listas y tarjetas</h4>
             <div class="row">
                 {% for list in board.lists %}
@@ -116,6 +132,24 @@
                                 <h5 class="mb-0">{{ list.name }}</h5>
                             </div>
                             <div class="card-body p-2">
+                                <!-- Formulario para añadir tarjeta -->
+                                <form class="newCardForm mb-3" data-list-id="{{ list.id }}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="create_card">
+                                    <input type="hidden" name="list_id" value="{{ list.id }}">
+                                    <div class="mb-2">
+                                        <input type="text" name="card_name" class="form-control form-control-sm" placeholder="Nueva tarjeta" required>
+                                    </div>
+                                    <div class="mb-2">
+                                        <textarea name="card_desc" class="form-control form-control-sm" placeholder="Descripción" rows="2"></textarea>
+                                    </div>
+                                    <div class="mb-2">
+                                        <input type="datetime-local" name="due_date" class="form-control form-control-sm">
+                                    </div>
+                                    <button type="submit" class="btn btn-sm btn-success w-100">Añadir tarjeta</button>
+                                </form>
+
+                                <!-- Tarjetas existentes -->
                                 {% for card in board.cards %}
                                     {% if card.list_name == list.name %}
                                         <div class="card mb-2">
@@ -135,6 +169,62 @@
                     </div>
                 {% endfor %}
             </div>
+
+            <!-- JavaScript para manejar los formularios -->
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    // Manejar creación de listas
+                    document.getElementById('newListForm').addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        const formData = new FormData(this);
+                        
+                        fetch(window.location.href, {
+                            method: 'POST',
+                            body: formData,
+                            headers: {
+                                'X-CSRFToken': formData.get('csrfmiddlewaretoken'),
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                location.reload(); // Recargar para ver la nueva lista
+                            } else {
+                                alert('Error: ' + data.error);
+                            }
+                        })
+                        .catch(error => console.error('Error:', error));
+                    });
+
+                    // Manejar creación de tarjetas
+                    document.querySelectorAll('.newCardForm').forEach(form => {
+                        form.addEventListener('submit', function(e) {
+                            e.preventDefault();
+                            const formData = new FormData(this);
+                            const listId = this.dataset.listId;
+                            
+                            fetch(window.location.href, {
+                                method: 'POST',
+                                body: formData,
+                                headers: {
+                                    'X-CSRFToken': formData.get('csrfmiddlewaretoken'),
+                                    'X-Requested-With': 'XMLHttpRequest'
+                                }
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    location.reload(); // Recargar para ver la nueva tarjeta
+                                } else {
+                                    alert('Error: ' + data.error);
+                                }
+                            })
+                            .catch(error => console.error('Error:', error));
+                        });
+                    });
+                });
+            </script>
         {% endif %}
     {% endif %}
 </div>

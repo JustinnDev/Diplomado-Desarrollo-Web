@@ -96,3 +96,15 @@ def get_board_details(board_id):
         'lists': [{'id': l.id, 'name': l.name} for l in lists],
         'cards': cards
     }
+
+def create_list(board_id, list_name):
+    """Crea una nueva lista en un tablero específico"""
+    client = get_trello_client()
+    board = client.get_board(board_id)
+    return board.add_list(list_name)
+
+def create_card(list_id, card_name, card_desc="", due_date=None):
+    """Crea una nueva tarjeta en una lista específica"""
+    client = get_trello_client()
+    trello_list = client.get_list(list_id)
+    return trello_list.add_card(card_name, desc=card_desc, due=due_date)
