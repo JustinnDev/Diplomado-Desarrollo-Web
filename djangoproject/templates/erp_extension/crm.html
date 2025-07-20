@@ -118,17 +118,15 @@
             </div>
 
             <!-- Formulario para nueva lista -->
-            <div class="card mb-4 bg-light">
-                <div class="card-body p-3">
-                    <form id="newListForm" class="d-flex">
-                        {% csrf_token %}
-                        <input type="hidden" name="action" value="create_list">
-                        <input type="text" name="list_name" class="form-control me-2" placeholder="Añadir otra lista" required>
-                        <button type="submit" class="btn btn-success">
-                            <i class="fas fa-plus"></i> Añadir
-                        </button>
-                    </form>
-                </div>
+            <div class="trello-list">
+                <form id="newListForm" class="d-flex flex-column">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="create_list">
+                    <input type="text" name="list_name" class="form-control mb-2" placeholder="Añadir otra lista" required>
+                    <button type="submit" class="btn btn-success btn-sm w-100">
+                        <i class="fas fa-plus"></i> Añadir lista
+                    </button>
+                </form>
             </div>
 
             <!-- Listas y tarjetas -->
@@ -560,6 +558,108 @@
                 }
                 .card-edit-form textarea {
                     min-height: 60px;
+                }
+
+                .trello-lists-container {
+                    display: flex;
+                    flex-wrap: nowrap;
+                    overflow-x: auto;
+                    gap: 1rem;
+                    padding-bottom: 1rem;
+                    scrollbar-width: thin;
+                    scrollbar-color: #ccc transparent;
+                }
+
+                .trello-list {
+                    background-color: #f4f5f7;
+                    border-radius: 8px;
+                    padding: 0.5rem;
+                    width: 272px;
+                    flex-shrink: 0;
+                    display: flex;
+                    flex-direction: column;
+                    max-height: 80vh;
+                }
+
+                .trello-list h5 {
+                    font-size: 1rem;
+                    margin-bottom: 0.5rem;
+                }
+
+                .trello-card {
+                    background-color: #fff;
+                    border: none;
+                    border-radius: 6px;
+                    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+                    padding: 0.5rem;
+                    margin-bottom: 0.5rem;
+                    transition: background-color 0.2s;
+                }
+
+                .trello-card:hover {
+                    background-color: #f0f0f0;
+                }
+
+                .trello-card .card-title {
+                    font-size: 0.9rem;
+                    font-weight: 600;
+                    margin-bottom: 0;
+                }
+
+                .btn.add-card-btn,
+                .btn.add-list-btn {
+                    background-color: #ebecf0;
+                    border: none;
+                    color: #5e6c84;
+                    text-align: left;
+                    width: 100%;
+                    margin-top: 0.5rem;
+                    font-weight: 500;
+                }
+
+                .btn.add-card-btn:hover,
+                .btn.add-list-btn:hover {
+                    background-color: #dfe1e6;
+                    color: #172b4d;
+                }
+
+                .newCardForm,
+                .list-edit-form,
+                .card-edit-form {
+                    background-color: #f4f5f7;
+                    padding: 0.5rem;
+                    border-radius: 6px;
+                }
+
+                .editable:hover {
+                    background-color: #e2e4e6;
+                }
+
+                .breadcrumb {
+                    background-color: transparent;
+                    font-size: 0.9rem;
+                    padding: 0;
+                }
+
+                .breadcrumb-item a {
+                    text-decoration: none;
+                    color: #0079bf;
+                }
+
+                .breadcrumb-item.active {
+                    color: #172b4d;
+                }
+
+                textarea,
+                input[type="text"],
+                input[type="datetime-local"] {
+                    background-color: #fff;
+                    border-radius: 4px;
+                    font-size: 0.85rem;
+                }
+
+                .btn-sm {
+                    font-size: 0.75rem;
                 }
             </style>
         {% endif %}
