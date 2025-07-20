@@ -3,7 +3,7 @@ from django.contrib import messages
 import pymysql 
 from django.http import JsonResponse
 from django.views import View
-from .trello_utils import verify_trello_connection, get_all_workspaces, get_boards_by_workspace, get_board_details, create_list, create_card, delete_card, archive_list, archive_board
+from .trello_utils import verify_trello_connection, get_all_workspaces, get_boards_by_workspace, get_board_details, create_list, create_card, delete_card, archive_list, archive_board, update_list, update_card
 from django.views.generic import TemplateView
 
 class TrelloConnectionTestView(View):
@@ -83,6 +83,39 @@ class TrelloExplorerView(TemplateView):
                         'name': new_card.name,
                         'desc': new_card.description,
                         'due_date': new_card.due_date.isoformat() if new_card.due_date else None
+                    }
+                })
+            
+            elif action == 'update_list':
+                list_id = request.POST.get('list_id')
+                new_name = request.POST.get('new_name')
+                update_list(list_id, new_name)
+                return JsonResponse({'success': True})
+                
+            elif action == 'update_card':
+                card_id = request.POST.get('card_id')
+                new_name = request.POST.get('new_name')
+                new_desc = request.POST.get('new_desc', None)
+                new_due_date = request.POST.get('new_due_date', None)
+                
+                # Convertir new_desc a None si está vacío
+                if new_desc == '':
+                    new_desc = None
+                    
+                updated_card = update_card(
+                    card_id,
+                    new_name,
+                    new_desc,
+                    new_due_date if new_due_date else None
+                )
+                
+                return JsonResponse({
+                    'success': True,
+                    'card': {
+                        'id': updated_card['id'],
+                        'name': updated_card['name'],
+                        'desc': updated_card['desc'],
+                        'due_date': updated_card['due_date'].isoformat() if updated_card['due_date'] else None
                     }
                 })
                 

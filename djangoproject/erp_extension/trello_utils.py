@@ -112,6 +112,34 @@ def create_card(list_id, card_name, card_desc="", due_date=None):
     return trello_list.add_card(card_name, desc=card_desc, due=due_date)
 
 
+def update_list(list_id, new_name):
+    """Actualiza el nombre de una lista existente"""
+    client = get_trello_client()
+    trello_list = client.get_list(list_id)
+    
+    # Forma correcta de actualizar una lista en Py-Trello
+    trello_list.set_name(new_name)
+    return True
+
+def update_card(card_id, new_name=None, new_desc=None, new_due_date=None):
+    """Actualiza los datos de una tarjeta existente"""
+    client = get_trello_client()
+    card = client.get_card(card_id)
+    
+    if new_name is not None:
+        card.set_name(new_name)
+    if new_desc is not None:
+        card.set_description(new_desc)  # Usar set_description en lugar de desc
+    if new_due_date is not None:
+        card.set_due(new_due_date)
+    
+    # No necesitamos save() porque los métodos set_* ya guardan los cambios
+    return {
+        'id': card.id,
+        'name': card.name,
+        'desc': card.description,  # Usar description para obtener la descripción
+        'due_date': card.due_date
+    }
 
 
 def delete_card(card_id):

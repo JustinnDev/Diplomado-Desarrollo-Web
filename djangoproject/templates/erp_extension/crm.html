@@ -136,30 +136,85 @@
                 {% for list in board.lists %}
                     <div class="card trello-list me-3" style="min-width: 300px;">
                         <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0">{{ list.name }}</h5>
-                            <button class="btn btn-sm btn-outline-danger archive-list-btn" data-list-id="{{ list.id }}">
-                                <i class="fas fa-archive"></i>
-                            </button>
+                            <h5 class="mb-0 editable list-name" data-list-id="{{ list.id }}">{{ list.name }}</h5>
+                            <div>
+                                <button class="btn btn-sm btn-outline-danger archive-list-btn" data-list-id="{{ list.id }}">
+                                    <i class="fas fa-archive"></i>
+                                </button>
+                            </div>
                         </div>
+                        
+                        <!-- Formulario de edición para listas -->
+                        <form class="edit-form list-edit-form" data-list-id="{{ list.id }}" style="display: none;">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="update_list">
+                            <input type="hidden" name="list_id" value="{{ list.id }}">
+                            <div class="input-group mb-2 p-2">
+                                <input type="text" name="new_name" class="form-control" value="{{ list.name }}" required>
+                                <button type="submit" class="btn btn-success btn-sm">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm cancel-edit-btn">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </form>
+
                         <div class="card-body p-2">
                             <!-- Tarjetas existentes -->
                             {% for card in board.cards %}
                                 {% if card.list_name == list.name %}
                                     <div class="card mb-2 trello-card">
                                         <div class="card-body p-2">
-                                            <div class="d-flex justify-content-between">
-                                                <h6 class="card-title">{{ card.name }}</h6>
-                                                <button class="btn btn-sm btn-outline-danger delete-card-btn" data-card-id="{{ card.id }}">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </div>
-                                            {% if card.due_date %}
-                                                <div class="d-flex align-items-center mt-2">
-                                                    <span class="badge {% if card.due_date_passed %}bg-danger{% else %}bg-warning text-dark{% endif %}">
-                                                        <i class="far fa-clock"></i> {{ card.due_date|date:"d M Y" }}
-                                                    </span>
+                                            <!-- Contenido de la tarjeta -->
+                                            <div class="card-content">
+                                                <div class="d-flex justify-content-between">
+                                                    <h6 class="card-title editable card-name" data-card-id="{{ card.id }}">{{ card.name }}</h6>
+                                                    <button class="btn btn-sm btn-outline-danger delete-card-btn" data-card-id="{{ card.id }}">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
                                                 </div>
-                                            {% endif %}
+                                                {% if card.desc %}
+                                                    <p class="card-text small editable card-desc mt-1" data-card-id="{{ card.id }}">
+                                                        {{ card.desc }}
+                                                    </p>
+                                                {% else %}
+                                                    <p class="card-text small editable card-desc mt-1 text-muted" data-card-id="{{ card.id }}">
+                                                        Añadir descripción...
+                                                    </p>
+                                                {% endif %}
+                                                {% if card.due_date %}
+                                                    <div class="d-flex align-items-center mt-2">
+                                                        <span class="badge {% if card.due_date_passed %}bg-danger{% else %}bg-warning text-dark{% endif %} editable card-due-date" 
+                                                              data-card-id="{{ card.id }}">
+                                                            <i class="far fa-clock"></i> {{ card.due_date|date:"d M Y" }}
+                                                        </span>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                            
+                                            <!-- Formulario de edición para tarjetas -->
+                                            <form class="edit-form card-edit-form" data-card-id="{{ card.id }}" style="display: none;">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="action" value="update_card">
+                                                <input type="hidden" name="card_id" value="{{ card.id }}">
+                                                <div class="mb-2">
+                                                    <input type="text" name="new_name" class="form-control form-control-sm mb-1" 
+                                                           value="{{ card.name }}" placeholder="Nombre de la tarjeta" required>
+                                                    <textarea name="new_desc" class="form-control form-control-sm mb-1" 
+                                                              rows="2" placeholder="Descripción">{{ card.desc }}</textarea>
+                                                    <input type="datetime-local" name="new_due_date" class="form-control form-control-sm" 
+                                                           value="{{ card.due_date|date:'Y-m-d\TH:i' }}">
+                                                </div>
+                                                <div class="d-flex">
+                                                    <button type="submit" class="btn btn-success btn-sm me-2">
+                                                        <i class="fas fa-check"></i> Guardar
+                                                    </button>
+                                                    <button type="button" class="btn btn-outline-secondary btn-sm cancel-edit-btn">
+                                                        <i class="fas fa-times"></i> Cancelar
+                                                    </button>
+                                                </div>
+                                            </form>
                                         </div>
                                     </div>
                                 {% endif %}
@@ -369,6 +424,94 @@
                             .catch(error => console.error('Error:', error));
                         }
                     });
+
+                    // Manejar edición de listas
+                    document.querySelectorAll('.editable.list-name').forEach(element => {
+                        element.addEventListener('click', function() {
+                            const listId = this.dataset.listId;
+                            const form = document.querySelector(`.list-edit-form[data-list-id="${listId}"]`);
+                            
+                            this.style.display = 'none';
+                            form.style.display = 'block';
+                            form.querySelector('input[name="new_name"]').focus();
+                        });
+                    });
+
+                    // Manejar edición de tarjetas
+                    document.querySelectorAll('.editable.card-name, .editable.card-desc, .editable.card-due-date').forEach(element => {
+                        element.addEventListener('click', function() {
+                            const cardId = this.dataset.cardId;
+                            const form = document.querySelector(`.card-edit-form[data-card-id="${cardId}"]`);
+                            const cardContent = form.previousElementSibling;
+                            
+                            cardContent.style.display = 'none';
+                            form.style.display = 'block';
+                            form.querySelector('input[name="new_name"]').focus();
+                        });
+                    });
+
+                    // Cancelar edición
+                    document.querySelectorAll('.cancel-edit-btn').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            const form = this.closest('.edit-form');
+                            const content = form.previousElementSibling;
+                            
+                            form.style.display = 'none';
+                            content.style.display = 'block';
+                        });
+                    });
+
+                    // Enviar formulario de edición de lista
+                    document.querySelectorAll('.list-edit-form').forEach(form => {
+                        form.addEventListener('submit', function(e) {
+                            e.preventDefault();
+                            const formData = new FormData(this);
+                            
+                            fetch(window.location.href, {
+                                method: 'POST',
+                                body: formData,
+                                headers: {
+                                    'X-CSRFToken': formData.get('csrfmiddlewaretoken'),
+                                    'X-Requested-With': 'XMLHttpRequest'
+                                }
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    location.reload();
+                                } else {
+                                    alert('Error: ' + data.error);
+                                }
+                            })
+                            .catch(error => console.error('Error:', error));
+                        });
+                    });
+
+                    // Enviar formulario de edición de tarjeta
+                    document.querySelectorAll('.card-edit-form').forEach(form => {
+                        form.addEventListener('submit', function(e) {
+                            e.preventDefault();
+                            const formData = new FormData(this);
+                            
+                            fetch(window.location.href, {
+                                method: 'POST',
+                                body: formData,
+                                headers: {
+                                    'X-CSRFToken': formData.get('csrfmiddlewaretoken'),
+                                    'X-Requested-With': 'XMLHttpRequest'
+                                }
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    location.reload();
+                                } else {
+                                    alert('Error: ' + data.error);
+                                }
+                            })
+                            .catch(error => console.error('Error:', error));
+                        });
+                    });
                 });
             </script>
 
@@ -401,6 +544,22 @@
                 .trello-card:hover .delete-card-btn, 
                 .trello-list:hover .archive-list-btn {
                     opacity: 1;
+                }
+                .edit-form {
+                    display: none;
+                    margin-top: 10px;
+                }
+                .editable {
+                    cursor: pointer;
+                }
+                .editable:hover {
+                    background-color: #f8f9fa;
+                }
+                .card-content {
+                    display: block;
+                }
+                .card-edit-form textarea {
+                    min-height: 60px;
                 }
             </style>
         {% endif %}
