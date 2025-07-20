@@ -4,7 +4,20 @@ import pymysql
 from django.http import JsonResponse
 from django.views import View
 from .trello_utils import verify_trello_connection, get_all_workspaces, get_boards_by_workspace, get_board_details, create_list, create_card, delete_card, archive_list, archive_board, update_list, update_card
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, ListView, CreateView, UpdateView, DetailView
+from django.urls import reverse_lazy
+from django.shortcuts import get_object_or_404
+from decimal import Decimal
+
+from .models import (
+    Driver, Vehicle, FuelStation, 
+    FuelRefill, FuelConsumption, MaintenanceLog
+)
+from .forms import (
+    DriverForm, VehicleForm, FuelStationForm,
+    FuelRefillForm, FuelConsumptionForm, MaintenanceLogForm
+)
+
 
 class TrelloConnectionTestView(View):
     def get(self, request):
@@ -205,3 +218,236 @@ def view_clients(request):
         })
     finally:
         print("=== FIN DE EJECUCIÓN ===")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class BaseFuelView(View):
+    """Vista base con funcionalidad común para todas las vistas de combustible"""
+    success_message = ""
+    error_message = ""
+
+    def dispatch(self, request, *args, **kwargs):
+        response = super().dispatch(request, *args, **kwargs)
+        if hasattr(self, 'get_success_message') and self.success_message:
+            messages.success(request, self.success_message)
+        elif hasattr(self, 'get_error_message') and self.error_message:
+            messages.error(request, self.error_message)
+        return response
+
+# Vistas para Conductores
+class DriverListView(BaseFuelView, ListView):
+    model = Driver
+    template_name = 'erp_extension/driver_list.html'
+    context_object_name = 'drivers'
+    success_message = "Lista de conductores cargada correctamente"
+
+class DriverCreateView(BaseFuelView, CreateView):
+    model = Driver
+    form_class = DriverForm
+    template_name = 'erp_extension/driver_form.html'
+    success_url = reverse_lazy('erp_extension:driver_list')
+    success_message = "Conductor creado exitosamente"
+    error_message = "Error al crear el conductor"
+
+class DriverUpdateView(BaseFuelView, UpdateView):
+    model = Driver
+    form_class = DriverForm
+    template_name = 'erp_extension/driver_form.html'
+    success_url = reverse_lazy('erp_extension:driver_list')
+    success_message = "Conductor actualizado exitosamente"
+    error_message = "Error al actualizar el conductor"
+
+# Vistas para Vehículos
+class VehicleListView(BaseFuelView, ListView):
+    model = Vehicle
+    template_name = 'erp_extension/vehicle_list.html'
+    context_object_name = 'vehicles'
+    success_message = "Lista de vehículos cargada correctamente"
+
+class VehicleCreateView(BaseFuelView, CreateView):
+    model = Vehicle
+    form_class = VehicleForm
+    template_name = 'erp_extension/vehicle_form.html'
+    success_url = reverse_lazy('erp_extension:vehicle_list')
+    success_message = "Vehículo creado exitosamente"
+    error_message = "Error al crear el vehículo"
+
+class VehicleUpdateView(BaseFuelView, UpdateView):
+    model = Vehicle
+    form_class = VehicleForm
+    template_name = 'erp_extension/vehicle_form.html'
+    success_url = reverse_lazy('erp_extension:vehicle_list')
+    success_message = "Vehículo actualizado exitosamente"
+    error_message = "Error al actualizar el vehículo"
+
+
+class VehicleDetailView(BaseFuelView, DetailView):
+    model = Vehicle
+    template_name = 'erp_extension/vehicle_detail.html'
+    context_object_name = 'vehicle'
+    success_message = "Detalles del vehículo cargados correctamente"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        vehicle = self.get_object()
+        
+        # Obtener los registros relacionados
+        context['refills'] = FuelRefill.objects.filter(vehicle=vehicle).order_by('-date')[:5]
+        context['consumptions'] = FuelConsumption.objects.filter(vehicle=vehicle).order_by('-date')[:5]
+        context['maintenances'] = MaintenanceLog.objects.filter(vehicle=vehicle).order_by('-date')[:5]
+        
+        # Calcular el porcentaje del nivel de combustible (manejo seguro de Decimal)
+        try:
+            if vehicle.fuel_capacity > Decimal('0'):
+                fuel_percentage = (vehicle.current_fuel_level / vehicle.fuel_capacity) * Decimal('100')
+            else:
+                fuel_percentage = Decimal('0')
+        except (TypeError, ValueError):
+            fuel_percentage = Decimal('0')
+            
+        context['fuel_percentage'] = float(fuel_percentage)  # Convertimos a float para el template
+        
+        return context
+
+# Vistas para Estaciones de Combustible
+class FuelStationListView(BaseFuelView, ListView):
+    model = FuelStation
+    template_name = 'erp_extension/fuelstation_list.html'
+    context_object_name = 'fuelstations'
+    success_message = "Lista de estaciones de combustible cargada correctamente"
+
+class FuelStationCreateView(BaseFuelView, CreateView):
+    model = FuelStation
+    form_class = FuelStationForm
+    template_name = 'erp_extension/fuelstation_form.html'
+    success_url = reverse_lazy('erp_extension:fuelstation_list')
+    success_message = "Estación de combustible creada exitosamente"
+    error_message = "Error al crear la estación de combustible"
+
+# Vistas para Recargas de Combustible
+class FuelRefillCreateView(BaseFuelView, CreateView):
+    model = FuelRefill
+    form_class = FuelRefillForm
+    template_name = 'erp_extension/fuelrefill_form.html'
+    success_message = "Recarga de combustible registrada exitosamente"
+    error_message = "Error al registrar la recarga de combustible"
+
+    def get_success_url(self):
+        return reverse_lazy('erp_extension:vehicle_detail', kwargs={'pk': self.object.vehicle.pk})
+
+    def get_initial(self):
+        initial = super().get_initial()
+        vehicle_id = self.request.GET.get('vehicle_id')
+        if vehicle_id:
+            initial['vehicle'] = get_object_or_404(Vehicle, pk=vehicle_id)
+        return initial
+
+class FuelRefillListView(BaseFuelView, ListView):
+    model = FuelRefill
+    template_name = 'erp_extension/fuelrefill_list.html'
+    context_object_name = 'refills'
+    paginate_by = 20
+    success_message = "Lista de recargas de combustible cargada correctamente"
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        vehicle_id = self.request.GET.get('vehicle_id')
+        if vehicle_id:
+            queryset = queryset.filter(vehicle__id=vehicle_id)
+        return queryset.order_by('-date')
+
+# Vistas para Consumo de Combustible
+class FuelConsumptionCreateView(BaseFuelView, CreateView):
+    model = FuelConsumption
+    form_class = FuelConsumptionForm
+    template_name = 'erp_extension/fuelconsumption_form.html'
+    success_message = "Consumo de combustible registrado exitosamente"
+    error_message = "Error al registrar el consumo de combustible"
+
+    def get_success_url(self):
+        return reverse_lazy('erp_extension:vehicle_detail', kwargs={'pk': self.object.vehicle.pk})
+
+    def get_initial(self):
+        initial = super().get_initial()
+        vehicle_id = self.request.GET.get('vehicle_id')
+        if vehicle_id:
+            initial['vehicle'] = get_object_or_404(Vehicle, pk=vehicle_id)
+        return initial
+
+class FuelConsumptionUpdateView(BaseFuelView, UpdateView):
+    model = FuelConsumption
+    form_class = FuelConsumptionForm
+    template_name = 'erp_extension/fuelconsumption_form.html'
+    success_message = "Consumo de combustible actualizado exitosamente"
+    error_message = "Error al actualizar el consumo de combustible"
+
+    def get_success_url(self):
+        return reverse_lazy('erp_extension:vehicle_detail', kwargs={'pk': self.object.vehicle.pk})
+
+    def get_initial(self):
+        initial = super().get_initial()
+        vehicle_id = self.request.GET.get('vehicle_id')
+        if vehicle_id:
+            initial['vehicle'] = get_object_or_404(Vehicle, pk=vehicle_id)
+        return initial
+
+# Vistas para Mantenimientos
+class MaintenanceLogCreateView(BaseFuelView, CreateView):
+    model = MaintenanceLog
+    form_class = MaintenanceLogForm
+    template_name = 'erp_extension/maintenance_form.html'
+    success_message = "Mantenimiento registrado exitosamente"
+    error_message = "Error al registrar el mantenimiento"
+
+    def get_success_url(self):
+        return reverse_lazy('erp_extension:vehicle_detail', kwargs={'pk': self.object.vehicle.pk})
+
+    def get_initial(self):
+        initial = super().get_initial()
+        vehicle_id = self.request.GET.get('vehicle_id')
+        if vehicle_id:
+            initial['vehicle'] = get_object_or_404(Vehicle, pk=vehicle_id)
+        return initial
+
+class MaintenanceLogListView(BaseFuelView, ListView):
+    model = MaintenanceLog
+    template_name = 'erp_extension/maintenance_list.html'
+    context_object_name = 'maintenances'
+    paginate_by = 20
+    success_message = "Lista de mantenimientos cargada correctamente"
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        vehicle_id = self.request.GET.get('vehicle_id')
+        if vehicle_id:
+            queryset = queryset.filter(vehicle__id=vehicle_id)
+        return queryset.order_by('-date')
+
+# Vista de Dashboard
+class FuelDashboardView(BaseFuelView, View):
+    template_name = 'erp_extension/fuel_dashboard.html'
+    success_message = "Dashboard de combustible cargado correctamente"
+
+    def get(self, request, *args, **kwargs):
+        vehicles = Vehicle.objects.filter(is_active=True)
+        recent_refills = FuelRefill.objects.order_by('-date')[:5]
+        recent_consumptions = FuelConsumption.objects.order_by('-date')[:5]
+        
+        context = {
+            'vehicles': vehicles,
+            'recent_refills': recent_refills,
+            'recent_consumptions': recent_consumptions,
+        }
+        return render(request, self.template_name, context)

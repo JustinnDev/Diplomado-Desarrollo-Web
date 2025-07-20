@@ -1,0 +1,262 @@
+{% extends "materials/material_dashboard.html" %}
+{% load static %}
+
+{% block module_content %}
+<div class="module-header">
+    <h1>
+        {% if object %}
+            <i class="icon-car"></i> Editar Vehículo
+        {% else %}
+            <i class="icon-car"></i> Añadir Vehículo
+        {% endif %}
+    </h1>
+    <p class="subtitle">
+        {% if object %}
+            Actualiza la información del vehículo {{ object.license_plate }}
+        {% else %}
+            Registra un nuevo vehículo en la flota
+        {% endif %}
+    </p>
+</div>
+
+<div class="form-container">
+    <form method="post" class="erp-form">
+        {% csrf_token %}
+        
+        <div class="form-section">
+            <h3 class="section-title">Información Básica</h3>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="{{ form.license_plate.id_for_label }}">{{ form.license_plate.label }}</label>
+                    {{ form.license_plate }}
+                    {% if form.license_plate.errors %}
+                        <div class="error-message">{{ form.license_plate.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.make.id_for_label }}">{{ form.make.label }}</label>
+                    {{ form.make }}
+                    {% if form.make.errors %}
+                        <div class="error-message">{{ form.make.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.model.id_for_label }}">{{ form.model.label }}</label>
+                    {{ form.model }}
+                    {% if form.model.errors %}
+                        <div class="error-message">{{ form.model.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.year.id_for_label }}">{{ form.year.label }}</label>
+                    {{ form.year }}
+                    {% if form.year.errors %}
+                        <div class="error-message">{{ form.year.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <h3 class="section-title">Especificaciones</h3>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="{{ form.vehicle_type.id_for_label }}">{{ form.vehicle_type.label }}</label>
+                    {{ form.vehicle_type }}
+                    {% if form.vehicle_type.errors %}
+                        <div class="error-message">{{ form.vehicle_type.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.fuel_type.id_for_label }}">{{ form.fuel_type.label }}</label>
+                    {{ form.fuel_type }}
+                    {% if form.fuel_type.errors %}
+                        <div class="error-message">{{ form.fuel_type.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.fuel_capacity.id_for_label }}">{{ form.fuel_capacity.label }}</label>
+                    {{ form.fuel_capacity }}
+                    {% if form.fuel_capacity.errors %}
+                        <div class="error-message">{{ form.fuel_capacity.errors }}</div>
+                    {% endif %}
+                    <small class="form-text">{{ form.fuel_capacity.help_text }}</small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <h3 class="section-title">Asignación</h3>
+            <div class="form-group">
+                <label for="{{ form.current_driver.id_for_label }}">{{ form.current_driver.label }}</label>
+                {{ form.current_driver }}
+                {% if form.current_driver.errors %}
+                    <div class="error-message">{{ form.current_driver.errors }}</div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group form-check">
+                {{ form.is_active }}
+                <label class="form-check-label" for="{{ form.is_active.id_for_label }}">{{ form.is_active.label }}</label>
+                {% if form.is_active.errors %}
+                    <div class="error-message">{{ form.is_active.errors }}</div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                <i class="icon-save"></i> Guardar
+            </button>
+            <a href="{% if object %}{% url 'erp_extension:vehicle_detail' object.pk %}{% else %}{% url 'erp_extension:vehicle_list' %}{% endif %}" class="btn btn-secondary">
+                <i class="icon-cancel"></i> Cancelar
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<style>
+    .form-container {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        padding: 25px;
+        margin-bottom: 30px;
+    }
+    
+    .erp-form {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+    
+    .form-section {
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .form-section:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+    
+    .section-title {
+        font-size: 18px;
+        color: #444;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+    }
+    
+    .section-title i {
+        margin-right: 10px;
+        color: #6c757d;
+    }
+    
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 20px;
+    }
+    
+    .form-group {
+        margin-bottom: 15px;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: #555;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+        transition: border-color 0.3s;
+    }
+    
+    .form-control:focus {
+        border-color: #4a90e2;
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+    }
+    
+    .form-check-input {
+        margin-right: 10px;
+    }
+    
+    .form-check-label {
+        cursor: pointer;
+    }
+    
+    .form-text {
+        color: #6c757d;
+        font-size: 12px;
+        margin-top: 5px;
+        display: block;
+    }
+    
+    .error-message {
+        color: #dc3545;
+        font-size: 13px;
+        margin-top: 5px;
+    }
+    
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid #eee;
+    }
+    
+    .btn {
+        padding: 10px 20px;
+        border-radius: 4px;
+        font-weight: 500;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s;
+    }
+    
+    .btn i {
+        margin-right: 8px;
+    }
+    
+    .btn-primary {
+        background-color: #4a90e2;
+        color: white;
+        border: none;
+    }
+    
+    .btn-primary:hover {
+        background-color: #3a7bc8;
+    }
+    
+    .btn-secondary {
+        background-color: #f8f9fa;
+        color: #495057;
+        border: 1px solid #ddd;
+    }
+    
+    .btn-secondary:hover {
+        background-color: #e9ecef;
+    }
+</style>
+{% endblock %}

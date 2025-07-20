@@ -516,153 +516,271 @@
 
             <!-- Estilos adicionales -->
             <style>
-                .trello-lists-container {
-                    min-height: 70vh;
-                }
-                .trello-list {
-                    height: fit-content;
-                    max-height: 80vh;
-                }
-                .trello-card {
-                    cursor: pointer;
-                    transition: all 0.2s;
-                }
-                .trello-card:hover {
-                    background-color: #f8f9fa;
-                }
-                .trello-card .card-title {
-                    font-size: 0.9rem;
-                }
-                textarea {
-                    resize: none;
-                }
-                .delete-card-btn, .archive-list-btn {
-                    opacity: 0;
-                    transition: opacity 0.2s;
-                }
-                .trello-card:hover .delete-card-btn, 
-                .trello-list:hover .archive-list-btn {
-                    opacity: 1;
-                }
-                .edit-form {
-                    display: none;
-                    margin-top: 10px;
-                }
-                .editable {
-                    cursor: pointer;
-                }
-                .editable:hover {
-                    background-color: #f8f9fa;
-                }
-                .card-content {
-                    display: block;
-                }
-                .card-edit-form textarea {
-                    min-height: 60px;
-                }
+/* Estilos base y contenedores */
+.trello-lists-container {
+    min-height: 70vh;
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 1rem;
+    padding-bottom: 1rem;
+    scrollbar-width: thin;
+    scrollbar-color: #ccc transparent;
+}
 
-                .trello-lists-container {
-                    display: flex;
-                    flex-wrap: nowrap;
-                    overflow-x: auto;
-                    gap: 1rem;
-                    padding-bottom: 1rem;
-                    scrollbar-width: thin;
-                    scrollbar-color: #ccc transparent;
-                }
+.trello-list {
+    background-color: #f4f5f7;
+    border-radius: 8px;
+    padding: 0.5rem;
+    width: 272px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    max-height: 80vh;
+    height: fit-content;
+    position: relative;
+}
 
-                .trello-list {
-                    background-color: #f4f5f7;
-                    border-radius: 8px;
-                    padding: 0.5rem;
-                    width: 272px;
-                    flex-shrink: 0;
-                    display: flex;
-                    flex-direction: column;
-                    max-height: 80vh;
-                }
+/* Estilos para tarjetas - Versión corregida definitiva */
+.trello-card {
+    background-color: #fff;
+    border: none;
+    border-radius: 6px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    transition: all 0.2s;
+    cursor: pointer;
+    position: relative;
+    overflow: visible;
+}
 
-                .trello-list h5 {
-                    font-size: 1rem;
-                    margin-bottom: 0.5rem;
-                }
+.trello-card:hover {
+    background-color: #f0f0f0;
+}
 
-                .trello-card {
-                    background-color: #fff;
-                    border: none;
-                    border-radius: 6px;
-                    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-                    padding: 0.5rem;
-                    margin-bottom: 0.5rem;
-                    transition: background-color 0.2s;
-                }
+/* Contenedor de contenido principal - Solución definitiva */
+.card-content-wrapper {
+    position: relative;
+    padding-right: 1.5rem; /* Espacio reservado para el botón */
+}
 
-                .trello-card:hover {
-                    background-color: #f0f0f0;
-                }
+/* Encabezados y contenido */
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    padding-right: 1.5rem; /* Espacio para el botón */
+}
 
-                .trello-card .card-title {
-                    font-size: 0.9rem;
-                    font-weight: 600;
-                    margin-bottom: 0;
-                }
+.card-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin: 0;
+    flex-grow: 1;
+    word-break: break-word;
+    padding-right: 0.5rem;
+}
 
-                .btn.add-card-btn,
-                .btn.add-list-btn {
-                    background-color: #ebecf0;
-                    border: none;
-                    color: #5e6c84;
-                    text-align: left;
-                    width: 100%;
-                    margin-top: 0.5rem;
-                    font-weight: 500;
-                }
+.card-text {
+    font-size: 0.85rem;
+    margin: 0.25rem 0 0 0;
+    word-break: break-word;
+}
 
-                .btn.add-card-btn:hover,
-                .btn.add-list-btn:hover {
-                    background-color: #dfe1e6;
-                    color: #172b4d;
-                }
+/* Botón de eliminar tarjeta - Posición corregida */
+.delete-card-btn {
+    position: absolute;
+    right: 0;
+    top: 0;
+    opacity: 0;
+    transition: opacity 0.2s;
+    background: none;
+    border: none;
+    padding: 0.25rem;
+    color: #6b778c;
+    cursor: pointer;
+    font-size: 0.8rem;
+    z-index: 2;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
-                .editable:hover {
-                    background-color: #e2e4e6;
-                }
+.trello-card:hover .delete-card-btn {
+    opacity: 1;
+}
 
-                .breadcrumb {
-                    background-color: transparent;
-                    font-size: 0.9rem;
-                    padding: 0;
-                }
+.delete-card-btn:hover {
+    color: #eb5a46;
+    background-color: rgba(235, 90, 70, 0.1);
+    border-radius: 3px;
+}
 
-                .breadcrumb-item a {
-                    text-decoration: none;
-                    color: #0079bf;
-                }
+/* Botón de archivar lista - Posición corregida */
+.archive-list-btn {
+    position: absolute;
+    right: 0.5rem;
+    top: 0.5rem;
+    opacity: 0;
+    transition: opacity 0.2s;
+    background: none;
+    border: none;
+    padding: 0.25rem;
+    color: #6b778c;
+    cursor: pointer;
+    font-size: 0.8rem;
+    z-index: 2;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
-                .breadcrumb-item.active {
-                    color: #172b4d;
-                }
+.trello-list:hover .archive-list-btn {
+    opacity: 1;
+}
 
-                textarea,
-                input[type="text"],
-                input[type="datetime-local"] {
-                    background-color: #fff;
-                    border-radius: 4px;
-                    font-size: 0.85rem;
-                }
+.archive-list-btn:hover {
+    color: #eb5a46;
+    background-color: rgba(235, 90, 70, 0.1);
+    border-radius: 3px;
+}
 
-                .btn-sm {
-                    font-size: 0.75rem;
-                }
+/* Elementos editables */
+.editable {
+    cursor: pointer;
+    transition: background-color 0.2s;
+    border-radius: 3px;
+    padding: 0.1rem 0.3rem;
+    margin: -0.1rem -0.3rem;
+    position: relative;
+}
 
+.editable:hover {
+    background-color: #e2e4e6;
+}
 
-                .newCardForm {
-                    display: none;
-                }
-                
-                .add-card-btn {
-                    display: block;
-                }
+/* Formularios */
+.edit-form {
+    display: none;
+    margin-top: 10px;
+}
+
+.newCardForm {
+    display: none;
+}
+
+/* Estilos para formularios de edición */
+.card-edit-form textarea {
+    min-height: 60px;
+}
+
+/* Botones de añadir */
+.btn.add-card-btn,
+.btn.add-list-btn {
+    background-color: #ebecf0;
+    border: none;
+    color: #5e6c84;
+    text-align: left;
+    width: 100%;
+    margin-top: 0.5rem;
+    font-weight: 500;
+    padding: 0.5rem;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.btn.add-card-btn:hover,
+.btn.add-list-btn:hover {
+    background-color: #dfe1e6;
+    color: #172b4d;
+}
+
+/* Breadcrumb y otros elementos */
+.breadcrumb {
+    background-color: transparent;
+    font-size: 0.9rem;
+    padding: 0;
+}
+
+.breadcrumb-item a {
+    text-decoration: none;
+    color: #0079bf;
+}
+
+.breadcrumb-item.active {
+    color: #172b4d;
+}
+
+textarea,
+input[type="text"],
+input[type="datetime-local"] {
+    background-color: #fff;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #dfe1e6;
+}
+
+.btn-sm {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+}
+
+/* Ajustes específicos para el encabezado de lista */
+.trello-list .card-header {
+    padding: 0.5rem 2rem 0.5rem 0.5rem; /* Más padding a la derecha para el botón */
+    position: relative;
+}
+
+.trello-list .card-header h5 {
+    margin: 0;
+    flex-grow: 1;
+    word-break: break-word;
+}
+
+/* Mejoras en la visualización de fechas */
+.card-due-date {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 3px;
+    margin-top: 0.25rem;
+}
+
+/* Corrección para el formulario de nueva tarjeta */
+.newCardForm {
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    background-color: #ebecf0;
+    border-radius: 4px;
+}
+
+/* Garantizar que el contenido de las tarjetas no se solape */
+.card-body {
+    position: relative;
+    padding: 0.5rem;
+}
+
+/* Ajuste para el contenedor de listas */
+.trello-lists-container .trello-list {
+    min-height: 100px;
+}
+
+/* Asegurar que los botones no afecten el layout */
+.action-buttons {
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: 2;
+}
             </style>
         {% endif %}
     {% endif %}

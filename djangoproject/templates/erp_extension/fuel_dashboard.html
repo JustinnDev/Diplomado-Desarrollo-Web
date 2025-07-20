@@ -1,0 +1,341 @@
+{% extends "materials/material_dashboard.html" %}
+{% load static %}
+
+{% block module_content %}
+<div class="module-header">
+    <h1><i class="icon-gas-pump"></i> Dashboard de Combustible</h1>
+    <p class="subtitle">Gestión y monitoreo de vehículos y combustible</p>
+</div>
+
+<div class="module-grid">
+    <!-- Resumen General -->
+    <div class="module-card">
+        <div class="module-card-header">
+            <h3><i class="icon-chart-pie"></i> Resumen General</h3>
+        </div>
+        <div class="module-card-body">
+            <div class="summary-stats">
+                <div class="stat-item">
+                    <span class="stat-value">{{ vehicles.count }}</span>
+                    <span class="stat-label">Vehículos Activos</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">{{ drivers.count }}</span>
+                    <span class="stat-label">Conductores</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">{{ fuel_stations.count }}</span>
+                    <span class="stat-label">Estaciones</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vehículos -->
+    <div class="module-card">
+        <div class="module-card-header">
+            <h3><i class="icon-car"></i> Vehículos</h3>
+            <a href="{% url 'erp_extension:vehicle_list' %}" class="btn-link">Ver todos</a>
+        </div>
+        <div class="module-card-body">
+            <div class="vehicle-list">
+                {% for vehicle in vehicles %}
+                <div class="vehicle-item">
+                    <div class="vehicle-info">
+                        <span class="vehicle-plate">{{ vehicle.license_plate }}</span>
+                        <span class="vehicle-model">{{ vehicle.make }} {{ vehicle.model }}</span>
+                    </div>
+                    <div class="vehicle-fuel">
+                        <div class="fuel-gauge">
+                            <div class="fuel-level" style="width: {% widthratio vehicle.current_fuel_level vehicle.fuel_capacity 100 %}%"></div>
+                        </div>
+                        <span class="fuel-text">{{ vehicle.current_fuel_level|floatformat:2 }} / {{ vehicle.fuel_capacity }} L</span>
+                    </div>
+                    <a href="{% url 'erp_extension:vehicle_detail' vehicle.pk %}" class="btn-sm">Detalles</a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Últimas Recargas -->
+    <div class="module-card">
+        <div class="module-card-header">
+            <h3><i class="icon-truck-loading"></i> Últimas Recargas</h3>
+            <a href="{% url 'erp_extension:fuelrefill_list' %}" class="btn-link">Ver todas</a>
+        </div>
+        <div class="module-card-body">
+            <div class="refill-list">
+                {% for refill in recent_refills %}
+                <div class="refill-item">
+                    <div class="refill-header">
+                        <span class="refill-vehicle">{{ refill.vehicle.license_plate }}</span>
+                        <span class="refill-date">{{ refill.date|date:"d/m/Y H:i" }}</span>
+                    </div>
+                    <div class="refill-details">
+                        <div class="refill-station">
+                            <i class="icon-gas-station"></i>
+                            {{ refill.station.name }}
+                        </div>
+                        <div class="refill-quantity">
+                            {{ refill.quantity }} L
+                        </div>
+                        <div class="refill-cost">
+                            ${{ refill.total_cost|floatformat:2 }}
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="no-data">No hay recargas recientes</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Últimos Consumos -->
+    <div class="module-card">
+        <div class="module-card-header">
+            <h3><i class="icon-road"></i> Últimos Consumos</h3>
+            <a href="#" class="btn-link">Ver todos</a>
+        </div>
+        <div class="module-card-body">
+            <div class="consumption-list">
+                {% for consumption in recent_consumptions %}
+                <div class="consumption-item">
+                    <div class="consumption-header">
+                        <span class="consumption-vehicle">{{ consumption.vehicle.license_plate }}</span>
+                        <span class="consumption-date">{{ consumption.date|date:"d/m/Y H:i" }}</span>
+                    </div>
+                    <div class="consumption-details">
+                        <div class="consumption-quantity">
+                            {{ consumption.quantity }} L
+                        </div>
+                        <div class="consumption-km">
+                            {{ consumption.km_since_last }} km
+                        </div>
+                        <div class="consumption-efficiency">
+                            {{ consumption.efficiency|floatformat:2 }} km/L
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="no-data">No hay consumos recientes</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Acciones Rápidas -->
+    <div class="module-card">
+        <div class="module-card-header">
+            <h3><i class="icon-bolt"></i> Acciones Rápidas</h3>
+        </div>
+        <div class="module-card-body">
+            <div class="quick-actions">
+                <a href="{% url 'erp_extension:fuelrefill_create' %}" class="action-btn">
+                    <i class="icon-truck-loading"></i>
+                    <span>Registrar Recarga</span>
+                </a>
+                <a href="{% url 'erp_extension:fuelconsumption_create' %}" class="action-btn">
+                    <i class="icon-road"></i>
+                    <span>Registrar Consumo</span>
+                </a>
+                <a href="{% url 'erp_extension:maintenance_create' %}" class="action-btn">
+                    <i class="icon-tools"></i>
+                    <span>Registrar Mantenimiento</span>
+                </a>
+                <a href="{% url 'erp_extension:vehicle_create' %}" class="action-btn">
+                    <i class="icon-car"></i>
+                    <span>Agregar Vehículo</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<style>
+    /* Estilos específicos para el dashboard de combustible */
+    .summary-stats {
+        display: flex;
+        justify-content: space-around;
+        text-align: center;
+        padding: 15px 0;
+    }
+    
+    .stat-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .stat-value {
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--primary-color);
+    }
+    
+    .stat-label {
+        font-size: 12px;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .vehicle-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .vehicle-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px;
+        background: var(--card-bg);
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    
+    .vehicle-info {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .vehicle-plate {
+        font-weight: 600;
+        color: var(--text-color);
+    }
+    
+    .vehicle-model {
+        font-size: 12px;
+        color: var(--text-muted);
+    }
+    
+    .vehicle-fuel {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-width: 120px;
+    }
+    
+    .fuel-gauge {
+        width: 100%;
+        height: 8px;
+        background: #e0e0e0;
+        border-radius: 4px;
+        overflow: hidden;
+        margin-bottom: 4px;
+    }
+    
+    .fuel-level {
+        height: 100%;
+        background: var(--success-color);
+        transition: width 0.3s ease;
+    }
+    
+    .fuel-text {
+        font-size: 11px;
+        color: var(--text-muted);
+    }
+    
+    .refill-list, .consumption-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .refill-item, .consumption-item {
+        padding: 12px;
+        background: var(--card-bg);
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    
+    .refill-header, .consumption-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+    }
+    
+    .refill-vehicle, .consumption-vehicle {
+        font-weight: 600;
+    }
+    
+    .refill-date, .consumption-date {
+        font-size: 12px;
+        color: var(--text-muted);
+    }
+    
+    .refill-details, .consumption-details {
+        display: flex;
+        justify-content: space-between;
+        font-size: 14px;
+    }
+    
+    .refill-station, .consumption-quantity {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    
+    .quick-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+    
+    .action-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 15px 10px;
+        background: var(--card-bg);
+        border-radius: 8px;
+        text-align: center;
+        transition: all 0.2s ease;
+    }
+    
+    .action-btn:hover {
+        background: var(--primary-light);
+        transform: translateY(-2px);
+    }
+    
+    .action-btn i {
+        font-size: 24px;
+        margin-bottom: 8px;
+        color: var(--primary-color);
+    }
+    
+    .action-btn span {
+        font-size: 13px;
+    }
+    
+    .no-data {
+        text-align: center;
+        padding: 20px;
+        color: var(--text-muted);
+        font-style: italic;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Aquí puedes añadir cualquier funcionalidad JavaScript específica
+    // para el dashboard de combustible si es necesario
+    
+    // Ejemplo: Actualizar el dashboard cada 60 segundos
+    setInterval(function() {
+        // Puedes implementar una actualización AJAX aquí
+        console.log("Actualizando datos del dashboard...");
+    }, 60000);
+});
+</script>
+{% endblock %}

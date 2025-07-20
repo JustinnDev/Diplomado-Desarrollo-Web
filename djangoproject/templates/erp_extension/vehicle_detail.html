@@ -1,0 +1,381 @@
+{% extends "materials/material_dashboard.html" %}
+{% load static %}
+
+{% block module_content %}
+<div class="module-header">
+    <h1>Detalles del Vehículo</h1>
+    <div class="header-actions">
+        <a href="{% url 'erp_extension:vehicle_update' vehicle.pk %}" class="btn btn-primary">
+            <i class="fas fa-edit"></i> Editar
+        </a>
+        <a href="{% url 'erp_extension:vehicle_list' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Volver a la lista
+        </a>
+    </div>
+</div>
+
+<div class="vehicle-detail-container">
+    <div class="vehicle-info-card">
+        <div class="vehicle-header">
+            <h2>{{ vehicle.make }} {{ vehicle.model }} ({{ vehicle.year }})</h2>
+            <span class="badge {{ vehicle.is_active|yesno:'badge-success,badge-danger' }}">
+                {{ vehicle.is_active|yesno:"Activo,Inactivo" }}
+            </span>
+        </div>
+        
+        <div class="vehicle-details">
+            <div class="detail-row">
+                <span class="detail-label">Placa:</span>
+                <span class="detail-value">{{ vehicle.license_plate }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Tipo:</span>
+                <span class="detail-value">{{ vehicle.get_vehicle_type_display }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Combustible:</span>
+                <span class="detail-value">{{ vehicle.get_fuel_type_display }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Capacidad del tanque:</span>
+                <span class="detail-value">{{ vehicle.fuel_capacity }} litros</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Conductor actual:</span>
+                <span class="detail-value">
+                    {% if vehicle.current_driver %}
+                        {{ vehicle.current_driver.name }} ({{ vehicle.current_driver.license_number }})
+                    {% else %}
+                        No asignado
+                    {% endif %}
+                </span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Nivel de combustible:</span>
+                <span class="detail-value">
+                    {{ vehicle.current_fuel_level|floatformat:2 }} litros
+                    <div class="progress fuel-level">
+                        <div class="progress-bar" 
+                            role="progressbar" 
+                            style="width: {{ fuel_percentage }}%"
+                            aria-valuenow="{{ vehicle.current_fuel_level }}" 
+                            aria-valuemin="0" 
+                            aria-valuemax="{{ vehicle.fuel_capacity }}">
+                        </div>
+                    </div>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="vehicle-tabs">
+        <ul class="nav nav-tabs" id="vehicleTabs" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="refills-tab" data-toggle="tab" href="#refills" role="tab">
+                    <i class="fas fa-gas-pump"></i> Recargas
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="consumptions-tab" data-toggle="tab" href="#consumptions" role="tab">
+                    <i class="fas fa-tachometer-alt"></i> Consumos
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="maintenance-tab" data-toggle="tab" href="#maintenance" role="tab">
+                    <i class="fas fa-tools"></i> Mantenimientos
+                </a>
+            </li>
+        </ul>
+        
+        <div class="tab-content" id="vehicleTabsContent">
+            <div class="tab-pane fade show active" id="refills" role="tabpanel">
+                <div class="section-header">
+                    <h3>Últimas recargas de combustible</h3>
+                    <a href="{% url 'erp_extension:vehicle_fuelrefill_create' vehicle.pk %}" class="btn btn-sm btn-success">
+                        <i class="fas fa-plus"></i> Nueva recarga
+                    </a>
+                </div>
+                
+                {% if refills %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Estación</th>
+                                <th>Cantidad (L)</th>
+                                <th>Precio/L</th>
+                                <th>Total</th>
+                                <th>Odómetro</th>
+                                <th>Conductor</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for refill in refills %}
+                            <tr>
+                                <td>{{ refill.date|date:"d/m/Y H:i" }}</td>
+                                <td>{{ refill.station.name }}</td>
+                                <td>{{ refill.quantity }}</td>
+                                <td>${{ refill.price_per_unit }}</td>
+                                <td>${{ refill.total_cost }}</td>
+                                <td>{{ refill.odometer_reading }}</td>
+                                <td>{{ refill.driver.name }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <a href="{% url 'erp_extension:fuelrefill_list' %}?vehicle_id={{ vehicle.pk }}" class="btn btn-link">
+                    Ver todas las recargas <i class="fas fa-arrow-right"></i>
+                </a>
+                {% else %}
+                <div class="alert alert-info">
+                    No hay registros de recargas para este vehículo.
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="tab-pane fade" id="consumptions" role="tabpanel">
+                
+                {% if consumptions %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Cantidad (L)</th>
+                                <th>Odómetro</th>
+                                <th>Km desde último</th>
+                                <th>Eficiencia (km/L)</th>
+                                <th>Propósito</th>
+                                <th>Conductor</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+{% for consumption in consumptions %}
+    <tr>
+        <td>{{ consumption.date|date:"d/m/Y H:i" }}</td>
+        <td>{{ consumption.driver }}</td>
+        <td>{{ consumption.quantity }} L</td>
+        <td>{{ consumption.odometer_reading }} km</td>
+        <td>
+            <a href="{% url 'erp_extension:fuelconsumption_update' consumption.pk %}" 
+               class="btn btn-sm btn-primary" title="Editar">
+                <i class="fas fa-edit"></i>
+            </a>
+        </td>
+    </tr>
+{% endfor %}
+
+<a href="{% url 'erp_extension:vehicle_fuelconsumption_create' vehicle.pk %}" 
+   class="btn btn-sm btn-success">
+    <i class="fas fa-plus"></i> Nuevo consumo
+</a>
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    No hay registros de consumo para este vehículo.
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="tab-pane fade" id="maintenance" role="tabpanel">
+                <div class="section-header">
+                    <h3>Últimos mantenimientos</h3>
+                    <a href="{% url 'erp_extension:vehicle_maintenance_create' vehicle.pk %}" class="btn btn-sm btn-success">
+                        <i class="fas fa-plus"></i> Nuevo mantenimiento
+                    </a>
+                </div>
+                
+                {% if maintenances %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Tipo</th>
+                                <th>Descripción</th>
+                                <th>Costo</th>
+                                <th>Odómetro</th>
+                                <th>Próximo en</th>
+                                <th>Realizado por</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for maintenance in maintenances %}
+                            <tr>
+                                <td>{{ maintenance.date|date:"d/m/Y H:i" }}</td>
+                                <td>{{ maintenance.get_maintenance_type_display }}</td>
+                                <td>{{ maintenance.description|truncatechars:50 }}</td>
+                                <td>${{ maintenance.cost }}</td>
+                                <td>{{ maintenance.odometer_reading }}</td>
+                                <td>
+                                    {% if maintenance.next_maintenance_km %}
+                                        {{ maintenance.next_maintenance_km }} km
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td>{{ maintenance.performed_by|default:"-" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <a href="{% url 'erp_extension:maintenance_list' %}?vehicle_id={{ vehicle.pk }}" class="btn btn-link">
+                    Ver todos los mantenimientos <i class="fas fa-arrow-right"></i>
+                </a>
+                {% else %}
+                <div class="alert alert-info">
+                    No hay registros de mantenimiento para este vehículo.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<style>
+.vehicle-detail-container {
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.vehicle-info-card {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 30px;
+    border-left: 4px solid #4e73df;
+}
+
+.vehicle-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.vehicle-header h2 {
+    margin: 0;
+    color: #4e73df;
+}
+
+.detail-row {
+    display: flex;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.detail-row:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.detail-label {
+    font-weight: 600;
+    min-width: 180px;
+    color: #6c757d;
+}
+
+.detail-value {
+    flex: 1;
+}
+
+.fuel-level {
+    margin-top: 5px;
+    height: 10px;
+    width: 80%;
+}
+
+.progress-bar {
+    background-color: #4e73df;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.section-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+}
+
+.nav-tabs {
+    margin-bottom: 20px;
+}
+
+.nav-tabs .nav-link {
+    color: #6c757d;
+    border: none;
+    padding: 10px 20px;
+}
+
+.nav-tabs .nav-link.active {
+    color: #4e73df;
+    border-bottom: 2px solid #4e73df;
+    background: transparent;
+}
+
+.table th {
+    border-top: none;
+    font-weight: 600;
+    color: #6c757d;
+}
+
+.header-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.badge {
+    padding: 5px 10px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.badge-success {
+    background-color: #1cc88a;
+}
+
+.badge-danger {
+    background-color: #e74a3b;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script>
+$(document).ready(function() {
+    // Activar pestañas
+    $('#vehicleTabs a').on('click', function (e) {
+        e.preventDefault();
+        $(this).tab('show');
+    });
+    
+    // Guardar la pestaña activa en localStorage
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+        localStorage.setItem('lastVehicleTab', $(e.target).attr('href'));
+    });
+
+    // Recuperar la última pestaña activa
+    var lastTab = localStorage.getItem('lastVehicleTab');
+    if (lastTab) {
+        $('#vehicleTabs a[href="' + lastTab + '"]').tab('show');
+    }
+});
+</script>
+{% endblock %}

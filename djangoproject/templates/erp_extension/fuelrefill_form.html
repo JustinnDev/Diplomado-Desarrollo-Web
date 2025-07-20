@@ -1,0 +1,237 @@
+{% extends "materials/material_dashboard.html" %}
+{% load static %}
+
+{% block module_content %}
+<div class="module-header">
+    <h1>Registrar Recarga de Combustible</h1>
+    <p class="subtitle">Complete los detalles de la recarga de combustible</p>
+</div>
+
+<div class="form-container">
+    <form method="post" class="erp-form">
+        {% csrf_token %}
+        
+        <div class="form-grid">
+            <!-- Columna Izquierda -->
+            <div class="form-column">
+                <div class="form-group">
+                    <label for="{{ form.vehicle.id_for_label }}">Vehículo</label>
+                    {{ form.vehicle }}
+                    {% if form.vehicle.errors %}
+                        <div class="form-error">{{ form.vehicle.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.driver.id_for_label }}">Conductor</label>
+                    {{ form.driver }}
+                    {% if form.driver.errors %}
+                        <div class="form-error">{{ form.driver.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.station.id_for_label }}">Estación de Servicio</label>
+                    {{ form.station }}
+                    {% if form.station.errors %}
+                        <div class="form-error">{{ form.station.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.date.id_for_label }}">Fecha y Hora</label>
+                    <input type="datetime-local" 
+                           class="form-control" 
+                           name="{{ form.date.name }}" 
+                           id="{{ form.date.id_for_label }}"
+                           value="{{ form.date.value|default:''|date:'Y-m-d\TH:i' }}">
+                    {% if form.date.errors %}
+                        <div class="form-error">{{ form.date.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Columna Derecha -->
+            <div class="form-column">
+                <div class="form-group">
+                    <label for="{{ form.quantity.id_for_label }}">Cantidad (litros)</label>
+                    {{ form.quantity }}
+                    {% if form.quantity.errors %}
+                        <div class="form-error">{{ form.quantity.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.price_per_unit.id_for_label }}">Precio por litro ($)</label>
+                    <input type="number" 
+                           class="form-control" 
+                           name="{{ form.price_per_unit.name }}" 
+                           id="{{ form.price_per_unit.id_for_label }}"
+                           step="0.01" 
+                           min="0" 
+                           value="{{ form.price_per_unit.value|default:'0.50' }}">
+                    {% if form.price_per_unit.errors %}
+                        <div class="form-error">{{ form.price_per_unit.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.odometer_reading.id_for_label }}">Lectura del Odómetro</label>
+                    {{ form.odometer_reading }}
+                    {% if form.odometer_reading.errors %}
+                        <div class="form-error">{{ form.odometer_reading.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.notes.id_for_label }}">Notas</label>
+                    {{ form.notes }}
+                    {% if form.notes.errors %}
+                        <div class="form-error">{{ form.notes.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> Guardar Recarga
+            </button>
+            <a href="{% if form.instance.vehicle %}{% url 'erp_extension:vehicle_detail' pk=form.instance.vehicle.pk %}{% else %}{% url 'erp_extension:fuelrefill_list' %}{% endif %}" 
+               class="btn btn-secondary">
+                <i class="fas fa-times"></i> Cancelar
+            </a>
+        </div>
+    </form>
+</div>
+
+<style>
+    .form-container {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        padding: 25px;
+        margin-top: 20px;
+    }
+    
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+    
+    .form-group {
+        margin-bottom: 20px;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: #333;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+    
+    select.form-control {
+        height: 40px;
+    }
+    
+    textarea.form-control {
+        min-height: 100px;
+        resize: vertical;
+    }
+    
+    .form-error {
+        color: #dc3545;
+        font-size: 13px;
+        margin-top: 5px;
+    }
+    
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 25px;
+        padding-top: 20px;
+        border-top: 1px solid #eee;
+    }
+    
+    .btn {
+        padding: 10px 20px;
+        border-radius: 4px;
+        font-size: 14px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .btn-primary {
+        background-color: #4e73df;
+        color: white;
+        border: none;
+    }
+    
+    .btn-primary:hover {
+        background-color: #3a5ec0;
+    }
+    
+    .btn-secondary {
+        background-color: #f8f9fc;
+        color: #333;
+        border: 1px solid #ddd;
+    }
+    
+    .btn-secondary:hover {
+        background-color: #e2e6ea;
+    }
+    
+    @media (max-width: 768px) {
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Establecer la fecha y hora actual por defecto si no hay valor
+    const dateField = document.getElementById('{{ form.date.id_for_label }}');
+    if (!dateField.value) {
+        const now = new Date();
+        const timezoneOffset = now.getTimezoneOffset() * 60000;
+        const localISOTime = (new Date(now - timezoneOffset)).toISOString().slice(0, 16);
+        dateField.value = localISOTime;
+    }
+    
+    // Calcular y mostrar el costo total en tiempo real
+    const quantityField = document.getElementById('{{ form.quantity.id_for_label }}');
+    const priceField = document.getElementById('{{ form.price_per_unit.id_for_label }}');
+    const totalCostDisplay = document.createElement('div');
+    totalCostDisplay.className = 'total-cost';
+    totalCostDisplay.style.marginTop = '8px';
+    totalCostDisplay.style.fontWeight = '500';
+    priceField.parentNode.appendChild(totalCostDisplay);
+    
+    function calculateTotalCost() {
+        const quantity = parseFloat(quantityField.value) || 0;
+        const price = parseFloat(priceField.value) || 0;
+        const total = (quantity * price).toFixed(2);
+        totalCostDisplay.textContent = `Costo total: $${total}`;
+    }
+    
+    quantityField.addEventListener('input', calculateTotalCost);
+    priceField.addEventListener('input', calculateTotalCost);
+    
+    // Calcular inicialmente
+    calculateTotalCost();
+});
+</script>
+{% endblock %}

@@ -1,0 +1,158 @@
+{% extends "materials/material_dashboard.html" %}
+{% load static %}
+
+{% block module_content %}
+<div class="module-header">
+    <h1>
+        {% if object %}Editar{% else %}Registrar{% endif %} Mantenimiento
+    </h1>
+    <p class="subtitle">
+        {% if object %}
+            Actualice los datos del mantenimiento del vehículo
+        {% else %}
+            Registre un nuevo mantenimiento para el vehículo
+        {% endif %}
+    </p>
+</div>
+
+<div class="form-container">
+    <form method="post" class="erp-form">
+        {% csrf_token %}
+        
+        <div class="form-section">
+            <h3 class="section-title">Información del Vehículo</h3>
+            <div class="form-row">
+                <div class="form-group {% if form.vehicle.errors %}has-error{% endif %}">
+                    {{ form.vehicle.label_tag }}
+                    {{ form.vehicle }}
+                    {% if form.vehicle.errors %}
+                        <div class="error-message">
+                            {{ form.vehicle.errors.as_text }}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <h3 class="section-title">Detalles del Mantenimiento</h3>
+            <div class="form-row">
+                <div class="form-group {% if form.date.errors %}has-error{% endif %}">
+                    {{ form.date.label_tag }}
+                    {{ form.date }}
+                    {% if form.date.errors %}
+                        <div class="error-message">
+                            {{ form.date.errors.as_text }}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group {% if form.maintenance_type.errors %}has-error{% endif %}">
+                    {{ form.maintenance_type.label_tag }}
+                    {{ form.maintenance_type }}
+                    {% if form.maintenance_type.errors %}
+                        <div class="error-message">
+                            {{ form.maintenance_type.errors.as_text }}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group {% if form.odometer_reading.errors %}has-error{% endif %}">
+                    {{ form.odometer_reading.label_tag }}
+                    {{ form.odometer_reading }}
+                    {% if form.odometer_reading.errors %}
+                        <div class="error-message">
+                            {{ form.odometer_reading.errors.as_text }}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group {% if form.next_maintenance_km.errors %}has-error{% endif %}">
+                    {{ form.next_maintenance_km.label_tag }}
+                    {{ form.next_maintenance_km }}
+                    {% if form.next_maintenance_km.errors %}
+                        <div class="error-message">
+                            {{ form.next_maintenance_km.errors.as_text }}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group {% if form.cost.errors %}has-error{% endif %}">
+                    {{ form.cost.label_tag }}
+                    {{ form.cost }}
+                    {% if form.cost.errors %}
+                        <div class="error-message">
+                            {{ form.cost.errors.as_text }}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group {% if form.performed_by.errors %}has-error{% endif %}">
+                    {{ form.performed_by.label_tag }}
+                    {{ form.performed_by }}
+                    {% if form.performed_by.errors %}
+                        <div class="error-message">
+                            {{ form.performed_by.errors.as_text }}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group full-width {% if form.description.errors %}has-error{% endif %}">
+                    {{ form.description.label_tag }}
+                    {{ form.description }}
+                    {% if form.description.errors %}
+                        <div class="error-message">
+                            {{ form.description.errors.as_text }}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                <i class="icon-save"></i> Guardar
+            </button>
+            <a href="{% if object %}{% url 'erp_extension:vehicle_detail' object.vehicle.pk %}{% else %}{% url 'erp_extension:maintenance_list' %}{% endif %}" class="btn btn-secondary">
+                <i class="icon-times"></i> Cancelar
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Actualizar el campo de vehículo si viene en la URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const vehicleId = urlParams.get('vehicle_id');
+    
+    if (vehicleId && document.getElementById('id_vehicle')) {
+        document.getElementById('id_vehicle').value = vehicleId;
+    }
+    
+    // Deshabilitar el campo de vehículo si viene en la URL (solo lectura)
+    if (vehicleId) {
+        document.getElementById('id_vehicle').disabled = true;
+    }
+    
+    // Manejar la lógica del próximo mantenimiento
+    const odometerField = document.getElementById('id_odometer_reading');
+    const nextMaintenanceField = document.getElementById('id_next_maintenance_km');
+    
+    if (odometerField && nextMaintenanceField) {
+        odometerField.addEventListener('change', function() {
+            if (this.value && !nextMaintenanceField.value) {
+                // Sugerir próximo mantenimiento a 5000 km más
+                nextMaintenanceField.value = parseInt(this.value) + 5000;
+            }
+        });
+    }
+});
+</script>
