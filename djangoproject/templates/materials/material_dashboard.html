@@ -16,6 +16,7 @@
 <link rel="stylesheet" href="{% static 'css/erp_extension_forms.css' %}">
 <link rel="stylesheet" href="{% static 'css/erp_extension_list.css' %}">
 <link rel="stylesheet" href="{% static 'css/erp_extension_confirm_delete.css' %}">
+<link rel="stylesheet" href="{% static 'css/erp_extension_stock.css' %}">
 <link rel="stylesheet" href="{% static 'css/erp_extension_messages.css' %}">
 <link rel="stylesheet" href="{% static 'css/erp_extension_animate.css' %}">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -41,21 +42,21 @@
         <div class="sidebar-menu">
             <div class="menu-category">Principal</div>
             <div class="menu-item">
-                <a href="{% url 'landing:index' %}">
+                <a href="{% url 'materials:dashboard' %}">
                     <span class="menu-icon"><i class="icon-home"></i></span>
                     <span class="menu-text">Dashboard</span>
                 </a>
             </div>
             
             <div class="menu-category">Operaciones</div>
-                <div class="menu-item active">
+                <div class="menu-item">
                     <a href="{% url 'materials:dashboard' %}">
                         <span class="menu-icon"><i class="icon-cube"></i></span>
                         <span class="menu-text">Materiales</span>
                     </a>
                 </div>
                 <div class="menu-item">
-                    <a href="{% url 'materials:comming_soon' %}">
+                    <a href="{% url 'materials:stock' %}">
                         <span class="menu-icon"><i class="icon-warehouse"></i></span>
                         <span class="menu-text">Inventario</span>
                     </a>
@@ -75,7 +76,7 @@
                     </a>
                 </div>
                 <div class="menu-item">
-                    <a href="">
+                    <a href="{% url 'erp_extension:crm' %}">
                         <span class="menu-icon"><i class="icon-users"></i></span>
                         <span class="menu-text">CRM</span>
                     </a>
@@ -198,7 +199,7 @@
                     </div>
                     <div class="module-card-body">
                         <div class="module-feature">
-                            <a href="#">
+                            <a href="{% url 'materials:stock' %}">
                                 <span class="feature-icon"><i class="icon-boxes"></i></span>
                                 Gestión de Stock
                             </a>

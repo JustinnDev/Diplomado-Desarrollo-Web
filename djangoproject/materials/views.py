@@ -31,6 +31,32 @@ class AdminMixin(AccessMixin):
         return super().dispatch(request, *args, **kwargs)
 
 
+class MaterialStockView(AdminMixin, ListView):
+    model = MaterialType
+    template_name = 'materials/material_stock.html'
+    context_object_name = 'materials'
+    
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return queryset.order_by('category', 'name')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        materials = context['materials']
+        total_stock = 0
+        total_value = 0
+        
+        for material in materials:
+            stock = material.current_stock
+            total_stock += stock
+            total_value += stock * material.base_price
+        
+        context['total_stock'] = total_stock
+        context['total_value'] = total_value
+        
+        return context
+
 # Vistas para Materiales
 class MaterialListView(AdminMixin,ListView):
     model = MaterialType

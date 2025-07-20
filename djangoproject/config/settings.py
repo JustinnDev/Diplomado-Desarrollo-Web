@@ -12,8 +12,15 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
+from dotenv import load_dotenv
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+load_dotenv() 
+
+TRELLO_API_KEY = os.getenv('TRELLO_API_KEY')
+TRELLO_API_SECRET = os.getenv('TRELLO_API_SECRET')
+TRELLO_TOKEN = os.getenv('TRELLO_TOKEN')
+
+# Build paths inside the project like this: BASE_DIR / 'subdir'.s
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 

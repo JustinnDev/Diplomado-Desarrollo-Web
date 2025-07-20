@@ -1,0 +1,107 @@
+{% extends 'materials/material_dashboard.html' %}
+{% load static %}
+{% load math_filters %}
+
+
+{% block module_content %}
+<div class="stock-header">
+    <h1><i class="icon icon-boxes"></i> Stock de Materiales</h1>
+    <div class="module-actions">
+        <button class="btn btn-secondary" onclick="window.print()">
+            <i class="icon icon-printer"></i> Imprimir
+        </button>
+        <button class="btn btn-primary" id="refreshStock">
+            <i class="icon icon-sync"></i> Actualizar
+        </button>
+    </div>
+</div>
+
+<div class="stock-summary">
+    <div class="stock-card">
+        <h3>Materiales Registrados</h3>
+        <div class="value">{{ materials|length }}</div>
+        <div class="label">Tipos diferentes</div>
+    </div>
+    <div class="stock-card">
+        <h3>Stock Total</h3>
+        <div class="value">{{ total_stock|floatformat:2 }} kg</div>
+        <div class="label">Peso neto acumulado</div>
+    </div>
+    <div class="stock-card">
+        <h3>Valor Total</h3>
+        <div class="value text-success">${{ total_value|floatformat:2 }}</div>
+        <div class="label">Valor según precios base</div>
+    </div>
+</div>
+
+<div class="material-table-container">
+    {% if materials %}
+    <table class="erp-table">
+        <thead>
+            <tr>
+                <th>Material</th>
+                <th>Categoría</th>
+                <th class="text-right">Stock (kg)</th>
+                <th class="text-right">Precio Base</th>
+                <th class="text-right">Valor Total</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for material in materials %}
+            <tr>
+                <td>
+                    <strong>{{ material.name }}</strong>
+                </td>
+                <td>
+                    <span class="badge-category badge-{{ material.category|lower }}">
+                        {{ material.get_category_display }}
+                    </span>
+                </td>
+                <td class="text-right">{{ material.current_stock|floatformat:2 }}</td>
+                <td class="text-right">${{ material.base_price|floatformat:2 }}</td>
+                <td class="text-right text-success">${{ material.current_stock|multiply:material.base_price|floatformat:2 }}</td>
+                <td>
+                    <div class="table-actions">
+                        <a href="{% url 'materials:edit' material.pk %}" class="btn-icon" title="Editar">
+                            <i class="icon icon-edit"></i>
+                        </a>
+                        <a href="{% url 'materials:reception_create' %}?material={{ material.pk }}" 
+                           class="btn-icon" title="Nueva recepción">
+                            <i class="icon icon-truck"></i>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+        <i class="icon icon-box-open" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+        <h3>No hay materiales registrados</h3>
+        <p>Comienza añadiendo tu primer material para verlo aquí</p>
+        <a href="{% url 'materials:add' %}" class="btn btn-primary" style="margin-top: 1rem;">
+            <i class="icon icon-plus"></i> Añadir Material
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script>
+$(document).ready(function() {
+    // Botón de actualizar
+    $('#refreshStock').click(function() {
+        window.location.reload();
+    });
+
+    // Actualizar automáticamente cada 5 minutos (300000 ms)
+    setTimeout(function() {
+        window.location.reload();
+    }, 300000);
+});
+</script>
+{% endblock %}

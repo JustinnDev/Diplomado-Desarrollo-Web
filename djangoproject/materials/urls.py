@@ -18,4 +18,5 @@ urlpatterns = [
     path('reception/<int:pk>/delete/', views.ReceptionDeleteView.as_view(), name='reception_delete'),
     path('reception/<int:pk>/detail/', views.ReceptionDetailView.as_view(), name='reception_detail'),
     path('reception/complete/', views.ReceptionCompleteView.as_view(), name='reception_complete'),
+    path('stock/', views.MaterialStockView.as_view(), name='stock'),
 ]

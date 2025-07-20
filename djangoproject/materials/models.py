@@ -16,6 +16,17 @@ class MaterialType(models.Model):
     
     def __str__(self):
         return f"{self.name}"
+    
+    @property
+    def current_stock(self):
+        """Calcula el stock actual sumando todas las operaciones de recepción"""
+        from django.db.models import Sum, F
+        total = ReceptionMaterial.objects.filter(
+            material_type=self
+        ).aggregate(
+            total_net=Sum(F('operations__gross_weight') - F('operations__tare_weight'))
+        )['total_net']
+        return total or 0
 
 class Client(models.Model):
     name = models.CharField(max_length=100)
