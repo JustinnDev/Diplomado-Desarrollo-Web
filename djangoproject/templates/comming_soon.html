@@ -4,41 +4,44 @@
 {% block module_content %}
 <div class="module-header">
     <h1>Sección en Desarrollo</h1>
-    <p class="subtitle">¡Estamos trabajando en esta funcionalidad!</p>
+    <p class="subtitle">¡Estamos trabajando duro para traerte esta funcionalidad!</p>
 </div>
 
 <div class="module-grid">
     <div class="module-card full-width">
         <div class="module-card-header">
-            <h3><i class="icon icon-cog"></i> En Construcción</h3>
+            <h2 class="construction-title">
+                <i class="icon icon-cog" aria-hidden="true"></i> 
+                <span>En Construcción</span>
+            </h2>
         </div>
-        <div class="module-card-body text-center">
-            <div class="animate-box">
-                <span class="dev-logo" style="font-size: 5rem; color: #6c757d; margin-bottom: 20px;">
-                    <i class="fas fa-tools"></i>
-                </span>
-                <h3 style="margin-bottom: 15px;">¡Próximamente!</h3>
-                <p style="margin-bottom: 25px; font-size: 16px;">
-                    Nuestro equipo está desarrollando esta funcionalidad para ofrecerte una mejor experiencia.
-                    Estará disponible en próximas actualizaciones.
+        <div class="module-card-body">
+            <div class="coming-soon-content">
+                <div class="construction-icon" aria-hidden="true">
+                    <i class="fas fa-tools fa-5x"></i>
+                </div>
+                <h3 class="coming-soon-title">¡Próximamente!</h3>
+                <p class="coming-soon-description">
+                    Nuestro equipo está desarrollando esta funcionalidad con mucho cuidado para ofrecerte la mejor experiencia.
+                    Estará disponible en las próximas actualizaciones del sistema.
                 </p>
                 
-                <div class="row" style="margin-top: 30px;">
-                    <div class="col-md-4 col-sm-6 col-xs-12" style="margin-bottom: 15px;">
-                        <a href="{% url 'landing:index' %}" class="btn btn-primary btn-block">
-                            <i class="fas fa-home" style="margin-right: 8px;"></i>
+                <div class="action-buttons">
+                    <div class="action-button">
+                        <a href="{% url 'landing:index' %}" class="btn btn-primary" aria-label="Ir a la página principal">
+                            <i class="fas fa-home" aria-hidden="true"></i>
                             Página Principal
                         </a>
                     </div>
-                    <div class="col-md-4 col-sm-6 col-xs-12" style="margin-bottom: 15px;">
-                        <a href="{% url 'materials:dashboard' %}" class="btn btn-primary btn-block">
-                            <i class="fas fa-cube" style="margin-right: 8px;"></i>
+                    <div class="action-button">
+                        <a href="{% url 'materials:dashboard' %}" class="btn btn-primary" aria-label="Volver al dashboard de materiales">
+                            <i class="fas fa-cube" aria-hidden="true"></i>
                             Materiales
                         </a>
                     </div>
-                    <div class="col-md-4 col-sm-6 col-xs-12" style="margin-bottom: 15px;">
-                        <a href="#" class="btn btn-primary btn-block">
-                            <i class="fas fa-envelope" style="margin-right: 8px;"></i>
+                    <div class="action-button">
+                        <a href="#" class="btn btn-primary" aria-label="Contactar al equipo de soporte">
+                            <i class="fas fa-envelope" aria-hidden="true"></i>
                             Contacto
                         </a>
                     </div>
@@ -47,4 +50,67 @@
         </div>
     </div>
 </div>
+
+<style>
+    .coming-soon-content {
+        text-align: center;
+        padding: 2rem;
+    }
+    
+    .construction-icon {
+        color: #6c757d;
+        margin-bottom: 1.5rem;
+        transition: transform 0.3s ease;
+    }
+    
+    .construction-icon:hover {
+        transform: rotate(15deg);
+    }
+    
+    .coming-soon-title {
+        margin-bottom: 1rem;
+        color: #343a40;
+        font-weight: 600;
+    }
+    
+    .coming-soon-description {
+        margin-bottom: 2rem;
+        font-size: 1.1rem;
+        color: #495057;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+        line-height: 1.6;
+    }
+    
+    .action-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+    
+    .action-button {
+        flex: 1;
+        min-width: 200px;
+    }
+    
+    .construction-title {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin: 0;
+    }
+    
+    @media (max-width: 768px) {
+        .action-buttons {
+            flex-direction: column;
+        }
+        
+        .action-button {
+            width: 100%;
+        }
+    }
+</style>
 {% endblock %}

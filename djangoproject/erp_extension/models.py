@@ -110,6 +110,7 @@ class FuelRefill(models.Model):
     @property
     def total_cost(self):
         return self.quantity * self.price_per_unit
+    
 
 
 class FuelConsumption(models.Model):

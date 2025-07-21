@@ -69,55 +69,7 @@
     </div>
 </div>
 
-<!-- Filtros y búsqueda -->
-<div class="module-filters">
-    <form method="get" class="filter-form">
-        <div class="form-row">
-            <div class="form-group col-md-3">
-                <label for="vehicle_type">Tipo de vehículo</label>
-                <select name="vehicle_type" id="vehicle_type" class="form-control">
-                    <option value="">Todos</option>
-                    {% for type in VEHICLE_TYPE_CHOICES %}
-                        <option value="{{ type.0 }}" {% if request.GET.vehicle_type == type.0 %}selected{% endif %}>
-                            {{ type.1 }}
-                        </option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="form-group col-md-3">
-                <label for="fuel_type">Tipo de combustible</label>
-                <select name="fuel_type" id="fuel_type" class="form-control">
-                    <option value="">Todos</option>
-                    {% for type in FUEL_TYPE_CHOICES %}
-                        <option value="{{ type.0 }}" {% if request.GET.fuel_type == type.0 %}selected{% endif %}>
-                            {{ type.1 }}
-                        </option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="form-group col-md-3">
-                <label for="status">Estado</label>
-                <select name="status" id="status" class="form-control">
-                    <option value="">Todos</option>
-                    <option value="active" {% if request.GET.status == 'active' %}selected{% endif %}>Activos</option>
-                    <option value="inactive" {% if request.GET.status == 'inactive' %}selected{% endif %}>Inactivos</option>
-                </select>
-            </div>
-            <div class="form-group col-md-3">
-                <label for="search">Buscar</label>
-                <div class="input-group">
-                    <input type="text" name="search" id="search" class="form-control" 
-                           placeholder="Placa, marca..." value="{{ request.GET.search }}">
-                    <div class="input-group-append">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </form>
-</div>
+
 {% endblock %}
 
 {% block extra_css %}

@@ -8,6 +8,7 @@ from django.views.generic import TemplateView, ListView, CreateView, UpdateView,
 from django.urls import reverse_lazy
 from django.shortcuts import get_object_or_404
 from decimal import Decimal
+from django.core.exceptions import ValidationError
 
 from .models import (
     Driver, Vehicle, FuelStation, 
@@ -337,6 +338,7 @@ class FuelStationCreateView(BaseFuelView, CreateView):
     error_message = "Error al crear la estación de combustible"
 
 # Vistas para Recargas de Combustible
+
 class FuelRefillCreateView(BaseFuelView, CreateView):
     model = FuelRefill
     form_class = FuelRefillForm
@@ -353,6 +355,18 @@ class FuelRefillCreateView(BaseFuelView, CreateView):
         if vehicle_id:
             initial['vehicle'] = get_object_or_404(Vehicle, pk=vehicle_id)
         return initial
+
+    def form_valid(self, form):
+        # Validar que la recarga no exceda la capacidad máxima del vehículo
+        vehicle = form.cleaned_data['vehicle']
+        refill_quantity = form.cleaned_data['quantity']
+        current_level = vehicle.current_fuel_level or 0
+        fuel_capacity = vehicle.fuel_capacity
+
+        if current_level + refill_quantity > fuel_capacity:
+            form.add_error('quantity', f"La recarga excede la capacidad actual del Tanque.")
+            return self.form_invalid(form)
+        return super().form_valid(form)
 
 class FuelRefillListView(BaseFuelView, ListView):
     model = FuelRefill
@@ -385,6 +399,17 @@ class FuelConsumptionCreateView(BaseFuelView, CreateView):
         if vehicle_id:
             initial['vehicle'] = get_object_or_404(Vehicle, pk=vehicle_id)
         return initial
+    
+    def form_valid(self, form):
+        # Validar que el consumo no genere un nivel negativo del tanque
+        vehicle = form.cleaned_data['vehicle']
+        consumption_quantity = form.cleaned_data['quantity']
+        current_level = vehicle.current_fuel_level or 0
+
+        if consumption_quantity > current_level:
+            form.add_error('quantity', "El consumo no puede ser negativo.")
+            return self.form_invalid(form)
+        return super().form_valid(form)
 
 class FuelConsumptionUpdateView(BaseFuelView, UpdateView):
     model = FuelConsumption
@@ -458,11 +483,15 @@ class FuelDashboardView(BaseFuelView, View):
 
     def get(self, request, *args, **kwargs):
         vehicles = Vehicle.objects.filter(is_active=True)
+        drivers = Driver.objects.filter(is_active=True)
+        fuelstations = FuelStation.objects.filter(is_active=True)
         recent_refills = FuelRefill.objects.order_by('-date')[:5]
         recent_consumptions = FuelConsumption.objects.order_by('-date')[:5]
         
         context = {
             'vehicles': vehicles,
+            'drivers': drivers,
+            'fuelstations': fuelstations,
             'recent_refills': recent_refills,
             'recent_consumptions': recent_consumptions,
         }
