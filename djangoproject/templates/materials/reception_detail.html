@@ -11,9 +11,9 @@
                     <a href="{% url 'materials:reception_list' %}" class="btn btn-outline-secondary mr-2">
                         <i class="fas fa-arrow-left"></i> Volver
                     </a>
-                    <button onclick="window.print()" class="btn btn-outline-primary">
-                        <i class="fas fa-print"></i> Imprimir
-                    </button>
+<a href="{% url 'materials:reception_print' pk=reception.id %}" class="btn btn-outline-primary" target="_blank">
+    <i class="fas fa-print"></i> Imprimir
+</a>
                 </div>
             </div>
 

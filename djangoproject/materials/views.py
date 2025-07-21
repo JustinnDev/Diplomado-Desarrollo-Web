@@ -8,6 +8,17 @@ from django.contrib.auth.mixins import AccessMixin
 from django.db import transaction, connections
 from django.core.serializers.json import DjangoJSONEncoder
 import json
+from django.http import HttpResponse
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.units import inch
+from reportlab.lib.enums import TA_CENTER, TA_RIGHT
+from reportlab.pdfgen import canvas
+from reportlab.platypus.flowables import HRFlowable
+from reportlab.lib.enums import TA_LEFT
+
 
 
 def admin_or_lin_required(view_func):
@@ -362,3 +373,175 @@ class ReceptionCompleteView(AdminMixin,TemplateView):
             del request.session['current_material']
             
         return redirect('materials:reception_list')
+    
+
+
+class ReceptionPrintView(AdminMixin, View):
+    def get(self, request, pk, *args, **kwargs):
+        reception = get_object_or_404(MaterialReception, pk=pk)
+
+        total_net_weight = sum(material.net_weight for material in reception.materials.all())
+        total_reception = sum(material.total for material in reception.materials.all())
+
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="Recibo_Recepción_{reception.id}.pdf"'
+
+        doc = SimpleDocTemplate(response, pagesize=letter,
+                                rightMargin=36, leftMargin=36,
+                                topMargin=36, bottomMargin=36)
+
+        styles = getSampleStyleSheet()
+        elements = []
+
+        # Estilos personalizados
+        left_title_style = ParagraphStyle('LeftTitle', parent=styles['Heading1'], fontSize=16, alignment=TA_LEFT, spaceAfter=6, textColor=colors.HexColor('#2c3e50'), fontName='Helvetica-Bold')
+        left_subtitle_style = ParagraphStyle('LeftSubtitle', parent=styles['Normal'], fontSize=10, alignment=TA_LEFT, spaceAfter=4, textColor=colors.HexColor('#34495e'), fontName='Helvetica')
+        section_style = ParagraphStyle('Section', parent=styles['Heading3'], fontSize=12, spaceAfter=8, textColor=colors.HexColor('#3498db'), fontName='Helvetica-Bold')
+        total_style = ParagraphStyle('Total', parent=styles['Normal'], fontSize=12, alignment=TA_RIGHT, textColor=colors.HexColor('#c0392b'), fontName='Helvetica-Bold')
+
+        # ENCABEZADO alineado a la izquierda
+        elements.append(Paragraph("RECIBO DE RECEPCIÓN", left_title_style))
+        elements.append(Paragraph(f"N° {reception.id:05d}", left_subtitle_style))
+        elements.append(Spacer(1, 6))
+        elements.append(Paragraph("RECICLADORA TITANIUM C.A.", left_subtitle_style))
+        elements.append(Paragraph("Aragua Av. Joaquin Crespo Calle de Servicio", left_subtitle_style))
+        elements.append(Paragraph("Parcela Nro. 25-B-G-4 Caserio Asentamiento Campesino La Morita Turmero", left_subtitle_style))
+        elements.append(Paragraph("RIF: J-412345678 | Teléfono: 0243-1234567", left_subtitle_style))
+        elements.append(Paragraph("Email: administracion@recicladoratitanium.com", left_subtitle_style))
+        elements.append(Spacer(1, 16))
+
+        # INFORMACIÓN GENERAL
+        elements.append(Paragraph("INFORMACIÓN GENERAL", section_style))
+
+        general_data = [
+            ["Cliente:", reception.client.name, "Fecha/Hora:", reception.reception_date.strftime("%d/%m/%Y %H:%M")],
+            ["Identificación:", reception.client.identification, "Total Recepción:", f"${total_reception:,.2f}"],
+        ]
+
+        if reception.client.phone:
+            general_data.append(["Teléfono:", reception.client.phone, "Peso Total:", f"{total_net_weight:,.2f} kg"])
+
+        if reception.notes:
+            general_data.append(["Notas:", reception.notes, "", ""])
+
+        general_table = Table(general_data, colWidths=[80, 180, 80, 180])
+        general_table.setStyle(TableStyle([
+            ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
+            ('FONTSIZE', (0, 0), (-1, -1), 10),
+            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+            ('TEXTCOLOR', (0, 0), (-1, -1), colors.HexColor('#2c3e50')),
+        ]))
+        elements.append(general_table)
+        elements.append(Spacer(1, 24))
+
+        # DETALLE DE MATERIALES
+        elements.append(Paragraph("DETALLE DE MATERIALES RECEPCIONADOS", section_style))
+
+        material_data = [[
+            "Material", 
+            "Categoría", 
+            "Subtipo", 
+            "Precio Unit.", 
+            "Desc.", 
+            "Peso Neto", 
+            "Total"
+        ]]
+
+        for material in reception.materials.all():
+            discount = "-"
+            if material.discount_type != 'NONE':
+                discount = f"{material.discount_value}{'%' if material.discount_type == 'PERCENTAGE' else 'kg'}"
+
+            row = [
+                material.material_type.name,
+                material.material_type.get_category_display(),
+                material.get_subtype_display(),
+                f"${material.material_type.base_price:,.2f}",
+                discount,
+                f"{material.net_weight:,.2f} kg",
+                f"${material.total:,.2f}"
+            ]
+            material_data.append(row)
+
+        material_data.append([
+            "", "", "", "", "TOTAL GENERAL:", 
+            f"{total_net_weight:,.2f} kg", 
+            f"${total_reception:,.2f}"
+        ])
+
+        materials_table = Table(material_data, colWidths=[120, 80, 80, 70, 50, 70, 70])
+        materials_table.setStyle(TableStyle([
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, -1), 9),
+            ('ALIGN', (3, 0), (-1, -1), 'RIGHT'),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ('GRID', (0, 0), (-1, -len(material_data)+1), 0.5, colors.HexColor('#e0e0e0')),
+            ('LINEBELOW', (0, -1), (-1, -1), 1, colors.HexColor('#c0392b')),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#3498db')),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+            ('BACKGROUND', (0, -1), (-1, -1), colors.HexColor('#f8f9fa')),
+            ('TEXTCOLOR', (0, -1), (-1, -1), colors.HexColor('#c0392b')),
+            ('SPAN', (1, -1), (4, -1)),
+            ('ROWBACKGROUNDS', (0, 1), (-1, -2), [colors.white, colors.HexColor('#f8f9fa')]),
+        ]))
+        elements.append(materials_table)
+        elements.append(Spacer(1, 36))
+
+        # FIRMAS
+        elements.append(HRFlowable(width="100%", thickness=1, lineCap='round', color=colors.HexColor('#3498db'), spaceAfter=12))
+
+        signatures = Table([
+            ["", ""],["", ""],["", ""],
+            ["_________________________", "_________________________"],
+            ["Firma del Cliente", "Firma del Responsable"],
+            ["", ""],
+            ["Nombre: ___________________", "Nombre: ___________________"],
+            ["C.I.: ____________________", "C.I.: ____________________"]
+        ], colWidths=[250, 250])
+
+        signatures.setStyle(TableStyle([
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('FONTSIZE', (0, 0), (-1, -1), 10),
+            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+            ('LINEABOVE', (0, 1), (0, 1), 1, colors.black),
+            ('LINEABOVE', (1, 1), (1, 1), 1, colors.black),
+            ('TEXTCOLOR', (0, 0), (-1, -1), colors.HexColor('#7f8c8d')),
+        ]))
+        elements.append(signatures)
+
+        # Nota final
+        nota = Paragraph(
+            "Documento generado automáticamente. Favor verificar todos los datos al recibir.",
+            ParagraphStyle('Nota', parent=styles['Normal'], fontSize=8, alignment=TA_CENTER, textColor=colors.HexColor('#95a5a6'), spaceBefore=24)
+        )
+        elements.append(nota)
+
+        doc.build(elements, onFirstPage=self.add_page_number, onLaterPages=self.add_page_number)
+        return response
+
+    def add_page_number(self, canvas, doc):
+        page_num = canvas.getPageNumber()
+        text = f"Página {page_num}"
+        canvas.setFont('Helvetica', 8)
+        canvas.setFillColor(colors.HexColor('#95a5a6'))
+        canvas.drawRightString(doc.width + doc.rightMargin - 20, 20, text)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
