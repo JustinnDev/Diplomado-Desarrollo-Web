@@ -2,115 +2,204 @@
 {% load static %}
 
 {% block module_content %}
-<section class="colorlib-section colorlib-catalog">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-8 col-md-offset-2 text-center colorlib-heading animate-box">
-                <h2 class="catalog-title">Historial de Recepciones</h2>
-                <p class="catalog-subtitle">Listado completo de recepciones de materiales</p>
-            </div>
-        </div>
-        
-        <div class="row">
-            <div class="col-md-12 animate-box" data-animate-effect="fadeInUp">
-                <div class="table-responsive">
-                    <table class="table catalog-table">
-                        <thead>
-                            <tr class="table-header">
-                                <th class="text-center">ID</th>
-                                <th class="text-center">Cliente</th>
-                                <th class="text-center">Fecha</th>
-                                <th class="text-center">Materiales</th>
-                                <th class="text-center">Peso Total</th>
-                                <th class="text-center">Valor Total</th>
-                                <th class="text-center">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for reception in receptions %}
-                            <tr class="table-row">
-                                <td class="text-center" data-title="ID">
-                                    #{{ reception.id }}
-                                </td>
-                                <td class="text-center" data-title="Cliente">
-                                    {{ reception.client.name }}
-                                    <br>
-                                    <small class="client-id">{{ reception.client.identification }}</small>
-                                </td>
-                                <td class="text-center" data-title="Fecha">
-                                    {{ reception.reception_date|date:"d/m/Y H:i" }}
-                                </td>
-                                <td class="text-center" data-title="Materiales">
-                                    {{ reception.materials.count }}
-                                </td>
-                                <td class="text-center weight" data-title="Peso Total">
-                                    {{ reception.total_net_weight|floatformat:2 }} kg
-                                </td>
-                                <td class="text-center price" data-title="Valor Total">
-                                    ${{ reception.total_reception|floatformat:2 }}
-                                </td>
-                                <td class="text-center actions">
-                                    <div class="btn-action-group">
-                                        <a href="{% url 'materials:reception_detail' reception.pk %}" class="btn btn-view">
-                                            <i class="icon-eye"></i> <span class="btn-text"></span>
-                                        </a>
-                                        <a href="{% url 'materials:reception_update' reception.pk %}" class="btn btn-edit">
-                                            <i class="icon-pencil"></i> <span class="btn-text"></span>
-                                        </a>
-                                        <a href="{% url 'materials:reception_delete' reception.pk %}" class="btn btn-delete">
-                                            <i class="icon-trash"></i> <span class="btn-text"></span>
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-                            {% empty %}
-                            <tr>
-                                <td colspan="7" class="text-center no-results">
-                                    <div class="empty-state">
-                                        <i class="icon-info-circle"></i>
-                                        <p>No hay recepciones registradas</p>
-                                    </div>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-                
-                <div class="text-center add-material-section">
-                    <a href="{% url 'materials:reception_create' %}" class="btn btn-add-material">
-                        <i class="icon-plus"></i> Nueva Recepción
-                    </a>
-                </div>
-
-                <!-- Paginación -->
-                {% if is_paginated %}
-                <div class="text-center pagination-section">
-                    <ul class="pagination">
-                        {% if page_obj.has_previous %}
-                        <li><a href="?page={{ page_obj.previous_page_number }}">&laquo;</a></li>
-                        {% else %}
-                        <li class="disabled"><span>&laquo;</span></li>
-                        {% endif %}
-                        
-                        {% for i in paginator.page_range %}
-                        {% if page_obj.number == i %}
-                        <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
-                        {% else %}
-                        <li><a href="?page={{ i }}">{{ i }}</a></li>
-                        {% endif %}
-                        {% endfor %}
-                        
-                        {% if page_obj.has_next %}
-                        <li><a href="?page={{ page_obj.next_page_number }}">&raquo;</a></li>
-                        {% else %}
-                        <li class="disabled"><span>&raquo;</span></li>
-                        {% endif %}
-                    </ul>
-                </div>
-                {% endif %}
-            </div>
-        </div>
+<!-- Contenido específico del módulo -->
+<div class="module-header">
+    <h1>Historial de Recepciones</h1>
+    <div class="header-actions">
+        <a href="{% url 'materials:reception_create' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Nueva Recepción
+        </a>
     </div>
-</section>
+</div>
+
+<div class="module-table-container">
+    <div class="table-responsive">
+        <table class="module-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Cliente</th>
+                    <th>Fecha</th>
+                    <th>Materiales</th>
+                    <th>Peso Total</th>
+                    <th>Valor Total</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reception in receptions %}
+                <tr>
+                    <td>#{{ reception.id }}</td>
+                    <td>
+                        {{ reception.client.name }}
+                        <br>
+                        <small class="text-muted">{{ reception.client.identification }}</small>
+                    </td>
+                    <td>{{ reception.reception_date|date:"d/m/Y H:i" }}</td>
+                    <td>{{ reception.materials.count }}</td>
+                    <td>{{ reception.total_net_weight|floatformat:2 }} kg</td>
+                    <td>${{ reception.total_reception|floatformat:2 }}</td>
+                    <td class="actions">
+                        <a href="{% url 'materials:reception_detail' reception.pk %}" class="btn btn-sm btn-info" title="Ver detalle">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                        <a href="{% url 'materials:reception_update' reception.pk %}" class="btn btn-sm btn-warning" title="Editar">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="{% url 'materials:reception_delete' reception.pk %}" class="btn btn-sm btn-danger" title="Eliminar">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center">No hay recepciones registradas</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Paginación -->
+{% if is_paginated %}
+<div class="module-pagination">
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <a class="page-link" href="#" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            {% endif %}
+            
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                <li class="page-item active">
+                    <a class="page-link" href="#">{{ num }}</a>
+                </li>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                </li>
+                {% endif %}
+            {% endfor %}
+            
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <a class="page-link" href="#" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<style>
+    /* Estilos específicos para la lista de recepciones */
+    .module-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    
+    .header-actions .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .module-table-container {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        overflow: hidden;
+        margin-bottom: 20px;
+    }
+    
+    .module-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .module-table th {
+        background-color: #f8f9fa;
+        padding: 12px 15px;
+        text-align: left;
+        font-weight: 600;
+        color: #495057;
+        border-bottom: 2px solid #e9ecef;
+    }
+    
+    .module-table td {
+        padding: 12px 15px;
+        border-bottom: 1px solid #e9ecef;
+        vertical-align: middle;
+    }
+    
+    .module-table tr:hover {
+        background-color: #f8f9fa;
+    }
+    
+    .actions {
+        white-space: nowrap;
+    }
+    
+    .actions .btn {
+        padding: 5px 8px;
+        margin-right: 5px;
+    }
+    
+    .module-pagination {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+    }
+    
+    @media (max-width: 768px) {
+        .module-table td, .module-table th {
+            padding: 8px 10px;
+        }
+        
+        .actions .btn {
+            margin-bottom: 5px;
+        }
+        
+        .header-actions {
+            flex-direction: column;
+            gap: 10px;
+            align-items: flex-start;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script>
+$(document).ready(function() {
+    // Inicializar tooltips
+    $('[title]').tooltip();
+});
+</script>
 {% endblock %}

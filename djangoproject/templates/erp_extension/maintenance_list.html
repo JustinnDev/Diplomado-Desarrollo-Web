@@ -4,11 +4,16 @@
 {% block module_content %}
 <!-- Contenido específico del módulo -->
 <div class="module-header">
-    <h1>Catálogo de Materiales</h1>
+    <h1>Lista de Mantenimientos</h1>
     <div class="header-actions">
-        <a href="{% url 'materials:add' %}" class="btn btn-primary">
-            <i class="fas fa-plus"></i> Nuevo Material
+        <a href="{% url 'erp_extension:maintenance_create' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Añadir Mantenimiento
         </a>
+        {% if vehicle_id %}
+        <a href="{% url 'erp_extension:vehicle_maintenance_create' vehicle_id %}" class="btn btn-success">
+            <i class="fas fa-tools"></i> Mantenimiento para este vehículo
+        </a>
+        {% endif %}
     </div>
 </div>
 
@@ -17,30 +22,50 @@
         <table class="module-table">
             <thead>
                 <tr>
-                    <th>Categoría</th>
-                    <th>Subtipo</th>
-                    <th>Precio Base</th>
+                    <th>Vehículo</th>
+                    <th>Tipo</th>
+                    <th>Fecha</th>
+                    <th>Descripción</th>
+                    <th>Costo</th>
+                    <th>Kilometraje</th>
+                    <th>Próximo</th>
+                    <th>Realizado por</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
-                {% for material in materials %}
+                {% for maintenance in maintenances %}
                 <tr>
-                    <td>{{ material.get_category_display }}</td>
-                    <td>{{ material.name }}</td>
-                    <td>${{ material.base_price|floatformat:2 }}</td>
-                    <td class="actions">
-                        <a href="{% url 'materials:edit' material.pk %}" class="btn btn-sm btn-warning" title="Editar">
-                            <i class="fas fa-edit"></i>
+                    <td>
+                        <a href="{% url 'erp_extension:vehicle_detail' maintenance.vehicle.pk %}">
+                            {{ maintenance.vehicle.license_plate }}
                         </a>
-                        <a href="{% url 'materials:delete' material.pk %}" class="btn btn-sm btn-danger" title="Eliminar">
-                            <i class="fas fa-trash"></i>
+                    </td>
+                    <td>{{ maintenance.get_maintenance_type_display }}</td>
+                    <td>{{ maintenance.date|date:"d/m/Y" }}</td>
+                    <td>{{ maintenance.description|truncatechars:30 }}</td>
+                    <td>${{ maintenance.cost|floatformat:2 }}</td>
+                    <td>{{ maintenance.odometer_reading }}</td>
+                    <td>
+                        {% if maintenance.next_maintenance_km %}
+                            {{ maintenance.next_maintenance_km }}
+                        {% else %}
+                            <span class="text-muted">No definido</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ maintenance.performed_by|default:"-" }}</td>
+                    <td class="actions">
+                        <a href="{% url 'erp_extension:vehicle_detail' maintenance.vehicle.pk %}" class="btn btn-sm btn-info" title="Ver vehículo">
+                            <i class="fas fa-car"></i>
+                        </a>
+                        <a href="{% url 'erp_extension:maintenance_update' pk=maintenance.pk %}" class="btn btn-sm btn-warning" title="Editar">
+                            <i class="fas fa-edit"></i>
                         </a>
                     </td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="4" class="text-center">No hay materiales registrados</td>
+                    <td colspan="9" class="text-center">No hay mantenimientos registrados</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -55,7 +80,7 @@
         <ul class="pagination">
             {% if page_obj.has_previous %}
             <li class="page-item">
-                <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if vehicle_id %}&vehicle_id={{ vehicle_id }}{% endif %}" aria-label="Previous">
                     <span aria-hidden="true">&laquo;</span>
                 </a>
             </li>
@@ -74,14 +99,14 @@
                 </li>
                 {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
                 <li class="page-item">
-                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                    <a class="page-link" href="?page={{ num }}{% if vehicle_id %}&vehicle_id={{ vehicle_id }}{% endif %}">{{ num }}</a>
                 </li>
                 {% endif %}
             {% endfor %}
             
             {% if page_obj.has_next %}
             <li class="page-item">
-                <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if vehicle_id %}&vehicle_id={{ vehicle_id }}{% endif %}" aria-label="Next">
                     <span aria-hidden="true">&raquo;</span>
                 </a>
             </li>
@@ -97,12 +122,13 @@
 </div>
 {% endif %}
 
+
 {% endblock %}
 
 {% block extra_css %}
 {{ block.super }}
 <style>
-    /* Estilos específicos para la lista de materiales */
+    /* Estilos específicos para la lista de mantenimientos */
     .module-header {
         display: flex;
         justify-content: space-between;
@@ -157,6 +183,18 @@
         margin-right: 5px;
     }
     
+    .module-filters {
+        background: white;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        margin-bottom: 20px;
+    }
+    
+    .filter-form .form-group {
+        margin-bottom: 0;
+    }
+    
     .module-pagination {
         display: flex;
         justify-content: center;
@@ -187,6 +225,22 @@
 $(document).ready(function() {
     // Inicializar tooltips
     $('[title]').tooltip();
+    
+    // Manejar el filtrado
+    $('select[name="vehicle_id"], select[name="maintenance_type"]').change(function() {
+        $(this).closest('form').submit();
+    });
+    
+    // Formatear fechas para el input date
+    function formatDateForInput(dateString) {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        return date.toISOString().split('T')[0];
+    }
+    
+    // Aplicar formato a las fechas existentes en los inputs
+    $('#date_from').val(formatDateForInput($('#date_from').val()));
+    $('#date_to').val(formatDateForInput($('#date_to').val()));
 });
 </script>
 {% endblock %}

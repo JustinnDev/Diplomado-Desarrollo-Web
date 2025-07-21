@@ -71,7 +71,7 @@
     <div class="vehicle-tabs">
         <ul class="nav nav-tabs" id="vehicleTabs" role="tablist">
             <li class="nav-item">
-                <a class="nav-link active" id="refills-tab" data-toggle="tab" href="#refills" role="tab">
+                <a class="nav-link" id="refills-tab" data-toggle="tab" href="#refills" role="tab">
                     <i class="fas fa-gas-pump"></i> Recargas
                 </a>
             </li>
@@ -88,150 +88,180 @@
         </ul>
         
         <div class="tab-content" id="vehicleTabsContent">
-            <div class="tab-pane fade show active" id="refills" role="tabpanel">
-                <div class="section-header">
-                    <h3>Últimas recargas de combustible</h3>
-                    <a href="{% url 'erp_extension:vehicle_fuelrefill_create' vehicle.pk %}" class="btn btn-sm btn-success">
-                        <i class="fas fa-plus"></i> Nueva recarga
+            <!-- Sección de Recargas -->
+            <div class="tab-pane fade" id="refills" role="tabpanel">
+                <div class="section-content">
+                    <div class="section-header">
+                        <h3>Últimas recargas de combustible</h3>
+                        <a href="{% url 'erp_extension:vehicle_fuelrefill_create' vehicle.pk %}" class="btn btn-sm btn-success">
+                            <i class="fas fa-plus"></i> Nueva recarga
+                        </a>
+                    </div>
+                    
+                    {% if refills %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Estación</th>
+                                    <th>Cantidad (L)</th>
+                                    <th>Precio/L</th>
+                                    <th>Total</th>
+                                    <th>Odómetro</th>
+                                    <th>Conductor</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for refill in refills %}
+                                <tr>
+                                    <td>{{ refill.date|date:"d/m/Y H:i" }}</td>
+                                    <td>{{ refill.station.name }}</td>
+                                    <td>{{ refill.quantity }}</td>
+                                    <td>${{ refill.price_per_unit }}</td>
+                                    <td>${{ refill.total_cost }}</td>
+                                    <td>{{ refill.odometer_reading }}</td>
+                                    <td>{{ refill.driver.name }}</td>
+                                    <td>
+                                        <a href="{% url 'erp_extension:fuelrefill_update' refill.pk %}" 
+                                           class="btn btn-sm btn-primary" title="Editar">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <a href="{% url 'erp_extension:fuelrefill_list' %}?vehicle_id={{ vehicle.pk }}" class="btn btn-link">
+                        Ver todas las recargas <i class="fas fa-arrow-right"></i>
                     </a>
+                    {% else %}
+                    <div class="alert alert-info">
+                        No hay registros de recargas para este vehículo.
+                    </div>
+                    {% endif %}
                 </div>
-                
-                {% if refills %}
-                <div class="table-responsive">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Fecha</th>
-                                <th>Estación</th>
-                                <th>Cantidad (L)</th>
-                                <th>Precio/L</th>
-                                <th>Total</th>
-                                <th>Odómetro</th>
-                                <th>Conductor</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for refill in refills %}
-                            <tr>
-                                <td>{{ refill.date|date:"d/m/Y H:i" }}</td>
-                                <td>{{ refill.station.name }}</td>
-                                <td>{{ refill.quantity }}</td>
-                                <td>${{ refill.price_per_unit }}</td>
-                                <td>${{ refill.total_cost }}</td>
-                                <td>{{ refill.odometer_reading }}</td>
-                                <td>{{ refill.driver.name }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-                <a href="{% url 'erp_extension:fuelrefill_list' %}?vehicle_id={{ vehicle.pk }}" class="btn btn-link">
-                    Ver todas las recargas <i class="fas fa-arrow-right"></i>
-                </a>
-                {% else %}
-                <div class="alert alert-info">
-                    No hay registros de recargas para este vehículo.
-                </div>
-                {% endif %}
             </div>
             
+            <!-- Sección de Consumos -->
             <div class="tab-pane fade" id="consumptions" role="tabpanel">
-                
-                {% if consumptions %}
-                <div class="table-responsive">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Fecha</th>
-                                <th>Cantidad (L)</th>
-                                <th>Odómetro</th>
-                                <th>Km desde último</th>
-                                <th>Eficiencia (km/L)</th>
-                                <th>Propósito</th>
-                                <th>Conductor</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-{% for consumption in consumptions %}
-    <tr>
-        <td>{{ consumption.date|date:"d/m/Y H:i" }}</td>
-        <td>{{ consumption.driver }}</td>
-        <td>{{ consumption.quantity }} L</td>
-        <td>{{ consumption.odometer_reading }} km</td>
-        <td>
-            <a href="{% url 'erp_extension:fuelconsumption_update' consumption.pk %}" 
-               class="btn btn-sm btn-primary" title="Editar">
-                <i class="fas fa-edit"></i>
-            </a>
-        </td>
-    </tr>
-{% endfor %}
+                <div class="section-content">
+                    <div class="section-header">
+                        <h3>Registros de consumo</h3>
+                        <a href="{% url 'erp_extension:vehicle_fuelconsumption_create' vehicle.pk %}" 
+                           class="btn btn-sm btn-success">
+                            <i class="fas fa-plus"></i> Nuevo consumo
+                        </a>
+                    </div>
 
-<a href="{% url 'erp_extension:vehicle_fuelconsumption_create' vehicle.pk %}" 
-   class="btn btn-sm btn-success">
-    <i class="fas fa-plus"></i> Nuevo consumo
-</a>
-                        </tbody>
-                    </table>
+                    {% if consumptions %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Cantidad (L)</th>
+                                    <th>Odómetro</th>
+                                    <th>Km desde último</th>
+                                    <th>Eficiencia (km/L)</th>
+                                    <th>Propósito</th>
+                                    <th>Conductor</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for consumption in consumptions %}
+                                <tr>
+                                    <td>{{ consumption.date|date:"d/m/Y H:i" }}</td>
+                                    <td>{{ consumption.quantity }} L</td>
+                                    <td>{{ consumption.odometer_reading }} km</td>
+                                    <td>{{ consumption.km_since_last|default:"-" }}</td>
+                                    <td>{{ consumption.efficiency|default:"-" }}</td>
+                                    <td>{{ consumption.purpose|default:"-" }}</td>
+                                    <td>{{ consumption.driver.name|default:"-" }}</td>
+                                    <td>
+                                        <a href="{% url 'erp_extension:fuelconsumption_update' consumption.pk %}" 
+                                           class="btn btn-sm btn-primary" title="Editar">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {% else %}
+                    <div class="alert alert-info">
+                        No hay registros de consumo para este vehículo.
+                    </div>
+                    {% endif %}
                 </div>
-                {% else %}
-                <div class="alert alert-info">
-                    No hay registros de consumo para este vehículo.
-                </div>
-                {% endif %}
             </div>
             
+            <!-- Sección de Mantenimientos -->
             <div class="tab-pane fade" id="maintenance" role="tabpanel">
-                <div class="section-header">
-                    <h3>Últimos mantenimientos</h3>
-                    <a href="{% url 'erp_extension:vehicle_maintenance_create' vehicle.pk %}" class="btn btn-sm btn-success">
-                        <i class="fas fa-plus"></i> Nuevo mantenimiento
+                <div class="section-content">
+                    <div class="section-header">
+                        <h3>Últimos mantenimientos</h3>
+                        <a href="{% url 'erp_extension:vehicle_maintenance_create' vehicle.pk %}" class="btn btn-sm btn-success">
+                            <i class="fas fa-plus"></i> Nuevo mantenimiento
+                        </a>
+                    </div>
+                    
+                    {% if maintenances %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Tipo</th>
+                                    <th>Descripción</th>
+                                    <th>Costo</th>
+                                    <th>Odómetro</th>
+                                    <th>Próximo en</th>
+                                    <th>Realizado por</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for maintenance in maintenances %}
+                                <tr>
+                                    <td>{{ maintenance.date|date:"d/m/Y H:i" }}</td>
+                                    <td>{{ maintenance.get_maintenance_type_display }}</td>
+                                    <td>{{ maintenance.description|truncatechars:50 }}</td>
+                                    <td>${{ maintenance.cost }}</td>
+                                    <td>{{ maintenance.odometer_reading }}</td>
+                                    <td>
+                                        {% if maintenance.next_maintenance_km %}
+                                            {{ maintenance.next_maintenance_km }} km
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ maintenance.performed_by|default:"-" }}</td>
+                                    <td>
+                                        <a href="{% url 'erp_extension:maintenance_update' pk=maintenance.pk %}" 
+                                           class="btn btn-sm btn-primary" title="Editar">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <a href="{% url 'erp_extension:maintenance_list' %}?vehicle_id={{ vehicle.pk }}" class="btn btn-link">
+                        Ver todos los mantenimientos <i class="fas fa-arrow-right"></i>
                     </a>
+                    {% else %}
+                    <div class="alert alert-info">
+                        No hay registros de mantenimiento para este vehículo.
+                    </div>
+                    {% endif %}
                 </div>
-                
-                {% if maintenances %}
-                <div class="table-responsive">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Fecha</th>
-                                <th>Tipo</th>
-                                <th>Descripción</th>
-                                <th>Costo</th>
-                                <th>Odómetro</th>
-                                <th>Próximo en</th>
-                                <th>Realizado por</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for maintenance in maintenances %}
-                            <tr>
-                                <td>{{ maintenance.date|date:"d/m/Y H:i" }}</td>
-                                <td>{{ maintenance.get_maintenance_type_display }}</td>
-                                <td>{{ maintenance.description|truncatechars:50 }}</td>
-                                <td>${{ maintenance.cost }}</td>
-                                <td>{{ maintenance.odometer_reading }}</td>
-                                <td>
-                                    {% if maintenance.next_maintenance_km %}
-                                        {{ maintenance.next_maintenance_km }} km
-                                    {% else %}
-                                        -
-                                    {% endif %}
-                                </td>
-                                <td>{{ maintenance.performed_by|default:"-" }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-                <a href="{% url 'erp_extension:maintenance_list' %}?vehicle_id={{ vehicle.pk }}" class="btn btn-link">
-                    Ver todos los mantenimientos <i class="fas fa-arrow-right"></i>
-                </a>
-                {% else %}
-                <div class="alert alert-info">
-                    No hay registros de mantenimiento para este vehículo.
-                </div>
-                {% endif %}
             </div>
         </div>
     </div>
@@ -313,20 +343,37 @@
     font-size: 1.2rem;
 }
 
+.section-content {
+    padding: 15px;
+    background: #fff;
+    border-radius: 0 0 8px 8px;
+}
+
 .nav-tabs {
-    margin-bottom: 20px;
+    margin-bottom: 0;
+    background: #f8f9fa;
+    border-radius: 8px 8px 0 0;
+    padding: 0 15px;
 }
 
 .nav-tabs .nav-link {
     color: #6c757d;
     border: none;
     padding: 10px 20px;
+    border-radius: 0;
 }
 
 .nav-tabs .nav-link.active {
     color: #4e73df;
     border-bottom: 2px solid #4e73df;
     background: transparent;
+}
+
+.tab-content {
+    min-height: 300px;
+    border: 1px solid #dee2e6;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
 }
 
 .table th {
@@ -352,6 +399,18 @@
 
 .badge-danger {
     background-color: #e74a3b;
+}
+
+.table-responsive {
+    margin-bottom: 20px;
+}
+
+.alert {
+    margin-bottom: 20px;
+}
+
+.btn-link {
+    padding-left: 0;
 }
 </style>
 {% endblock %}

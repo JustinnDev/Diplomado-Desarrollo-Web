@@ -8,146 +8,154 @@
 </div>
 
 <div class="module-grid">
-    <!-- Resumen General -->
-    <div class="module-card">
-        <div class="module-card-header">
-            <h3><i class="icon-chart-pie"></i> Resumen General</h3>
+    <!-- Primera fila: Resumen y Acciones Rápidas -->
+    <div class="module-row">
+        <!-- Resumen General -->
+        <div class="module-card summary-card">
+            <div class="module-card-header">
+                <h3><i class="icon-chart-pie"></i> Resumen General</h3>
+            </div>
+            <div class="module-card-body">
+                <div class="summary-stats">
+                    <div class="stat-item">
+                        <span class="stat-value">{{ vehicles.count }}</span>
+                        <span class="stat-label">Vehículos Activos</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value">{{ drivers.count }}</span>
+                        <span class="stat-label">Conductores</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value">{{ fuel_stations.count }}</span>
+                        <span class="stat-label">Estaciones</span>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="module-card-body">
-            <div class="summary-stats">
-                <div class="stat-item">
-                    <span class="stat-value">{{ vehicles.count }}</span>
-                    <span class="stat-label">Vehículos Activos</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-value">{{ drivers.count }}</span>
-                    <span class="stat-label">Conductores</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-value">{{ fuel_stations.count }}</span>
-                    <span class="stat-label">Estaciones</span>
+
+        <!-- Acciones Rápidas -->
+        <div class="module-card actions-card">
+            <div class="module-card-header">
+                <h3><i class="icon-bolt"></i> Acciones Rápidas</h3>
+            </div>
+            <div class="module-card-body">
+                <div class="quick-actions-grid">
+                    <a href="{% url 'erp_extension:fuelrefill_create' %}" class="action-btn">
+                        <i class="icon-truck-loading"></i>
+                        <span>Registrar Recarga</span>
+                    </a>
+                    <a href="{% url 'erp_extension:fuelconsumption_create' %}" class="action-btn">
+                        <i class="icon-road"></i>
+                        <span>Registrar Consumo</span>
+                    </a>
+                    <a href="{% url 'erp_extension:maintenance_create' %}" class="action-btn">
+                        <i class="icon-tools"></i>
+                        <span>Registrar Mantenimiento</span>
+                    </a>
+                    <a href="{% url 'erp_extension:vehicle_create' %}" class="action-btn">
+                        <i class="icon-car"></i>
+                        <span>Agregar Vehículo</span>
+                    </a>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Vehículos -->
-    <div class="module-card">
-        <div class="module-card-header">
-            <h3><i class="icon-car"></i> Vehículos</h3>
-            <a href="{% url 'erp_extension:vehicle_list' %}" class="btn-link">Ver todos</a>
-        </div>
-        <div class="module-card-body">
-            <div class="vehicle-list">
-                {% for vehicle in vehicles %}
-                <div class="vehicle-item">
-                    <div class="vehicle-info">
-                        <span class="vehicle-plate">{{ vehicle.license_plate }}</span>
-                        <span class="vehicle-model">{{ vehicle.make }} {{ vehicle.model }}</span>
-                    </div>
-                    <div class="vehicle-fuel">
-                        <div class="fuel-gauge">
-                            <div class="fuel-level" style="width: {% widthratio vehicle.current_fuel_level vehicle.fuel_capacity 100 %}%"></div>
+    <!-- Segunda fila: Vehículos -->
+    <div class="module-row">
+        <div class="module-card vehicles-card">
+            <div class="module-card-header">
+                <h3><i class="icon-car"></i> Vehículos</h3>
+                <a href="{% url 'erp_extension:vehicle_list' %}" class="btn-link">Ver todos</a>
+            </div>
+            <div class="module-card-body">
+                <div class="vehicle-list">
+                    {% for vehicle in vehicles %}
+                    <div class="vehicle-item">
+                        <div class="vehicle-info">
+                            <span class="vehicle-plate">{{ vehicle.license_plate }}</span>
+                            <span class="vehicle-model">{{ vehicle.make }} {{ vehicle.model }}</span>
                         </div>
-                        <span class="fuel-text">{{ vehicle.current_fuel_level|floatformat:2 }} / {{ vehicle.fuel_capacity }} L</span>
+                        <div class="vehicle-fuel">
+                            <div class="fuel-gauge">
+                                <div class="fuel-level" style="width: {% widthratio vehicle.current_fuel_level vehicle.fuel_capacity 100 %}%"></div>
+                            </div>
+                            <span class="fuel-text">{{ vehicle.current_fuel_level|floatformat:2 }} / {{ vehicle.fuel_capacity }} L</span>
+                        </div>
+                        <a href="{% url 'erp_extension:vehicle_detail' vehicle.pk %}" class="btn-sm">Detalles</a>
                     </div>
-                    <a href="{% url 'erp_extension:vehicle_detail' vehicle.pk %}" class="btn-sm">Detalles</a>
+                    {% endfor %}
                 </div>
-                {% endfor %}
             </div>
         </div>
     </div>
 
-    <!-- Últimas Recargas -->
-    <div class="module-card">
-        <div class="module-card-header">
-            <h3><i class="icon-truck-loading"></i> Últimas Recargas</h3>
-            <a href="{% url 'erp_extension:fuelrefill_list' %}" class="btn-link">Ver todas</a>
-        </div>
-        <div class="module-card-body">
-            <div class="refill-list">
-                {% for refill in recent_refills %}
-                <div class="refill-item">
-                    <div class="refill-header">
-                        <span class="refill-vehicle">{{ refill.vehicle.license_plate }}</span>
-                        <span class="refill-date">{{ refill.date|date:"d/m/Y H:i" }}</span>
+    <!-- Tercera fila: Recargas y Consumos -->
+    <div class="module-row">
+        <!-- Últimas Recargas -->
+        <div class="module-card refills-card">
+            <div class="module-card-header">
+                <h3><i class="icon-truck-loading"></i> Últimas Recargas</h3>
+                <a href="{% url 'erp_extension:fuelrefill_list' %}" class="btn-link">Ver todas</a>
+            </div>
+            <div class="module-card-body">
+                <div class="refill-list">
+                    {% for refill in recent_refills %}
+                    <div class="refill-item">
+                        <div class="refill-header">
+                            <span class="refill-vehicle">{{ refill.vehicle.license_plate }}</span>
+                            <span class="refill-date">{{ refill.date|date:"d/m/Y H:i" }}</span>
+                        </div>
+                        <div class="refill-details">
+                            <div class="refill-station">
+                                <i class="icon-gas-station"></i>
+                                {{ refill.station.name }}
+                            </div>
+                            <div class="refill-quantity">
+                                {{ refill.quantity }} L
+                            </div>
+                            <div class="refill-cost">
+                                ${{ refill.total_cost|floatformat:2 }}
+                            </div>
+                        </div>
                     </div>
-                    <div class="refill-details">
-                        <div class="refill-station">
-                            <i class="icon-gas-station"></i>
-                            {{ refill.station.name }}
-                        </div>
-                        <div class="refill-quantity">
-                            {{ refill.quantity }} L
-                        </div>
-                        <div class="refill-cost">
-                            ${{ refill.total_cost|floatformat:2 }}
-                        </div>
-                    </div>
+                    {% empty %}
+                    <p class="no-data">No hay recargas recientes</p>
+                    {% endfor %}
                 </div>
-                {% empty %}
-                <p class="no-data">No hay recargas recientes</p>
-                {% endfor %}
             </div>
         </div>
-    </div>
 
-    <!-- Últimos Consumos -->
-    <div class="module-card">
-        <div class="module-card-header">
-            <h3><i class="icon-road"></i> Últimos Consumos</h3>
-            <a href="#" class="btn-link">Ver todos</a>
-        </div>
-        <div class="module-card-body">
-            <div class="consumption-list">
-                {% for consumption in recent_consumptions %}
-                <div class="consumption-item">
-                    <div class="consumption-header">
-                        <span class="consumption-vehicle">{{ consumption.vehicle.license_plate }}</span>
-                        <span class="consumption-date">{{ consumption.date|date:"d/m/Y H:i" }}</span>
-                    </div>
-                    <div class="consumption-details">
-                        <div class="consumption-quantity">
-                            {{ consumption.quantity }} L
-                        </div>
-                        <div class="consumption-km">
-                            {{ consumption.km_since_last }} km
-                        </div>
-                        <div class="consumption-efficiency">
-                            {{ consumption.efficiency|floatformat:2 }} km/L
-                        </div>
-                    </div>
-                </div>
-                {% empty %}
-                <p class="no-data">No hay consumos recientes</p>
-                {% endfor %}
+        <!-- Últimos Consumos -->
+        <div class="module-card consumptions-card">
+            <div class="module-card-header">
+                <h3><i class="icon-road"></i> Últimos Consumos</h3>
+                <a href="{% url 'erp_extension:maintenance_list'%}" class="btn-link">Ver todos</a>
             </div>
-        </div>
-    </div>
-
-    <!-- Acciones Rápidas -->
-    <div class="module-card">
-        <div class="module-card-header">
-            <h3><i class="icon-bolt"></i> Acciones Rápidas</h3>
-        </div>
-        <div class="module-card-body">
-            <div class="quick-actions">
-                <a href="{% url 'erp_extension:fuelrefill_create' %}" class="action-btn">
-                    <i class="icon-truck-loading"></i>
-                    <span>Registrar Recarga</span>
-                </a>
-                <a href="{% url 'erp_extension:fuelconsumption_create' %}" class="action-btn">
-                    <i class="icon-road"></i>
-                    <span>Registrar Consumo</span>
-                </a>
-                <a href="{% url 'erp_extension:maintenance_create' %}" class="action-btn">
-                    <i class="icon-tools"></i>
-                    <span>Registrar Mantenimiento</span>
-                </a>
-                <a href="{% url 'erp_extension:vehicle_create' %}" class="action-btn">
-                    <i class="icon-car"></i>
-                    <span>Agregar Vehículo</span>
-                </a>
+            <div class="module-card-body">
+                <div class="consumption-list">
+                    {% for consumption in recent_consumptions %}
+                    <div class="consumption-item">
+                        <div class="consumption-header">
+                            <span class="consumption-vehicle">{{ consumption.vehicle.license_plate }}</span>
+                            <span class="consumption-date">{{ consumption.date|date:"d/m/Y H:i" }}</span>
+                        </div>
+                        <div class="consumption-details">
+                            <div class="consumption-quantity">
+                                {{ consumption.quantity }} L
+                            </div>
+                            <div class="consumption-km">
+                                {{ consumption.km_since_last }} km
+                            </div>
+                            <div class="consumption-efficiency">
+                                {{ consumption.efficiency|floatformat:2 }} km/L
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="no-data">No hay consumos recientes</p>
+                    {% endfor %}
+                </div>
             </div>
         </div>
     </div>
@@ -157,7 +165,89 @@
 {% block extra_css %}
 {{ block.super }}
 <style>
-    /* Estilos específicos para el dashboard de combustible */
+    /* Estilos base y estructura */
+    .module-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        padding: 0 10px;
+    }
+    
+    .module-row {
+        display: flex;
+        gap: 20px;
+        width: 100%;
+    }
+    
+    .module-card {
+        flex: 1;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .summary-card {
+        min-width: 300px;
+        max-width: 400px;
+    }
+    
+    .actions-card {
+        min-width: 300px;
+    }
+    
+    .vehicles-card {
+        width: 100%;
+    }
+    
+    .refills-card, .consumptions-card {
+        flex: 1;
+        min-width: 0;
+    }
+    
+    .module-card-header {
+        padding: 15px 20px;
+        border-bottom: 1px solid #f0f0f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .module-card-header h3 {
+        margin: 0;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .module-card-header i {
+        font-size: 18px;
+        color: var(--primary-color);
+    }
+    
+    .btn-link {
+        font-size: 13px;
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: 500;
+    }
+    
+    .btn-link:hover {
+        text-decoration: underline;
+    }
+    
+    .module-card-body {
+        padding: 15px 20px;
+        flex: 1;
+        overflow-y: auto;
+    }
+    
+    /* Estilos específicos para cada sección */
+    
+    /* Resumen General */
     .summary-stats {
         display: flex;
         justify-content: space-around;
@@ -169,12 +259,14 @@
         display: flex;
         flex-direction: column;
         align-items: center;
+        padding: 0 10px;
     }
     
     .stat-value {
         font-size: 24px;
         font-weight: 700;
         color: var(--primary-color);
+        margin-bottom: 5px;
     }
     
     .stat-label {
@@ -184,6 +276,45 @@
         letter-spacing: 0.5px;
     }
     
+    /* Acciones Rápidas */
+    .quick-actions-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+    
+    .action-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 20px 10px;
+        background: var(--card-bg);
+        border-radius: 8px;
+        text-align: center;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        border: 1px solid #f0f0f0;
+    }
+    
+    .action-btn:hover {
+        background: var(--primary-light);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    }
+    
+    .action-btn i {
+        font-size: 24px;
+        margin-bottom: 8px;
+        color: var(--primary-color);
+    }
+    
+    .action-btn span {
+        font-size: 13px;
+        color: var(--text-color);
+    }
+    
+    /* Lista de Vehículos */
     .vehicle-list {
         display: flex;
         flex-direction: column;
@@ -194,7 +325,7 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 12px;
+        padding: 12px 15px;
         background: var(--card-bg);
         border-radius: 8px;
         box-shadow: 0 1px 3px rgba(0,0,0,0.05);
@@ -203,11 +334,13 @@
     .vehicle-info {
         display: flex;
         flex-direction: column;
+        min-width: 120px;
     }
     
     .vehicle-plate {
         font-weight: 600;
         color: var(--text-color);
+        margin-bottom: 2px;
     }
     
     .vehicle-model {
@@ -220,6 +353,7 @@
         flex-direction: column;
         align-items: center;
         min-width: 120px;
+        margin: 0 15px;
     }
     
     .fuel-gauge {
@@ -242,14 +376,29 @@
         color: var(--text-muted);
     }
     
+    .btn-sm {
+        padding: 6px 12px;
+        font-size: 12px;
+        background: var(--primary-color);
+        color: white;
+        border-radius: 4px;
+        text-decoration: none;
+        transition: background 0.2s;
+    }
+    
+    .btn-sm:hover {
+        background: var(--primary-dark);
+    }
+    
+    /* Listas de Recargas y Consumos */
     .refill-list, .consumption-list {
         display: flex;
         flex-direction: column;
-        gap: 10px;
+        gap: 12px;
     }
     
     .refill-item, .consumption-item {
-        padding: 12px;
+        padding: 15px;
         background: var(--card-bg);
         border-radius: 8px;
         box-shadow: 0 1px 3px rgba(0,0,0,0.05);
@@ -258,11 +407,12 @@
     .refill-header, .consumption-header {
         display: flex;
         justify-content: space-between;
-        margin-bottom: 8px;
+        margin-bottom: 10px;
     }
     
     .refill-vehicle, .consumption-vehicle {
         font-weight: 600;
+        font-size: 14px;
     }
     
     .refill-date, .consumption-date {
@@ -273,7 +423,7 @@
     .refill-details, .consumption-details {
         display: flex;
         justify-content: space-between;
-        font-size: 14px;
+        font-size: 13px;
     }
     
     .refill-station, .consumption-quantity {
@@ -282,37 +432,8 @@
         gap: 6px;
     }
     
-    .quick-actions {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-    }
-    
-    .action-btn {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 15px 10px;
-        background: var(--card-bg);
-        border-radius: 8px;
-        text-align: center;
-        transition: all 0.2s ease;
-    }
-    
-    .action-btn:hover {
-        background: var(--primary-light);
-        transform: translateY(-2px);
-    }
-    
-    .action-btn i {
-        font-size: 24px;
-        margin-bottom: 8px;
+    .refill-station i, .consumption-quantity i {
         color: var(--primary-color);
-    }
-    
-    .action-btn span {
-        font-size: 13px;
     }
     
     .no-data {
@@ -320,6 +441,39 @@
         padding: 20px;
         color: var(--text-muted);
         font-style: italic;
+        font-size: 14px;
+    }
+    
+    /* Responsive */
+    @media (max-width: 1200px) {
+        .module-row {
+            flex-direction: column;
+        }
+        
+        .summary-card, .actions-card {
+            max-width: 100%;
+        }
+        
+        .quick-actions-grid {
+            grid-template-columns: repeat(4, 1fr);
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .quick-actions-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .vehicle-item {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .vehicle-fuel {
+            width: 100%;
+            margin: 10px 0;
+        }
     }
 </style>
 {% endblock %}

@@ -31,21 +31,25 @@ urlpatterns = [
     # URLs para Recargas de Combustible
     path('fuel-refills/', views.FuelRefillListView.as_view(), name='fuelrefill_list'),
     path('fuel-refills/add/', views.FuelRefillCreateView.as_view(), name='fuelrefill_create'),
-    path('vehicles/<int:vehicle_id>/fuel-refills/add/', 
-         views.FuelRefillCreateView.as_view(), name='vehicle_fuelrefill_create'),
+    path('vehicles/<int:vehicle_id>/fuel-refills/add/', views.FuelRefillCreateView.as_view(), name='vehicle_fuelrefill_create'),
     
-path('fuel-consumptions/add/', views.FuelConsumptionCreateView.as_view(), name='fuelconsumption_create'),
-path('vehicles/<int:vehicle_id>/fuel-consumptions/add/', 
-     views.FuelConsumptionCreateView.as_view(), name='vehicle_fuelconsumption_create'),
-path('fuel-consumptions/<int:pk>/edit/', 
-     views.FuelConsumptionUpdateView.as_view(), name='fuelconsumption_update'),
-path('vehicles/<int:vehicle_id>/fuel-consumptions/<int:pk>/edit/', 
-     views.FuelConsumptionUpdateView.as_view(), name='vehicle_fuelconsumption_update'),
+    path('fuel-consumptions/add/', views.FuelConsumptionCreateView.as_view(), name='fuelconsumption_create'),
+    path('vehicles/<int:vehicle_id>/fuel-consumptions/add/', views.FuelConsumptionCreateView.as_view(), name='vehicle_fuelconsumption_create'),
+    path('fuel-consumptions/<int:pk>/edit/', views.FuelConsumptionUpdateView.as_view(), name='fuelconsumption_update'),
+    path('vehicles/<int:vehicle_id>/fuel-consumptions/<int:pk>/edit/', views.FuelConsumptionUpdateView.as_view(), name='vehicle_fuelconsumption_update'),
     
     # URLs para Mantenimientos
     path('maintenances/', views.MaintenanceLogListView.as_view(), name='maintenance_list'),
     path('maintenances/add/', views.MaintenanceLogCreateView.as_view(), name='maintenance_create'),
-    path('vehicles/<int:vehicle_id>/maintenances/add/', 
-         views.MaintenanceLogCreateView.as_view(), name='vehicle_maintenance_create'),
+    path('vehicles/<int:vehicle_id>/maintenances/add/', views.MaintenanceLogCreateView.as_view(), name='vehicle_maintenance_create'),
+
+         
+    # Añade estas URLs junto con las demás de mantenimiento
+    path('maintenances/<int:pk>/', views.MaintenanceLogDetailView.as_view(), name='maintenance_detail'),
+    path('maintenances/<int:pk>/edit/', views.MaintenanceLogUpdateView.as_view(), name='maintenance_update'),
+
+    path('fuel-refills/<int:pk>/edit/', views.FuelRefillUpdateView.as_view(), name='fuelrefill_update'),
+    path('vehicles/<int:vehicle_id>/fuel-refills/<int:pk>/edit/',views.FuelRefillUpdateView.as_view(), name='vehicle_fuelrefill_update'),
     ]
+
 

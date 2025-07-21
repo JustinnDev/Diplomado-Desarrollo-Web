@@ -434,6 +434,22 @@ class MaintenanceLogListView(BaseFuelView, ListView):
         if vehicle_id:
             queryset = queryset.filter(vehicle__id=vehicle_id)
         return queryset.order_by('-date')
+    
+class MaintenanceLogDetailView(BaseFuelView, DetailView):
+    model = MaintenanceLog
+    template_name = 'erp_extension/maintenance_detail.html'
+    context_object_name = 'maintenance'
+    success_message = "Detalles de mantenimiento cargados correctamente"
+
+class MaintenanceLogUpdateView(BaseFuelView, UpdateView):
+    model = MaintenanceLog
+    form_class = MaintenanceLogForm
+    template_name = 'erp_extension/maintenance_form.html'
+    success_message = "Mantenimiento actualizado exitosamente"
+    error_message = "Error al actualizar el mantenimiento"
+
+    def get_success_url(self):
+        return reverse_lazy('erp_extension:vehicle_detail', kwargs={'pk': self.object.vehicle.pk})
 
 # Vista de Dashboard
 class FuelDashboardView(BaseFuelView, View):
@@ -451,3 +467,38 @@ class FuelDashboardView(BaseFuelView, View):
             'recent_consumptions': recent_consumptions,
         }
         return render(request, self.template_name, context)
+    
+class FuelRefillUpdateView(BaseFuelView, UpdateView):
+    model = FuelRefill
+    form_class = FuelRefillForm
+    template_name = 'erp_extension/fuelrefill_form.html'
+    success_message = "Recarga de combustible actualizada exitosamente"
+    error_message = "Error al actualizar la recarga de combustible"
+
+    def get_success_url(self):
+        # Redirige a la página de detalle del vehículo asociado
+        return reverse_lazy('erp_extension:vehicle_detail', kwargs={'pk': self.object.vehicle.pk})
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Agrega el vehículo al contexto si está disponible en la URL
+        if 'vehicle_id' in self.kwargs:
+            context['vehicle'] = get_object_or_404(Vehicle, pk=self.kwargs['vehicle_id'])
+        return context
+
+
+class VehicleFuelRefillUpdateView(FuelRefillUpdateView):
+    """
+    Vista específica para editar recargas desde la página de un vehículo.
+    Hereda de FuelRefillUpdateView y solo sobrecarga get_initial para
+    asegurar la relación con el vehículo.
+    """
+    
+    def get_initial(self):
+        initial = super().get_initial()
+        vehicle_id = self.kwargs.get('vehicle_id')
+        if vehicle_id:
+            vehicle = get_object_or_404(Vehicle, pk=vehicle_id)
+            initial['vehicle'] = vehicle
+            initial['driver'] = vehicle.current_driver  # Establece el conductor actual por defecto
+        return initial

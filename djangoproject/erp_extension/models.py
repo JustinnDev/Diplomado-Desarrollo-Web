@@ -149,8 +149,9 @@ class FuelConsumption(models.Model):
     def efficiency(self):
         """Calcula la eficiencia en km/litro (si hay km recorridos)"""
         km = self.km_since_last
-        if km > 0 and self.quantity > 0:
+        if km > 0 and self.quantity > 0: 
             return km / float(self.quantity)
+        
         return 0
 
 class MaintenanceLog(models.Model):
